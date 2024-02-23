@@ -1,4 +1,5 @@
 ./riscv-gnu-toolchain/
+./riscv-isa-sim/
 ./riscv-pk/
 ./venv/
 
