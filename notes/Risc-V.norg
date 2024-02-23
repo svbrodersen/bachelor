@@ -1,0 +1,20 @@
+* Risc-V - Reduced Instruction Set Computing
+  - Most use the same instruction length for almost all instructions. Differentiation in the way the instruction is interpreted.
+  - Easier to optimize the instructions when there are fewer to keep track of.
+  - Increased Scalability. Having fewer instructions simply makes it easier to scale with multithreading.
+** Open sourced Instruction Set Architecture (ISA)
+
+** History
+*** Complex Instruction Set Computing (CISC)
+    Dominant architecture. Has a large number of complex machine language instructions, which can perform multiple operations in a single instruction.
+    Allowed for more efficient use of memory at a time when memory was a significant cost factor. Has become a kind of umbrella term, and usually refers
+    to everything other than RISC. At the time main memory access was usually slow, which at the time resulted in a tremendous saving,
+    on the cost of computer memory and disc storage and faster execution.
+
+** Propritary RISC architectures
+   Companies such as Intel, AMD and ARM created systems designed to execute a small number of instructions at high speed.
+   Created a fragmented landscape where different RISC architectures were not compatible with each other. Writing for
+   one type of RISC architecture wouldn't guarentee that the program would run on a different type of RISC.
+
+   Limited access. As with all Open Source, it sees to remove the stipulation that information should be contained with the few.
+   When RISC-V is open sourced, more people can chime in.

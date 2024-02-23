@@ -1,0 +1,7 @@
+* Real time Operating System
+  - Used for embedded systems
+  -
+** Questions
+   - It is stated that the scheduling time should be deterministic for the user. What happens if a given thread gives up control at
+     time t1, but the standard time is t2?
+     -

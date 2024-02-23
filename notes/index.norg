@@ -1,0 +1,31 @@
+* These are my notes surrounding my bachelor. Here I keep a list of what needs to be done
+
+
+**  Document side of project
+  - ( ) Create the Bachelor Latex Document
+  -- ( ) Introduction
+  --- ( ) Context / History
+  --- ( ) Problem
+  --- ( ) Expansion
+  --- ( ) Solution
+
+  -- ( ) Background
+  --- ( ) Acellerator based computer architecture
+  --- ( ) Risc-V
+  --- ( ) Related work
+
+  -- ( ) Analysis
+  --- ( ) Issues with related work
+  --- ( ) What Babol sees to fix
+  --- ( ) What I implement
+
+  -- ( ) Design
+
+  -- ( ) Evaluate
+  --- ( ) Functional
+  --- ( ) Non-Functional
+
+  -- ( ) Conclusion
+
+**  Implementation
+  - ( ) Implementation
