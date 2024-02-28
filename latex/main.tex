@@ -1,6 +1,29 @@
-\documentclass{article}
+\documentclass[a4paper, 12pt]{article}
 \usepackage{amsmath}
+\usepackage[utf8]{inputenc}
+\usepackage{subfiles}
+\usepackage{titlepic}
+\usepackage{graphicx}
+
+\author{
+{Simon Vinding Brodersen}, \\
+\small Department of Computer Science
+}
+\title{
+{RISC-V based computers in the data center} \\
+{\large University of Copenhagen} \\[1em]
+\includegraphics[width=0.7\textwidth]{./assets/images/Ku-ucph-logo-svg.svg.png}
+}
+\date{\today}
+
+\setcounter{tocdepth}{2}
 
 \begin{document}
-   This is a test
+\maketitle
+\newpage
+
+\tableofcontents
+
+\subfile{sections/Introduction.tex}
+
 \end{document}

@@ -5,3 +5,25 @@
    - It is stated that the scheduling time should be deterministic for the user. What happens if a given thread gives up control at
      time t1, but the standard time is t2?
      -
+
+
+** Running with QEMU:
+@code bash
+qemu-system-riscv32 -nographic -machine virt -net none \
+-chardev stdio,id=con,mux=on -serial chardev:con \
+-mon chardev=con,mode=readline -bios none \
+-smp 4 -S -kernel ./build/gcc/output/RTOSDemo.elf
+@end
+
+** freeRTOSConfig
+   - configMTIME_BASE_ADDRESS & configMTIMECMP_BASE_ADDRESS refer to the chip machine timer base adress and the machine timer compare register (MTIME and MTIMECMP).
+   - If there is no MTIME(machine timer) then set both values to 0
+   - configISR_STACK_SIZE_WORDS is the size of the interrupt stack to be allocated (STATIC). Defined in words and not bytes. A word is 4 bytes.
+   - Using the linker script allows to use the stack that waas used by the main() prior.
+   - For linker script interrupt (system) stack setup, then declare __freertos_irq_stack_top and ensure configISR_STACK_SIZE_WORDS is not defined.
+   -- For the linker script, there is a good example on the page (https://www.freertos.org/Using-FreeRTOS-on-RISC-V.html#PORTING_FREERTOS_TO_RISC_V)
+   - If the RISC-V core in use includes a Core Local Interrupter (CLINT) then portasmHAS_SIFIVE_CLINT can be defined to 1, and no other action needed.
+   - Otherwise you must edit the startup code provided manually.
+   - If there is a machine timer (MTIME) then portasmHAS_MTIME must be set to 1, otherwise 0
+   - portasmADDITIONAL_CONTEXT_SIZE is the number of additional registers that exist on the target chip.
+   - postasmSAVE_ADDITIONAL_REGISTERS is an assembly macro that must be implemented to save any chip specific additional registers
