@@ -1,0 +1,31 @@
+[
+  {
+    "arguments": [
+      "/opt/riscv/bin/riscv64-unknown-elf-gcc",
+      "-I./../../../../Source/include",
+      "-I./../../../../Source/portable/GCC/RISC-V",
+      "-I./../../../../Source/portable/GCC/RISC-V/chip_specific_extensions/RV32I_CLINT_no_extensions",
+      "-I./../../../../Demo/Common/include",
+      "-I./../../../../Demo/RISC-V_RV32_QEMU_VIRT_GCC",
+      "-DportasmHANDLE_INTERRUPT=handle_trap",
+      "-fmessage-length=0",
+      "-march=rv32i_zicsr",
+      "-mabi=ilp32",
+      "-mcmodel=medlow",
+      "-ffunction-sections",
+      "-fdata-sections",
+      "--specs=nano.specs",
+      "-fno-builtin-printf",
+      "-Wno-unused-parameter",
+      "-g3",
+      "-Os",
+      "-c",
+      "-o",
+      "output/main.o",
+      "./../../../../Demo/RISC-V_RV32_QEMU_VIRT_GCC/main.c"
+    ],
+    "directory": "/home/simon/Programming/cs_econ/bachelor/freeRTOS/Demo/RISC-V_RV32_QEMU_VIRT_GCC/build/gcc",
+    "file": "/home/simon/Programming/cs_econ/bachelor/freeRTOS/Demo/RISC-V_RV32_QEMU_VIRT_GCC/main.c",
+    "output": "/home/simon/Programming/cs_econ/bachelor/freeRTOS/Demo/RISC-V_RV32_QEMU_VIRT_GCC/build/gcc/output/main.o"
+  }
+]
