@@ -5,3 +5,5 @@
    - It is stated that the scheduling time should be deterministic for the user. What happens if a given thread gives up control at
      time t1, but the standard time is t2?
      -
+     RISC-V 32 bit hvad skal der til at target den?
+     codasip
