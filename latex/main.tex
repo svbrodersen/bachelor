@@ -1,9 +1,10 @@
-\documentclass[a4paper, 12pt]{article}
+\documentclass[a4paper, 12pt, twocolumn]{article}
 \usepackage{amsmath}
 \usepackage[utf8]{inputenc}
 \usepackage{subfiles}
 \usepackage{titlepic}
 \usepackage{graphicx}
+
 
 \author{
 {Simon Vinding Brodersen}, \\
@@ -22,8 +23,14 @@
 \maketitle
 \newpage
 
-\tableofcontents
+\twocolumn[\tableofcontents]
+\newpage
 
-\subfile{sections/Introduction.tex}
+
+\subfile{./sections/Introduction.tex}
+\subfile{./sections/Background.tex}
+
+\bibliographystyle{plain}
+\twocolumn[\bibliography{refs}]
 
 \end{document}
