@@ -2,9 +2,9 @@
   - Used for embedded systems
   -
 ** Questions
-   - It is stated that the scheduling time should be deterministic for the user. What happens if a given thread gives up control at
-     time t1, but the standard time is t2?
-     -
+   - The Codasip specifies a RV32IMCB, which I assume to be RISC-V base integer extension,
+     multiplication and division, compressed extension, but what does B mean? It is not an
+   extension for the default gcc compile flags in the same way the others are.
 
 
 ** Running with QEMU:
