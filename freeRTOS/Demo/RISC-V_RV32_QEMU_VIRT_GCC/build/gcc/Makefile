@@ -10,11 +10,11 @@ SIZE = riscv64-unknown-elf-size
 MAKE = make
 
 CFLAGS += $(INCLUDE_DIRS) -DportasmHANDLE_INTERRUPT=handle_trap -fmessage-length=0 \
-          -march=rv32imc_zicsr -mabi=ilp32 -mcmodel=medlow -ffunction-sections -fdata-sections \
+          -march=rv32imc_zicsr_zbb -mabi=ilp32 -mcmodel=medlow -ffunction-sections -fdata-sections \
           --specs=nano.specs -fno-builtin-printf  -Wno-unused-parameter -nostartfiles -g3 -Os
 
 LDFLAGS += -nostartfiles -Xlinker --gc-sections -Wl,-Map,$(OUTPUT_DIR)/RTOSDemo.map \
-           -T./fake_rom.ld -march=rv32imc_zicsr -mabi=ilp32 -mcmodel=medlow -Xlinker \
+           -T./fake_rom.ld -march=rv32imc_zicsr_zbb -mabi=ilp32 -mcmodel=medlow -Xlinker \
            --defsym=__stack_size=350 -Wl,--start-group -Wl,--end-group -Wl,--wrap=malloc \
            -Wl,--wrap=free -Wl,--wrap=open -Wl,--wrap=lseek -Wl,--wrap=read -Wl,--wrap=write \
            -Wl,--wrap=fstat -Wl,--wrap=stat -Wl,--wrap=close -Wl,--wrap=link -Wl,--wrap=unlink \
