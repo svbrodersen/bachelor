@@ -2,6 +2,7 @@ target remote localhost:1234
 set arch riscv:rv32
 set remotetimeout 250
 flushregs
-file ./output/RTOSDemo.elf
+file ./build/gcc/output/RTOSDemo.elf
 load
-tb main
+break main
+

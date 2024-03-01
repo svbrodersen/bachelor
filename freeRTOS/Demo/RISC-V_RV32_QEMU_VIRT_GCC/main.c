@@ -111,7 +111,7 @@ void vFullDemoIdleFunction(void);
 
 /*-----------------------------------------------------------*/
 
-void main(void) {
+int main(void) {
   /* See https://www.freertos.org/freertos-on-qemu-mps2-an385-model.html for
   instructions. */
 
