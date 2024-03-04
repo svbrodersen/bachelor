@@ -17,8 +17,8 @@ la gp, __global_pointer$
   bne a0, a1, secondary
 
   // load _stack_top into the sp register
-  // la sp, _stack_top
-  // add s0, sp, zero
+  la sp, _stack_top
+  add s0, sp, zero
 
 
   // argc, argv, envp is 0 and jump to main
