@@ -1,0 +1,1 @@
+clang-18 -g -O0 -ffreestanding -nostartfiles -nostdlib -nodefaultlibs --target=riscv32 -march=rv32imac_zicsr -T./ram.ld CMakeFiles/main.elf.dir/start.S.o CMakeFiles/main.elf.dir/main.c.o -o main.elf 

@@ -1,0 +1,19 @@
+Start testing: Mar 06 13:46 CET
+----------------------------------------------------------
+1/1 Testing: qemu
+1/1 Test: qemu
+Command: "/usr/bin/qemu-system-riscv32" "-nographic" "-machine" "virt" "-net" "none" "-chardev" "stdio,id=con,mux=on" "-serial" "chardev:con" "-mon" "chardev=con,mode=readline" "-bios" "none" "-smp" "4" "-s" "-S" "-kernel" "./main.elf"
+Directory: /home/simon/Programming/cs_econ/bachelor/src/bare_metal
+"qemu" start time: Mar 06 13:46 CET
+Output:
+----------------------------------------------------------
+qemu-system-riscv32: QEMU: Terminated via GDBstub
+<end of output>
+Test time =  36.92 sec
+----------------------------------------------------------
+Test Passed.
+"qemu" end time: Mar 06 13:47 CET
+"qemu" time elapsed: 00:00:36
+----------------------------------------------------------
+
+End testing: Mar 06 13:47 CET
