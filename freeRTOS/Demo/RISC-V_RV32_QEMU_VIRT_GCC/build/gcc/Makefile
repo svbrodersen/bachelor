@@ -4,16 +4,17 @@ IMAGE := RTOSDemo.elf
 # The directory that contains the /source and /demo sub directories.
 FREERTOS_ROOT = ./../../../..
 
-CC = riscv64-unknown-elf-gcc
-LD = riscv64-unknown-elf-gcc
+CC = clang
+LD = clang
 SIZE = riscv64-unknown-elf-size
 MAKE = make
 
-CFLAGS += $(INCLUDE_DIRS) -DportasmHANDLE_INTERRUPT=handle_trap -fmessage-length=0 \
+CFLAGS += $(INCLUDE_DIRS) -DportasmHANDLE_INTERRUPT=handle_trap -fmessage-length=0 --target=riscv32-unknown-elf \
           -march=rv32imc_zicsr_zbb -mabi=ilp32 -mcmodel=medlow -ffunction-sections -fdata-sections \
-          --specs=nano.specs -fno-builtin-printf  -Wno-unused-parameter -nostartfiles -g3 -Os
+          --specs=nano.specs -fno-builtin-printf  -Wno-unused-parameter -nostartfiles -g3 -Os \
 
-LDFLAGS += -nostartfiles -Xlinker --gc-sections -Wl,-Map,$(OUTPUT_DIR)/RTOSDemo.map \
+-fuse-ld=lld")
+LDFLAGS += -nostartfiles -Xlinker --gc-sections -Wl,-Map,$(OUTPUT_DIR)/RTOSDemo.map --target=riscv32-unknown-elf \
            -T./fake_rom.ld -march=rv32imc_zicsr_zbb -mabi=ilp32 -mcmodel=medlow -Xlinker \
            --defsym=__stack_size=350 -Wl,--start-group -Wl,--end-group -Wl,--wrap=malloc \
            -Wl,--wrap=free -Wl,--wrap=open -Wl,--wrap=lseek -Wl,--wrap=read -Wl,--wrap=write \
@@ -23,7 +24,7 @@ LDFLAGS += -nostartfiles -Xlinker --gc-sections -Wl,-Map,$(OUTPUT_DIR)/RTOSDemo.
            -Wl,--wrap=_free -Wl,--wrap=_open -Wl,--wrap=_lseek -Wl,--wrap=_read -Wl,--wrap=_write \
            -Wl,--wrap=_fstat -Wl,--wrap=_stat -Wl,--wrap=_close -Wl,--wrap=_link -Wl,--wrap=_unlink \
            -Wl,--wrap=_execve -Wl,--wrap=_fork -Wl,--wrap=_getpid -Wl,--wrap=_kill -Wl,--wrap=_wait \
-           -Wl,--wrap=_isatty -Wl,--wrap=_times -Wl,--wrap=_sbrk -Wl,--wrap=__exit -Wl,--wrap=_puts
+           -Wl,--wrap=_isatty -Wl,--wrap=_times -Wl,--wrap=_sbrk -Wl,--wrap=__exit -Wl,--wrap=_puts \
 
 # -Wl,--wrap=_exit
 #
