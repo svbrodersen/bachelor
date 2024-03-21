@@ -1,3 +1,0 @@
-target create ./main.elf
-gdb-remote localhost:1234
-b main
