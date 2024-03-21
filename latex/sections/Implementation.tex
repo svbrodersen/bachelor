@@ -52,11 +52,8 @@ pushd build
 sudo cmake -S ../llvm -G Ninja \
 -DCMAKE_BUILD_TYPE="Release" -DBUILD_SHARED_LIBS=True \
 -DLLVM_BUILD_TESTS=False \
--DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;\
-lldb;lld;polly" \
+-DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;lld" \
 -DCMAKE_INSTALL_PREFIX=/opt/llvm \
--DDEFAULT_SYSROOT="/opt/riscv/riscv64-unknown-elf" \
--DGCC_INSTALL_PREFIX="/opt/riscv" \
 -DLLVM_TARGETS_TO_BUILD="RISCV" \
 -DLLVM_USE_LINKER=lld
 sudo cmake --build . --target install
@@ -135,11 +132,11 @@ $0x00 + 0x8000000$ bytes, which is equivalent to 128MB.
 The linker script is used to combine a number of object files together to create
 a single object or executable file. Now creating an entire linker script from
 scratch is quite cumbersome, and beyond the scope of this project. However,
-luckily for us, we are able to modify the default linker script quite easily to
-incorperate our information about the qemu virtual machine. First, to access the
-default linker script of lld run the following command.
+luckily for us, we are able to modify the default linker script that ld would
+use quite easily to
+incorperate our information about the qemu virtual machine.
 \begin{lstlisting}
-ld.lld --verbose > riscv.ld
+riscv64-unknown-elf-ld --verbose > riscv.ld
 \end{lstlisting}
 This creates a new file called riscv.ld, which contains the default linker
 script used. From here, we have to introduce a new variable, \_stack\_top, and
