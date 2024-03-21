@@ -17,18 +17,19 @@ add_link_options(
 )
 
 set(CMAKE_VERBOSE_MAKEFILE true)
-set(CMAKE_C_COMPILER "clang-18")
-set(CMAKE_ASM_COMPILER "clang-18")
+set(CMAKE_C_COMPILER "clang")
+set(CMAKE_ASM_COMPILER "clang")
 set(CMAKE_C_FLAGS "-g -O0 -ffreestanding -nostartfiles \
--nostdlib -nodefaultlibs --target=riscv32 -march=rv32imac_zicsr -T./ram.ld")
+-nostdlib -nodefaultlibs --target=riscv32 -march=rv32imac_zicsr -T./ram.ld \
+-fuse-ld=lld")
+
 set(CMAKE_ASM_FLAGS "-g -O0 -ffreestanding -nostartfiles \
--nostdlib -nodefaultlibs --target=riscv32 -march=rv32imac_zicsr -T./ram.ld")
+-fuse-ld=lld -nostdlib -nodefaultlibs --target=riscv32 \
+-march=rv32imac_zicsr -T./ram.ld")
 
 
 add_test(
   NAME qemu
-  COMMAND qemu-system-riscv32 -nographic -machine virt -net none
-          -chardev stdio,id=con,mux=on -serial chardev:con
-          -mon chardev=con,mode=readline -bios none
-          -smp 4 -s -S -kernel ./main.elf
+  COMMAND qemu-system-riscv32 -machine virt -bios none
+          -nographic -s -S -kernel ./main.elf
 )

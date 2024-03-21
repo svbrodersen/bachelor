@@ -30,6 +30,4 @@ la gp, __global_pointer$
 
 secondary:
 	// TODO: Multicore is not supported. We wait for interrupt, and then jump to secondary (making sure all threads are here)
-	wfi
-	j secondary
 	.cfi_endproc // We end the proccess
