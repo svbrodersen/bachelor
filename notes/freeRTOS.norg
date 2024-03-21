@@ -27,3 +27,6 @@ qemu-system-riscv32 -nographic -machine virt -net none \
    - If there is a machine timer (MTIME) then portasmHAS_MTIME must be set to 1, otherwise 0
    - portasmADDITIONAL_CONTEXT_SIZE is the number of additional registers that exist on the target chip.
    - postasmSAVE_ADDITIONAL_REGISTERS is an assembly macro that must be implemented to save any chip specific additional registers
+
+* Component to work on
+Er der noget jeg kan forbedre, og eller arbejde videre på.
