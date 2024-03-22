@@ -1,11 +1,11 @@
-OUTPUT_ARCH( "riscv" )
-ENTRY( _start )
+OUTPUT_ARCH("riscv")
+ENTRY(_start)
 
 MEMORY
 {
 	/* Fake ROM area */
-	rom (rxa) : ORIGIN = 0x80000000, LENGTH = 512K
-	ram (wxa) : ORIGIN = 0x80080000, LENGTH = 512K
+	ram (wxa) : ORIGIN = 0x80000000, LENGTH = 100M
+  rom (rxa) : ORIGIN = 0x86400000, LENGTH = 28M
 }
 
 SECTIONS
@@ -16,7 +16,7 @@ SECTIONS
 		KEEP (*(SORT_NONE(.init)))
 	} >rom AT>rom
 
-	.text :
+.text :
 	{
 		*(.text.unlikely .text.unlikely.*)
 		*(.text.startup .text.startup.*)
@@ -111,7 +111,6 @@ SECTIONS
 	.stack :
 	{
 		. = ALIGN(16);
-		. += __stack_size;
-		_stack_top = .;
+		_stack_top = ORIGIN(ram) + LENGTH(ram);
 	} >ram AT>ram
 }

@@ -111,7 +111,7 @@ SECTIONS
 	.stack :
 	{
 		. = ALIGN(16);
-		. += __stack_size;
+		. += 350;
 		_stack_top = .;
 	} >ram AT>ram
 }
