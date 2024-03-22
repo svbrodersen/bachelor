@@ -54,8 +54,7 @@ sudo cmake -S ../llvm -G Ninja \
 -DLLVM_BUILD_TESTS=False \
 -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;lld" \
 -DCMAKE_INSTALL_PREFIX=/opt/llvm \
--DLLVM_TARGETS_TO_BUILD="RISCV" \
--DLLVM_USE_LINKER=lld
+-DLLVM_TARGETS_TO_BUILD="RISCV"
 sudo cmake --build . --target install
 popd
 \end{lstlisting}
