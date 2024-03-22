@@ -4,8 +4,8 @@ ENTRY(_start)
 MEMORY
 {
 	/* Fake ROM area */
-	rom (rxa) : ORIGIN = 0x80000000, LENGTH = 64M
-	ram (wxa) : ORIGIN = 0x84000000, LENGTH = 64M
+	ram (wxa) : ORIGIN = 0x80000000, LENGTH = 100M
+  rom (rxa) : ORIGIN = 0x86400000, LENGTH = 28M
 }
 
 SECTIONS
