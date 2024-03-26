@@ -9,12 +9,13 @@ LD = clang
 SIZE = riscv64-unknown-elf-size
 MAKE = make
 
-CFLAGS += $(INCLUDE_DIRS) -DportasmHANDLE_INTERRUPT=handle_trap -fmessage-length=0 --target=riscv32-unknown-elf \
+CFLAGS += $(INCLUDE_DIRS) -DportasmHANDLE_INTERRUPT=handle_trap -fmessage-length=0 --target=riscv32 \
           -march=rv32imc_zicsr_zbb -mabi=ilp32 -mcmodel=medlow -ffunction-sections -fdata-sections \
           --specs=nano.specs -fno-builtin-printf  -Wno-unused-parameter -nostartfiles -g3 -Os \
+					--sysroot="/opt/riscv/riscv64-unknown-elf/" --gcc-toolchain="/opt/riscv/"
 
--fuse-ld=lld")
-LDFLAGS += -nostartfiles -Xlinker --gc-sections -Wl,-Map,$(OUTPUT_DIR)/RTOSDemo.map --target=riscv32-unknown-elf \
+LDFLAGS += -nostartfiles -Xlinker --gc-sections -Wl,-Map,$(OUTPUT_DIR)/RTOSDemo.map --target=riscv32 \
+					 --sysroot="/opt/riscv/riscv64-unknown-elf/" --gcc-toolchain="/opt/riscv/" \
            -T./fake_rom.ld -march=rv32imc_zicsr_zbb -mabi=ilp32 -mcmodel=medlow -Xlinker \
            --defsym=__stack_size=350 -Wl,--start-group -Wl,--end-group -Wl,--wrap=malloc \
            -Wl,--wrap=free -Wl,--wrap=open -Wl,--wrap=lseek -Wl,--wrap=read -Wl,--wrap=write \
@@ -90,6 +91,7 @@ INCLUDE_DIRS += -I$(DEMO_PROJECT)
 SOURCE_FILES += (DEMO_PROJECT)/main.c
 SOURCE_FILES += (DEMO_PROJECT)/main_blinky.c
 SOURCE_FILES += (DEMO_PROJECT)/main_full.c
+SOURCE_FILES += (DEMO_PROJECT)/list_merge.c
 SOURCE_FILES += (DEMO_PROJECT)/ns16550.c
 SOURCE_FILES += (DEMO_PROJECT)/riscv-virt.c
 # Lightweight print formatting to use in place of the heavier GCC equivalent.
