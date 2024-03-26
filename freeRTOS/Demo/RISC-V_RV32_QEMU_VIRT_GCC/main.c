@@ -101,6 +101,7 @@ extern void freertos_vector_table(void);
  */
 extern void main_blinky(void);
 extern void main_full(void);
+extern void list_main(void);
 
 /*
  * Only the comprehensive demo uses application hook (callback) functions.  See
@@ -124,15 +125,17 @@ int main(void) {
   }
 #endif
 
-/* The mainCREATE_SIMPLE_BLINKY_DEMO_ONLY setting is described at the top
-of this file. */
-#if (mainCREATE_SIMPLE_BLINKY_DEMO_ONLY == 1)
-  { main_blinky(); }
-#else
-  {
-    main_full();
-  }
-#endif
+  /* The mainCREATE_SIMPLE_BLINKY_DEMO_ONLY setting is described at the top
+  of this file. */
+  // #if (mainCREATE_SIMPLE_BLINKY_DEMO_ONLY == 1)
+  //   { main_blinky(); }
+  // #else
+  //   {
+  //     main_full();
+  //   }
+  // #endif
+
+  list_main();
 }
 /*-----------------------------------------------------------*/
 
