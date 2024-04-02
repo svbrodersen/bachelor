@@ -3,8 +3,8 @@ The implmentations created as part of this bachorlor thesis aimed
 to make use of the LLVM compiler infastructure.
 LLVM is a collection of modular and reusable compiler and toolchain technologies,
 most notably for this project is the clang compiler and
-lldb debugger. Furthermore, cmake and qemu will be heavily used when automating
-the building process and virtualising a RISC-V 32-bit architecture.
+lldb debugger. Furthermore, qemu will be used extensively while testing the
+implementations.
 
 \subsection{Dependencies}
 \subsubsection{QEMU}
@@ -15,12 +15,12 @@ make -j $(nproc)  # build the project with all num cores jobs
 sudo make install
 \end{lstlisting}.
 QEMU is a system emulator, which has the capabilities of emulating both a 32-bit
-and 64-bit RISC-V CPU.\cite{QEMU}
+and 64-bit RISC-V CPU\cite{QEMU}.
 Following the instructions by RISC-V's getting started guide
 we can build the QEMU RISC-V system emulators by running the code
-provided in Listing~\ref{lst:qemu_install}.\footnote{Once
+provided in Listing~\ref{lst:qemu_install}\cite{RISC-V_GS}.\footnote{Once
 installed make sure to add both llvm and riscv gnu toolchain
-to path. Both should be installed in the /opt/ folder.}\cite{RISC-V_GS}
+to path. Both should be installed in the /opt/ folder.}
 
 \subsubsection{Installing LLVM compiler infastructure}
 \begin{lstlisting}[caption=Installing LLVM compiler infastructure with RISC-V
@@ -108,7 +108,7 @@ about starting address and length of the memory section. The memory node has
 two required sections, first the device\_type, which must simply be "memory", and
 secondly the reg value. The reg value "Consists of an arbitrary number of
 address and size pairs that specify the physical address and size of the memory
-ranges". \cite{DTS} Furthermore, it is stated, that the property name reg has
+ranges"\cite{DTS} . Furthermore, it is stated, that the property name reg has
 the value encoded as a number of (address, length) pairs. It also states, that
 the number of <u32> cells required to specify the address and length are
 bus-specific and are specified by the \#address-cells and \#size-cells properties
@@ -128,25 +128,24 @@ address of the memory section is at address $0x00 + 0x80000000 = 0x80000000$ and
 $0x00 + 0x8000000$ bytes, which is equivalent to 128MB.
 
 \subsubsection{Creating a linker script}
-The linker script is used to combine a number of object files together to create
-a single object or executable file. Now creating an entire linker script from
-scratch is quite cumbersome, and beyond the scope of this project. However,
-luckily for us, we are able to modify the default linker script that ld would
-use quite easily to
-incorperate our information about the qemu virtual machine.
+The linker script is used to tell the linker which parts of the file to include
+in the final output file, aswell as where each section is stored in memory. As
+we are working on an embedded system, we have to stray from the default and
+create our own linker script. The clang uses the llvm lld linker, which is compatible
+with the general linker scripts implementations of the GNU ld linker\cite{llvm-org-linker}.
+Thus, we can make use of the GNU ld manual for creating our linker script\cite{GNU-linker}.
 \begin{lstlisting}
-riscv64-unknown-elf-ld --verbose > riscv.ld
-\end{lstlisting}
-This creates a new file called riscv.ld, which contains the default linker
-script used. From here, we have to introduce a new variable, \_stack\_top, and
-define the memory section, which we previously found. Within the linker script,
-we add the following lines, to define the memory section.
+OUTPUT_ARCH('riscv')
+ENTRY(_start)
 
-\begin{lstlisting}
-MEMORY {
-RAM(rwx) : ORIGIN = 0x80000000, LENGTH=128M
+MEMORY
+{
+/* Fake ROM area */
+rom (rxa) : ORIGIN = 0x80000000, LENGTH = 1M
+ram (wxa) : ORIGIN = 0x80100000, LENGTH = 127M
 }
 \end{lstlisting}
-
-
-
+First, we must specify that we want the RISC-V architecture and designate the entry point
+of the program at a function named "\_start," which we will define later.
+Second, we define the MEMORY area to consist of both a writable memory region and a read-only
+memory region. We name these regions "ram" and "rom," respectively.

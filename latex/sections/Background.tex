@@ -1,21 +1,21 @@
-
 \twocolumn[\section{Background}]
 \subsection{Accelerator-based Computer Architecture}
-The concept of offloading is nothing new in the world.
-Working in a team where each person has their speciality seems logical when we are talking about our day to day work environment.
-Having good comunication between each entity yet working on what we are best at seems logical when speaking about work. However,
-when it comes to the architectecture of computers, we have heavily relied on the shoulders of the base Centrel Processing Unit(CPU).
-An acellerator is a seperate substructure that is architected using a different set of objectives
-than the base processor. With this design, the substructure can be optimized for it's specific task, often leading to both performance increases
-and less energy consumption. \cite{AA} Prominent examples of acellerators include the Graphic Processing Unit(GPU), which is a part major part of most computers today.
+The concept of offloading is nothing new.
+In a team where each member specializes, it seems logical when discussing our day-to-day work environment.
+Effective communication between entities while focusing on what we do best seems logical when speaking about work.
+However, when it comes to computer architecture, we have heavily relied on the Central Processing Unit (CPU).
+An accelerator is a separate substructure designed with different objectives than the base processor.
+With this design, the substructure can be optimized for its specific task, often leading to both performance increases and less energy consumption\cite{AA}.
+Prominent examples of accelerators include the Graphics Processing Unit (GPU), which is a major component in most computers today.
 
 \subsection{RISC-V}
 Reduced Intruction Set Computer(RISC), more specifically the fifth version (RISC-V). Is an Instruction Set Architecture(ISA), that aims to make the process of
 making custom processors targeting a variety of end applications more feasible. Previous ISAs have often been created by private companies, which leads to patents
 and a need for a license to develop a specialised processor. These licenses could often take months to negotiate without mentioning the large sum of money involved.
-It is assumed that creating a free and open sourced ISA could reduce the barrier of entry and greatly increase innovation along with afforability.\cite{ISAfree}
+It is assumed that creating a free and open sourced ISA could reduce the barrier of entry and greatly increase innovation along with afforability\cite{ISAfree}.
 
 RISC-V aims to provide a small core of instructions which compilers, assemblers, linkers and operating systems can generally rely on, while still being extendable for more specialised
 accelerators. In RISC-V there  are two primary base integer variants, RV32I and RV64I, whcih provide the 32-bit and 64-bit user-level address spaces respectively. However, RISC-V is already
 in the works with a RV128I variant which would provide the foundation needed for a 128-bit user address space in the future. In gereral, RISC-V provides standard and non-standard extensions,
 where standard extensions should not conflict with other standard extensions, and the non-standard extensions are more highly specialised.
+
