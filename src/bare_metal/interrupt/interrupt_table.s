@@ -3,7 +3,7 @@
 .extern riscv_interrupt_handler
 .global riscv_IVT
 riscv_IVT:
-IR_0: // Reserved
+IR_0: // User software interrupt
   j riscv_interrupt_handler
 
 IR_1: // Supervisor software interrupt
@@ -15,7 +15,7 @@ IR_2: // Reserved
 IR_3: // Machine software interrupt
   j riscv_interrupt_handler
 
-IR_4: // Reserved
+IR_4: // User timer interrupt
   j riscv_interrupt_handler
 
 IR_5: // Supervisor timer interrupt
@@ -27,7 +27,7 @@ IR_6: // Reserved
 IR_7: // Machine timer interrupt
   j riscv_interrupt_handler
 
-IR_8: // Reserved
+IR_8: // User external interrupt
   j riscv_interrupt_handler
 
 IR_9: // Supervisor external interrupt
