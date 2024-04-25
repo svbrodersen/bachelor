@@ -1,0 +1,1 @@
+int riscv_kernel();

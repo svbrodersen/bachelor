@@ -1,4 +1,5 @@
 #include "interrupt/ISR.h"
+#include "kernel/kernel.h"
 #include "print/uart.h"
 #include <stdio.h>
 #define LENGTH_LEFT 5
@@ -39,10 +40,6 @@ int main() {
       "li t0, 0x00000080\n"
       "csrs mie, t0");
   set_interrupt_timer();
-  while (1) {
-    printf("Hello from main function\n");
-    for (int i = 0; i < 30000000; i++)
-      ;
-  }
+  riscv_kernel();
   return 0;
 }

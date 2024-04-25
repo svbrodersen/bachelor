@@ -12,12 +12,17 @@ QEMU_FLAGS=-machine virt -bios none
 QEMU_FLAGS+=-nographic -kernel ./$(KERNEL)
 
 OBJ = main.o ./print/printf-stdarg.o ./print/uart.o ./interrupt/ISR.o
+OBJ += ./threads/context/common_trampoline.o ./threads/context/getcontext.o ./threads/context/setcontext.o
+OBJ += ./threads/context/makecontext.o ./threads/threads.o ./kernel/kernel.o
 
 
 all: $(OBJ)
 	$(CC) $^ $(START) $(INTERRUPT) $(CFLAGS) -T $(LINKER_SCRIPT) -o $(KERNEL)
 
 %.o : %.c
+	$(CC) -c $(CFLAGS) $< -o $@
+
+%.o : %.S
 	$(CC) -c $(CFLAGS) $< -o $@
 
 run: all
