@@ -1,5 +1,12 @@
 * These are my notes surrounding my bachelor. Here I keep a list of what needs to be done
 
+** Next up
+  List merge multithreading library.
+   First create it.
+   then abstract what is needed for it to run in terms of context switching.
+   Then look into multicore.
+   Then look into supervisor mode.
+
 
 **  Document side of project
   - ( ) Create the Bachelor Latex Document
