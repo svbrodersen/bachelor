@@ -41,6 +41,7 @@ SECTIONS
 	{
     /* It is standard to have the stack aligned to 16 bytes*/
 		. = ALIGN(16);
+    PROVIDE(_stack_end = .);
 		_stack_top = ORIGIN(ram) + LENGTH(ram);
 	} >ram AT>ram
 }

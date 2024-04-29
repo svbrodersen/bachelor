@@ -13,7 +13,7 @@ QEMU_FLAGS+=-nographic -kernel ./$(KERNEL)
 
 OBJ = main.o ./print/printf-stdarg.o ./print/uart.o ./interrupt/ISR.o
 OBJ += ./threads/context/common_trampoline.o ./threads/context/getcontext.o ./threads/context/setcontext.o
-OBJ += ./threads/context/makecontext.o ./threads/threads.o ./kernel/kernel.o
+OBJ += ./threads/context/makecontext.o ./threads/threads.o ./kernel/kernel.o ./palloc.o
 
 
 all: $(OBJ)
