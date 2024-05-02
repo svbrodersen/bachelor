@@ -12,4 +12,11 @@ typedef struct thread {
   struct thread *parent;
 } thread_t;
 
-int thread_create(thread_t *);
+/* Initiates a thread with the target function. Must be called with makecontext
+ * on the context element afterwards*/
+int thread_create(thread_t *, void (*func)(void), int argc, ...);
+int thread_get(thread_t **, Tid);
+
+void init_scheduler();
+void scheduler_add_thread(thread_t *thread);
+void schedule_new_thread();
