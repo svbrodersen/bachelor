@@ -1,22 +1,27 @@
 CC=clang
 CFLAGS=-g -O0 -ffreestanding -nostartfiles
 CFLAGS+=-nostdlib -nodefaultlibs --target=riscv32 -march=rv32imac_zicsr
-CFLAGS+=-Wall --sysroot=/opt/riscv/riscv64-unknown-elf/
+CFLAGS+=--sysroot=/opt/riscv/riscv64-unknown-elf/
 LINKER_SCRIPT=./linker/ram.ld
-START=./asm/start.S
 KERNEL=main.elf
 
 QEMU=qemu-system-riscv32
 QEMU_FLAGS=-machine virt -bios none
 QEMU_FLAGS+=-nographic -kernel ./$(KERNEL)
 
-OBJ = main.o ./print/printf-stdarg.o ./print/uart.o
+SOURCES = $(shell find -name '*.c')
+SOURCES += $(shell find -name '*.S')
+OBJS_c = $(SOURCES:%.c=%.o)
+OBJS = $(OBJS_c:%.S=%.o)
 
 
-all: $(OBJ)
-	$(CC) $^ $(START) $(CFLAGS) -T $(LINKER_SCRIPT) -o $(KERNEL)
+all: $(OBJS)
+	$(CC) $^ $(CFLAGS) -T $(LINKER_SCRIPT) -o $(KERNEL)
 
 %.o : %.c
+	$(CC) -c $(CFLAGS) $< -o $@
+
+%.o : %.S
 	$(CC) -c $(CFLAGS) $< -o $@
 
 run: all
@@ -25,7 +30,9 @@ run: all
 debug: all
 	$(QEMU) -s -S $(QEMU_FLAGS)
 
+%.s : %.c
+	$(CC) -c $(CFLAGS) $< -S -o $@
+
 clean:
-	rm -vf *.o
-	rm -vf ./$(KERNEL)
+	rm -vf $(OBJS)
 

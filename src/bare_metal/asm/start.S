@@ -20,7 +20,6 @@ la gp, __global_pointer$
   la sp, _stack_top
   add s0, sp, zero
 
-
   // argc, argv, envp is 0 and jump to main
   li  a0, 0
   li  a1, 0
