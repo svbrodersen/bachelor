@@ -133,7 +133,8 @@ in the final output file, aswell as where each section is stored in memory. As
 we are working on an embedded system, we have to stray from the default and
 create our own linker script. The clang uses the llvm lld linker, which is compatible
 with the general linker scripts implementations of the GNU ld linker\cite{llvm-org-linker}.
-Thus, we can make use of the GNU ld manual for creating our linker script\cite{GNU-linker}.
+Thus, we can make use of the GNU ld manual for modifying the linker script in freeRTOS for our bare metal application instead of writing the entire thing from scratch\cite{GNU-linker}.
+
 \begin{lstlisting}
 OUTPUT_ARCH('riscv')
 ENTRY(_start)
@@ -148,4 +149,98 @@ ram (wxa) : ORIGIN = 0x80100000, LENGTH = 127M
 First, we must specify that we want the RISC-V architecture and designate the entry point
 of the program at a function named "\_start," which we will define later.
 Second, we define the MEMORY area to consist of both a writable memory region and a read-only
-memory region. We name these regions "ram" and "rom," respectively.
+memory region. We name these regions "ram" and "rom," respectively. With that we move on to define the SECTIONS element of the linker script.
+
+\begin{lstlisting}
+SECTIONS
+{
+.text : ALIGN(CONSTANT(MAXPAGESIZE))
+{
+  *(.text .text.*)
+}
+
+.rodata : ALIGN(CONSTANT(MAXPAGESIZE))
+{
+  *(.rdata)
+  *(.rodata .rodata.*)
+}
+
+.data : ALIGN(CONSTANT(MAXPAGESIZE))
+{
+  *(.data .data.*)
+  /*RISCV convention to have __global_pointer
+  aligned to 8 bytes*/
+  . = ALIGN(8);
+  PROVIDE( __global_pointer$ = . + 0x800 );
+}
+
+.bss : ALIGN(CONSTANT(MAXPAGESIZE))
+{
+  *(.bss .bss.*)
+}
+
+/* It is standard to have
+the stack aligned to 16 bytes*/
+. = ALIGN(16);
+_end = .;
+
+.stack : ALIGN(CONSTANT(MAXPAGESIZE))
+{
+  _stack_top = ORIGIN(ram) + LENGTH(ram);
+}
+}
+\end{lstlisting}
+The text, rodata, data and bss sections follows the same general procedure. We align the
+section to the maximum size of a page, and the match all the data which we care about for
+the given sections. I have opted to disregard specifying where the linker has to save
+all the data, and instead opted to let the linker itself find a suited location looking at
+the attributes we gave to memory previously.
+In the data section, we also provide a global pointer, which is used to access global variables
+within our later code implementation.\footnote{In general the global pointer is used together
+with an offset in much the same manner as a stack pointer and offset.}
+
+Then I align the end with 16 bytes as is the custom. Reason this is moved outside the stack
+is that I use the \_end variable later, and as such it should be aligned aswell.
+Then within the stack section we define the \_stack\_top as being the end of the random access
+memory section (ram), as the stack grows downwards.
+
+\subsubsection{Getting into the main function}
+In the linker script we specified the entry point of our program as \_start. Next up
+is implementing said entry point in assembly. Within a new assembly file we add the following.
+\begin{lstlisting}
+.extern main
+.section .init
+.globl _start
+.type _start,@function
+
+_start:
+  .cfi_startproc
+  .cfi_undefined ra
+  .option push
+  .option norelax
+  la gp, __global_pointer$
+  .option pop
+  // load _stack_top into the sp register
+  la sp, _stack_top
+  add s0, sp, zero
+
+  // argc, argv, envp is 0 and jump to main
+  li  a0, 0
+  li  a1, 0
+  li  a2, 0
+  jal main
+  .cfi_endproc // We end the proccess
+\end{lstlisting}
+First we specify that externaly there will be implemented a main entry point. Next we tell the
+linker to save the following code in the .init section and initialize a global label \_start,
+and note that it is a function.
+
+Next the \_start is defined, and define .cfi\_startproc such that we have an entry in the
+.eh\_frame. Next we define the return address register(ra) as being undefined, as we are in
+the start of the entire program. Since the linker usually relaxes adressing sequences to
+shorter GP-relative sequences when possible, the initial load of GP must not be relaxed
+\cite{GNU_BIN}. However, we do not need the same for loading the \_stack\_top into the sp
+register, and then also save it in the s0 register, which stores the frame pointer.
+Then the last step is loading 0 into argc, argv and envp and the jump to the externaly
+defined main function.
+
