@@ -1,4 +1,4 @@
-\twocolumn[\section{Implementation}]
+\ssection{Implementation}
 The implmentations created as part of this bachorlor thesis aimed
 to make use of the LLVM compiler infastructure.
 LLVM is a collection of modular and reusable compiler and toolchain technologies,
@@ -81,7 +81,7 @@ this project.
 
 
 \subsection{Bare metal C application}
-\subsubsection{Getting system information}
+\subsubsection{Getting system information}\label{sec:sys-info}
 Now that there is a working toolchain, we can move on to the developement of the
 bare metal C version. First, we need information about the delvelopemnt
 environment we are currently working on, such that we are able to setup a stack
@@ -243,4 +243,67 @@ shorter GP-relative sequences when possible, the initial load of GP must not be 
 register, and then also save it in the s0 register, which stores the frame pointer.
 Then the last step is loading 0 into argc, argv and envp and the jump to the externaly
 defined main function.
+
+\subsubsection{Printing with UART}
+\begin{lstlisting}[float=*, label=lst:putchar, caption=Implementation of putchar of stdarg lib]
+#include <stdint.h>
+#define UART_ADDR 0x10000000
+#define LCR 0x03          // Line control register
+#define LSR 0x05          // Line status register
+#define FCR 0x02          // FIFO control reigster
+#define RBR 0x00          // Receiver buffer register
+#define IER 0x01          // Interrupt enable register
+#define LSR_THRE 0b110000 //
+void uart_init(void) {
+  volatile uint8_t *ptr = (uint8_t *)UART_ADDR;
+
+  // Set word length to 8 (LCR[1:0])
+  *(ptr + LCR) = 0b11;
+
+  // Enable FIFO (FCR[0])
+  *(ptr + FCR) = 0b1;
+
+  // Enable receiver buffer interrupts (IER[0])
+  *(ptr + IER) = 0b1;
+}
+
+static void uart_put(uint8_t c) { *(uint8_t *)(UART_ADDR + RBR) = c; }
+static uint8_t uart_get(uintptr_t addr) { return *(uint8_t *)(addr); }
+
+void putchar(unsigned char c) {
+  volatile uintptr_t ptr = (uintptr_t)UART_ADDR;
+  // make sure there is nothing else in FIFO
+  while ((uart_get(ptr + LSR) & LSR_THRE) == 0) {
+    // do nothing
+  }
+  // add the char to reciver buffer register
+  uart_put(c);
+}
+\end{lstlisting}
+As we are working with bare metal, the standard printf function will not work. However, QEMU
+allows the use of universal asynchronous receiver / transmitter (UART) protocol, which allows
+us to implement a printf function, that writes to the terminal without the need for the QEMU
+GUI interface. Furthermore, there exists opensource baremetal versions of the printf function,
+which makes the effort of printing a lot easier. One such example is Georges Menie's stdarg,
+which depends on a single function called putchar, which has to take a character and place it
+somewhere. One such implementation can be seen in Listing~\ref{lst:putchar}. Again this code is
+a modified version of what is seen in freeRTOS. From the previous dtc file created
+in Section~\ref{sec:sys-info} there is also information regarding the UART configuration.
+\begin{lstlisting}
+serial@10000000 {
+  interrupts = <0x0a>;
+  interrupt-parent = <0x03>;
+  clock-frequency = "\08@";
+  reg = <0x00 0x10000000 0x00 0x100>;
+  compatible = "ns16550a";
+};
+\end{lstlisting}
+First it states the address, 0x10000000, and it states that it is ns16550a compatible
+\cite{uart}. The specifications states the adresses of the different registers seen above.
+This allows us to first initialize the uart, and then afterwards define a uart\_put function,
+which takes and unsigned character and sends it to the receive buffer register. The putchar
+function also makes sure that we do not overwrite a previous character by busy looping until
+the FIFO is clear.
+
+
 

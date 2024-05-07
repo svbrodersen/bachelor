@@ -1,6 +1,7 @@
 % ! TeX Program = lualatex
 %
 \documentclass[a4paper, 12pt, twocolumn]{article}
+\usepackage{newclude}
 \usepackage{KUstyle}
 \usepackage{amsmath}
 \usepackage{subfiles}
@@ -11,6 +12,7 @@
 \usepackage{lipsum}
 \usepackage[english]{babel}
 
+\newcommand{\ssection}[1]{\twocolumn[\section{#1}]}
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
@@ -41,9 +43,13 @@
 
 \subfile{./sections/Introduction.tex}
 \subfile{./sections/Background.tex}
-\subfile{./sections/implementation/Implementation.tex}
+\subfile{./sections/Implementation.tex}
+
+\appendix
+\subfile{./appendix.tex}
 
 \bibliographystyle{plain}
 \twocolumn[\bibliography{refs}]
+
 
 \end{document}
