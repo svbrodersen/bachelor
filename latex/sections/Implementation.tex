@@ -79,8 +79,7 @@ this project.
 \end{itemize}
 
 
-\subsection{Bare metal C application}
-\subsubsection{Getting system information}\label{sec:sys-info}
+\subsection{Getting system information}\label{sec:sys-info}
 Now that there is a working tool chain, we can move on to the development of the
 bare metal C version. First, we need information about the development
 environment we are currently working on, such that we are able to set up a stack
@@ -126,7 +125,7 @@ With the information previously provided, we know that the starting
 address of the memory section is at address $0x00 + 0x80000000 = 0x80000000$ and has a size of
 $0x00 + 0x8000000$ bytes, which is equivalent to 128MB.
 
-\subsubsection{Creating a linker script}
+\subsection{Creating a linker script}
 The linker script is used to tell the linker which parts of the file to include
 in the final output file, as well as where each section is stored in memory. As
 we are working on an embedded system, we have to stray from the default and
@@ -203,7 +202,7 @@ is that I use the \_end variable later, and as such it should be aligned as well
 Then within the stack section we define the \_stack\_top as being the end of the random access
 memory section (ram), as the stack grows downwards.
 
-\subsubsection{Getting into the main function}
+\subsection{Getting into the main function}
 In the linker script we specified the entry point of our program as \_start. Next up
 is implementing said entry point in assembly. Within a new assembly file we add the following.
 \begin{lstlisting}
@@ -243,7 +242,7 @@ register, and then also save it in the s0 register, which stores the frame point
 Then the last step is loading 0 into argc, argv and envp and the jump to the externally
 defined main function.
 
-\subsubsection{Printing with UART}
+\subsection{Printing with UART}
 \begin{lstlisting}[float=*, label=lst:putchar, caption=Implementation of putchar of stdarg lib]
 #include <stdint.h>
 #define UART_ADDR 0x10000000
@@ -297,12 +296,10 @@ serial@10000000 {
   compatible = "ns16550a";
 };
 \end{lstlisting}
-First it states the address, 0x10000000, and it states that it is ns16550a compatible
-\cite{uart}. The specifications state the aaddresses of the different registers seen above.
-This allows us to first initialize the UART, and then afterwards define an uart\_put function,
-which takes and unsigned character and sends it to the receive buffer register. The putchar
-function also makes sure that we do not overwrite a previous character by busy looping until
-the FIFO is clear.
+First it states the address of the uart is, 0x10000000, and it states that it is ns16550a compatible \cite{uart}. In Listing~\ref{lst:putchar} you can see the needed implementations for the
+uart to work, which is a slightly modified version of what is seen in freeRTOS. First,
+we define the register values as stated in the uart documentation, and initialize the uart.
+Next, we define af uart\_put and uart\_get function to read from and write to addresses. With this we are able to define the putchar function. It works by busy waiting until the FIFO queue is
+empty, and then gives the character to the reciver buffer register.
 
-
-
+\subsection{libucontext}

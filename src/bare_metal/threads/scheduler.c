@@ -2,12 +2,14 @@
 #include "context/libucontext.h"
 #include "threads.h"
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 
 volatile Tid queue[MAX_NUM_THREADS];
 volatile size_t queue_head;
 volatile size_t queue_tail;
 bool queue_initialized = false;
+volatile uint32_t ql;
 
 void increase_counter(volatile size_t *counter) {
   *counter = (*counter + 1) % MAX_NUM_THREADS;
@@ -31,6 +33,7 @@ int queue_init() {
   if (queue_initialized) {
     return false;
   }
+  ql = 0;
   queue_head = 0;
   queue_tail = 0;
   queue_initialized = true;
@@ -38,11 +41,15 @@ int queue_init() {
 }
 
 void queue_pop(Tid *ret) {
+  __sync_fetch_and_sub(&ql, 1);
   *ret = queue[queue_head];
   increase_counter(&queue_head);
 }
 
+uint32_t queue_length() { return __sync_fetch_and_add(&ql, 0); }
+
 void queue_append(Tid item) {
+  __sync_fetch_and_add(&ql, 1);
   queue[queue_tail] = item;
   increase_counter(&queue_tail);
 }

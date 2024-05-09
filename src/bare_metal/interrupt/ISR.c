@@ -32,7 +32,13 @@ void set_interrupt_timer() {
       : "i"(TIME_QUANTANT));
 }
 
+void do_nothing() {
+  while (1) {
+    for (int i = 0; i < 10000; i++) {
+    }
+  }
+}
+
 __attribute__((interrupt)) void riscv_interrupt_handler(void) {
   printf("Hello from interrupt handler\n");
-  set_interrupt_timer();
 }

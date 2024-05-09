@@ -9,9 +9,11 @@ extern libucontext_ucontext_t schedule_new_thread_context;
 thread_t *threads[MAX_NUM_THREADS];
 Tid thread_count = 0;
 
-int thread_create(thread_t *thread, void (*func)(void), int argc, ...) {
+int thread_create(thread_t *thread, thread_t *parent, void (*func)(void),
+                  int argc, ...) {
   va_list va;
   thread->thread_id = thread_count;
+  thread->child_done = 0;
   threads[thread_count] = thread;
   thread_count++;
   libucontext_getcontext(&(thread->context));

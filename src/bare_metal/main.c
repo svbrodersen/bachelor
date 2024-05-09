@@ -25,8 +25,19 @@ void merge(int lst1[], int lst2[], int res[]) {
 }
 
 int main() {
-  // init_interrupts();
-  // set_interrupt_timer();
-  riscv_kernel();
+  int hart_id;
+  asm("csrr %0, mhartid" : "=r"(hart_id));
+  printf("main %d", hart_id);
+  while (1)
+    ;
+  return 0;
+}
+
+int secondary_main() {
+  int hart_id;
+  asm("csrr %0, mhartid" : "=r"(hart_id));
+  printf("secondary_main %d", hart_id);
+  while (1)
+    ;
   return 0;
 }
