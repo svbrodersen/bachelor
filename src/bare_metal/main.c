@@ -25,8 +25,13 @@ void merge(int lst1[], int lst2[], int res[]) {
 }
 
 int main() {
-  // init_interrupts();
+  init_interrupts();
   // set_interrupt_timer();
   riscv_kernel();
   return 0;
+}
+
+int secondary_main() {
+  while (1) {
+  }
 }

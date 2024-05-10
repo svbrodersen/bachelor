@@ -6,8 +6,12 @@ LINKER_SCRIPT=./linker/ram.ld
 KERNEL=main.elf
 
 QEMU=qemu-system-riscv32
-QEMU_FLAGS=-machine virt -bios none
-QEMU_FLAGS+=-nographic -kernel ./$(KERNEL)
+QEMU_FLAGS=-machine virt -smp 4
+QEMU_FLAGS+=-nographic
+QEMU_FLAGS+= -device loader,file=./$(KERNEL),cpu-num=0
+QEMU_FLAGS+= -device loader,file=./$(KERNEL),cpu-num=1
+QEMU_FLAGS+= -device loader,file=./$(KERNEL),cpu-num=2
+QEMU_FLAGS+= -device loader,file=./$(KERNEL),cpu-num=3
 
 SOURCES = $(shell find -name '*.c')
 SOURCES += $(shell find -name '*.S')
