@@ -1,6 +1,6 @@
-#include "merge.h"
+#include "../include/defines.h"
+#include "../include/threads.h"
 #include "../palloc.h"
-#include "../threads/threads.h"
 #include <stddef.h>
 #include <stdint.h>
 int merge_sort(void *input_list, size_t size, size_t length) {}
@@ -12,4 +12,4 @@ int parallel_merge_sort(void *input_list, size_t size, size_t length) {
   void *left = palloc(size * left_length);
   void *right = palloc(right_length * size);
   return 0;
-}
+};

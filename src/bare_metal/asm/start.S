@@ -2,6 +2,7 @@
 .section .init
 .globl _start
 .type _start,@function
+#include "../include/defines.h"
 
 _start:
   .cfi_startproc

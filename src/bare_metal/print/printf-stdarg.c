@@ -25,7 +25,7 @@
 
 */
 
-#include "uart.h"
+#include "../include/uart.h"
 #include <stdarg.h>
 extern void putchar(unsigned char c);
 

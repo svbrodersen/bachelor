@@ -1,0 +1,3 @@
+#define STACK_SIZE 2048
+#define MAX_NUM_CORES 4
+#define MAX_LIST_SIZE

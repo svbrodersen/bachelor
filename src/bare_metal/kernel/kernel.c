@@ -1,5 +1,5 @@
+#include "../include/threads.h"
 #include "../palloc.h"
-#include "../threads/threads.h"
 #include <stdio.h>
 void do_nothing1() { printf("Hello from 1\n"); }
 void do_nothing2() { printf("Hello from 2\n"); }
