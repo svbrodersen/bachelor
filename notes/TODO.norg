@@ -1,0 +1,4 @@
+* ( ) TODO
+  -- ( ) Port freeRTOS over to clang if possible.
+  -- ( ) Run bare metal C application on RISC-V 32 bit QEMU
+-- ( ) Start writing about the process. What is needed for each and so on.

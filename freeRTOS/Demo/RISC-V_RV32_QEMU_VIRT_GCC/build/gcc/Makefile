@@ -4,8 +4,8 @@ IMAGE := RTOSDemo.elf
 # The directory that contains the /source and /demo sub directories.
 FREERTOS_ROOT = ./../../../..
 
-CC = riscv64-unknown-elf-gcc
-LD = riscv64-unknown-elf-gcc
+CC = clang
+LD = clang
 SIZE = riscv64-unknown-elf-size
 MAKE = make
 
@@ -25,7 +25,7 @@ LDFLAGS += -nostartfiles -Xlinker --gc-sections -Wl,-Map,$(OUTPUT_DIR)/RTOSDemo.
            -Wl,--wrap=_free -Wl,--wrap=_open -Wl,--wrap=_lseek -Wl,--wrap=_read -Wl,--wrap=_write \
            -Wl,--wrap=_fstat -Wl,--wrap=_stat -Wl,--wrap=_close -Wl,--wrap=_link -Wl,--wrap=_unlink \
            -Wl,--wrap=_execve -Wl,--wrap=_fork -Wl,--wrap=_getpid -Wl,--wrap=_kill -Wl,--wrap=_wait \
-           -Wl,--wrap=_isatty -Wl,--wrap=_times -Wl,--wrap=_sbrk -Wl,--wrap=__exit -Wl,--wrap=_puts
+           -Wl,--wrap=_isatty -Wl,--wrap=_times -Wl,--wrap=_sbrk -Wl,--wrap=__exit -Wl,--wrap=_puts \
 
 # -Wl,--wrap=_exit
 #

@@ -28,7 +28,5 @@ qemu-system-riscv32 -nographic -machine virt -net none \
    - portasmADDITIONAL_CONTEXT_SIZE is the number of additional registers that exist on the target chip.
    - postasmSAVE_ADDITIONAL_REGISTERS is an assembly macro that must be implemented to save any chip specific additional registers
 
-** Clang
-   install via the download script. https://apt.llvm.org/
-   It works via having clang-18. When compiling you must call clang-18 not clang.
-
+* Component to work on
+Er der noget jeg kan forbedre, og eller arbejde videre på.
