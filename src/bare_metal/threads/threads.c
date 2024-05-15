@@ -6,13 +6,13 @@
 
 extern libucontext_ucontext_t secondary_main_context;
 
-thread_t *threads[MAX_NUM_THREADS];
+thread_t *threads_t[MAX_NUM_THREADS];
 Tid thread_count = 0;
 
 int thread_create(thread_t *thread, void (*func)(void), int argc, ...) {
   va_list va;
   thread->thread_id = thread_count;
-  threads[thread_count] = thread;
+  threads_t[thread_count] = thread;
   thread_count++;
   libucontext_getcontext(&(thread->context));
   /* set the uc_link for when function call when it is done */
@@ -29,6 +29,6 @@ int thread_create(thread_t *thread, void (*func)(void), int argc, ...) {
 }
 
 int thread_get(thread_t **ret, Tid item) {
-  *ret = threads[item];
+  *ret = threads_t[item];
   return 0;
 }

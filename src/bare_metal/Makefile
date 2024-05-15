@@ -1,7 +1,7 @@
 CC=clang
 CFLAGS=-g -O0 -ffreestanding -nostartfiles
 CFLAGS+=-nostdlib -nodefaultlibs --target=riscv32 -march=rv32imac_zicsr
-CFLAGS+=--sysroot=/opt/riscv/riscv64-unknown-elf/
+CFLAGS+=--sysroot=/opt/riscv/riscv64-unknown-elf/ -v
 LINKER_SCRIPT=./linker/ram.ld
 KERNEL=main.elf
 

@@ -1,4 +1,5 @@
 #include "../threads/context/libucontext.h"
+#include <stdbool.h>
 #include <sys/types.h>
 
 #define MAX_NUM_THREADS 100
@@ -11,6 +12,7 @@ typedef volatile struct thread {
   Tid thread_id;
   volatile struct thread *parent;
   int value;
+  bool is_done;
 } thread_t;
 
 /* Initiates a thread with the target function. Must be called with makecontext

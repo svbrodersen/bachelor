@@ -5,21 +5,25 @@
 #include "include/uart.h"
 #include "palloc.h"
 #include "threads/context/libucontext.h"
-#include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 
 volatile thread_t threads[THREAD_NUMBER];
 volatile int core_num_jobs[MAX_NUM_CORES];
 volatile bool initialized = false;
+void memcpy(void *dest, const void *src, size_t n) {
+  for (size_t i = 0; i < n; i++) {
+    ((char *)dest)[i] = ((char *)src)[i];
+  }
+}
 
-void get_hartid(int *id) { asm volatile("la $1, mhartid\n\t" : "=r"(*id) :); }
+int pow_2(int x) { return (0x1 << x); }
 
 void get_curr_idx(int *curr_idx, int id) {
   *curr_idx = (THREAD_NUMBER - 1) - (core_num_jobs[id] * MAX_NUM_CORES);
 }
 
-void mark_parent_done() {
+void mark_done() {
   int curr_idx, id;
   get_hartid(&id);
   get_curr_idx(&curr_idx, id);
@@ -27,6 +31,7 @@ void mark_parent_done() {
     return;
   }
   core_num_jobs[id]++;
+  threads[curr_idx].is_done = true;
   __sync_fetch_and_add(&threads[curr_idx].parent->value, 1);
 }
 
@@ -70,10 +75,10 @@ void merge(int res[], int l, int m, int r) {
     l++;
     k++;
   }
-  mark_parent_done();
+  mark_done();
 }
 // Utility function to find minimum of two integers
-int inline min(int x, int y) { return (x < y) ? x : y; }
+int min(int x, int y) { return (x < y) ? x : y; }
 
 /* Iterative mergesort function to sort arr[0...n-1] */
 void mergeSort(int arr[], int l, int r) {
@@ -98,7 +103,7 @@ void mergeSort(int arr[], int l, int r) {
       merge(arr, left_start, mid, right_end);
     }
   }
-  mark_parent_done();
+  mark_done();
 }
 
 int setBitNumber(int n) {
@@ -114,17 +119,17 @@ int setBitNumber(int n) {
   return 1 << (31 - k);
 }
 
-int parallel_merge_sort(int *intput_list, size_t length) {
+void parallel_merge_sort(int *intput_list, size_t length) {
   // number
   int depth = setBitNumber(MAX_NUM_CORES) + 1;
   int k, j, i;
   int l, m, r;
   int temp, idx;
   for (i = 0; i < depth; i++) {
-    k = (int)pow(2, i);
+    k = pow_2(i);
 
     if (k == 1) {
-      thread_create((thread_t *)&threads[0], &merge, 4, intput_list, 0,
+      thread_create((thread_t *)&threads[0], (void *)&merge, 4, intput_list, 0,
                     length / 2, length);
       threads[0].parent = NULL;
       threads[0].value = 0;
@@ -138,14 +143,14 @@ int parallel_merge_sort(int *intput_list, size_t length) {
       r = temp * (j + 1);
       idx = i + j;
       if (i == depth - 1) {
-        thread_create((thread_t *)&threads[idx], &mergeSort, 3, intput_list, l,
-                      r);
+        thread_create((thread_t *)&threads[idx], (void *)&mergeSort, 3,
+                      intput_list, l, r);
         // Make it such that it looks like both children are finished (even
         // though there are none)
         threads[idx].value = 2;
       } else {
-        thread_create((thread_t *)&threads[idx], &merge, 4, intput_list, l,
-                      (r + l) / 2, r);
+        thread_create((thread_t *)&threads[idx], (void *)&merge, 4, intput_list,
+                      l, (r + l) / 2, r);
         threads[idx].value = 0;
       }
       // index of parent
@@ -165,6 +170,12 @@ void secondary_main() {
 
   get_hartid(&id);
   get_curr_idx(&curr_idx, id);
+  if (curr_idx < 0) {
+    // No more jobx for this mhart to do
+    while (!threads[0].is_done) {
+    }
+    secondary_main();
+  }
   while (threads[curr_idx].value < 2) {
     // spin lock until children are done
   }

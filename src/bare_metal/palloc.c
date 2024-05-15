@@ -11,9 +11,11 @@ int init_palloc() {
   return 0;
 }
 
+void get_hartid(int *id) { asm volatile("csrr %0, mhartid\n\t" : "=r"(id) :); }
+
 unsigned char *palloc(size_t size) {
   int id;
-  asm volatile("la $1, mhartid\n\t" : "=r"(id) :);
+  get_hartid(&id);
   unsigned char *ret = (unsigned char *)curr_mem[id];
   curr_mem[id] += size;
   return ret;
