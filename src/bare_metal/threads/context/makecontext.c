@@ -21,7 +21,7 @@
 
 extern void libucontext_trampoline(void);
 
-void libucontext_makecontext(libucontext_ucontext_t *ucp, void (*func)(void),
+void libucontext_makecontext(libucontext_ucontext_t *ucp, void (*func)(),
                              int argc, ...) {
   libucontext_greg_t *sp, *regp;
   va_list va;
@@ -55,7 +55,7 @@ void libucontext_makecontext(libucontext_ucontext_t *ucp, void (*func)(void),
   va_end(va);
 }
 
-void vlibucontext_makecontext(libucontext_ucontext_t *ucp, void (*func)(void),
+void vlibucontext_makecontext(libucontext_ucontext_t *ucp, void (*func)(),
                               int argc, va_list args) {
   libucontext_greg_t *sp, *regp;
   int i;

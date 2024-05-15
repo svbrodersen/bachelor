@@ -1,3 +1,4 @@
 #define STACK_SIZE 2048
 #define MAX_NUM_CORES 4
+#define THREAD_NUMBER 2 * MAX_NUM_CORES - 1
 #define MAX_LIST_SIZE

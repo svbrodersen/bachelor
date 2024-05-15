@@ -6,10 +6,11 @@
 
 typedef u_int32_t Tid;
 
-typedef struct thread {
+typedef volatile struct thread {
   libucontext_ucontext_t context;
   Tid thread_id;
-  struct thread *parent;
+  volatile struct thread *parent;
+  int value;
 } thread_t;
 
 /* Initiates a thread with the target function. Must be called with makecontext

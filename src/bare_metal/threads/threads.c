@@ -4,7 +4,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-extern libucontext_ucontext_t schedule_new_thread_context;
+extern libucontext_ucontext_t secondary_main_context;
 
 thread_t *threads[MAX_NUM_THREADS];
 Tid thread_count = 0;
@@ -16,7 +16,7 @@ int thread_create(thread_t *thread, void (*func)(void), int argc, ...) {
   thread_count++;
   libucontext_getcontext(&(thread->context));
   /* set the uc_link for when function call when it is done */
-  thread->context.uc_link = &schedule_new_thread_context;
+  thread->context.uc_link = &secondary_main_context;
 
   /*Set up a stack */
   thread->context.uc_stack.ss_size = THREAD_STACK_SIZE;
