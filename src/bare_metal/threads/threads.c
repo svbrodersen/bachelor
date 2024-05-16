@@ -9,7 +9,7 @@ extern libucontext_ucontext_t secondary_main_context;
 thread_t *threads_t[MAX_NUM_THREADS];
 Tid thread_count = 0;
 
-int thread_create(thread_t *thread, void (*func)(void), int argc, ...) {
+int thread_create(thread_t *thread) {
   va_list va;
   thread->thread_id = thread_count;
   threads_t[thread_count] = thread;
@@ -22,9 +22,6 @@ int thread_create(thread_t *thread, void (*func)(void), int argc, ...) {
   thread->context.uc_stack.ss_size = THREAD_STACK_SIZE;
   thread->context.uc_stack.ss_sp = palloc(thread->context.uc_stack.ss_size);
 
-  va_start(va, argc);
-  vlibucontext_makecontext(&thread->context, func, argc, va);
-  va_end(va);
   return 0;
 }
 

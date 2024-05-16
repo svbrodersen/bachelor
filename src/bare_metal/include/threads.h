@@ -17,7 +17,7 @@ typedef volatile struct thread {
 
 /* Initiates a thread with the target function. Must be called with makecontext
  * on the context element afterwards*/
-int thread_create(thread_t *, void (*func)(void), int argc, ...);
+int thread_create(thread_t *);
 int thread_get(thread_t **, Tid);
 
 void init_scheduler();

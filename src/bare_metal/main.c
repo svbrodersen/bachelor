@@ -20,7 +20,7 @@ void memcpy(void *dest, const void *src, size_t n) {
 int pow_2(int x) { return (0x1 << x); }
 
 void get_curr_idx(int *curr_idx, int id) {
-  *curr_idx = (THREAD_NUMBER - 1) - (core_num_jobs[id] * MAX_NUM_CORES);
+  *curr_idx = (THREAD_NUMBER - 1 - id) - (core_num_jobs[id] * MAX_NUM_CORES);
 }
 
 void mark_done() {
@@ -119,9 +119,9 @@ int setBitNumber(int n) {
   return 1 << (31 - k);
 }
 
-void parallel_merge_sort(int *intput_list, size_t length) {
+void parallel_merge_sort(int *input_list, size_t length) {
   // number
-  int depth = setBitNumber(MAX_NUM_CORES) + 1;
+  int depth = setBitNumber(length / MAX_NUM_CORES) + 1;
   int k, j, i;
   int l, m, r;
   int temp, idx;
@@ -129,8 +129,10 @@ void parallel_merge_sort(int *intput_list, size_t length) {
     k = pow_2(i);
 
     if (k == 1) {
-      thread_create((thread_t *)&threads[0], (void *)&merge, 4, intput_list, 0,
-                    length / 2, length);
+      thread_create((thread_t *)&threads[0]);
+      libucontext_makecontext(&threads[0].context, (void (*)())merge, 4,
+                              input_list, 0, length / 2, length);
+
       threads[0].parent = NULL;
       threads[0].value = 0;
       continue;
@@ -139,24 +141,26 @@ void parallel_merge_sort(int *intput_list, size_t length) {
     // threads. Just default mergesort
     temp = length / k;
     for (j = 0; j < k; j++) {
-      l = temp * j;
-      r = temp * (j + 1);
+      l = temp * j;       // l is inclusive
+      r = temp * (j + 1); // r is exclusive
       idx = i + j;
+      thread_create((thread_t *)&threads[idx]);
       if (i == depth - 1) {
-        thread_create((thread_t *)&threads[idx], (void *)&mergeSort, 3,
-                      intput_list, l, r);
+        libucontext_makecontext(&threads[idx].context, (void (*)())mergeSort, 3,
+                                input_list, l, r);
         // Make it such that it looks like both children are finished (even
         // though there are none)
         threads[idx].value = 2;
       } else {
-        thread_create((thread_t *)&threads[idx], (void *)&merge, 4, intput_list,
-                      l, (r + l) / 2, r);
+        libucontext_makecontext(&threads[idx].context, (void (*)())merge, 4,
+                                input_list, l, m, r);
         threads[idx].value = 0;
       }
-      // index of parent
-      threads[idx].parent = &threads[i + j % 2];
+      // index of parent is i - 1 + j%2
+      threads[idx].parent = &threads[i + j % 2 - 1];
     }
   }
+  printf("Done with parallel setup\n");
 }
 
 libucontext_ucontext_t secondary_main_context;
@@ -184,7 +188,7 @@ void secondary_main() {
 }
 
 int main() {
-  int alist[10] = {9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
+  int alist[16] = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
   libucontext_getcontext(&secondary_main_context);
   secondary_main_context.uc_stack.ss_size = THREAD_STACK_SIZE;
   secondary_main_context.uc_stack.ss_sp =
