@@ -7,7 +7,7 @@
 
 typedef u_int32_t Tid;
 
-typedef volatile struct thread {
+typedef struct thread {
   libucontext_ucontext_t context;
   Tid thread_id;
   volatile struct thread *parent;

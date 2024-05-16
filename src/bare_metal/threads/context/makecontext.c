@@ -45,13 +45,14 @@ void libucontext_makecontext(libucontext_ucontext_t *ucp, void (*func)(),
   /* first 8 args go in $a0 through $a7. */
   regp = &(ucp->uc_mcontext.__gregs[REG_A0]);
 
-  for (i = 0; (i < argc && i < 8); i++)
+  for (i = 0; (i < argc && i < 8); i++) {
     *regp++ = va_arg(va, libucontext_greg_t);
+  }
 
   /* remainder overflows into stack */
-  for (; i < argc; i++)
+  for (; i < argc; i++) {
     *sp++ = va_arg(va, libucontext_greg_t);
-
+  }
   va_end(va);
 }
 
@@ -76,10 +77,12 @@ void vlibucontext_makecontext(libucontext_ucontext_t *ucp, void (*func)(),
   /* first 8 args go in $a0 through $a7. */
   regp = &(ucp->uc_mcontext.__gregs[REG_A0]);
 
-  for (i = 0; (i < argc && i < 8); i++)
+  for (i = 0; (i < argc && i < 8); i++) {
     *regp++ = va_arg(args, libucontext_greg_t);
+  }
 
   /* remainder overflows into stack */
-  for (; i < argc; i++)
+  for (; i < argc; i++) {
     *sp++ = va_arg(args, libucontext_greg_t);
+  }
 }
