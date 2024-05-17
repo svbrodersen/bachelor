@@ -9,10 +9,12 @@
 #include <stdio.h>
 extern void secondary_main();
 
-volatile int alist[16] = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
+volatile int alist[20] = {19, 18, 17, 16, 15, 14, 13, 12, 11, 10,
+                          9,  8,  7,  6,  5,  4,  3,  2,  1,  0};
 thread_t threads[THREAD_NUMBER];
 volatile int core_num_jobs[MAX_NUM_CORES];
 volatile bool initialized = false;
+volatile int is_done = 0;
 
 void atomic_add_1(int *val) {
   asm("li t0, 1\n\t"
@@ -44,7 +46,9 @@ void mark_done() {
   }
   // atomically increase the value by 1
   atomic_add_1(&threads[curr_idx].parent->value);
-  threads[curr_idx].is_done = true;
+  if (curr_idx == 0) {
+    atomic_add_1(&is_done);
+  }
   secondary_main();
 }
 
@@ -194,7 +198,7 @@ void secondary_main() {
   get_curr_idx(&curr_idx, id);
   if (curr_idx < 0) {
     // No more jobx for this mhart to do
-    while (!threads[0].is_done) {
+    while (is_done < 1) {
     }
     if (id == 0) {
       // we are thread 0
@@ -214,10 +218,11 @@ void secondary_main() {
 
 int main() {
   init_palloc();
+  is_done = 0;
   for (int i = 0; i < MAX_NUM_CORES; i++) {
     core_num_jobs[i] = 0;
   }
-  parallel_merge_sort(alist, 16);
+  parallel_merge_sort(alist, 20);
   initialized = true;
   libucontext_setcontext(&threads[THREAD_NUMBER - 1].context);
   return 0;
