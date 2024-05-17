@@ -7,11 +7,21 @@
 #include "threads/context/libucontext.h"
 #include <stdbool.h>
 #include <stdio.h>
+extern void secondary_main();
 
 volatile int alist[16] = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
 thread_t threads[THREAD_NUMBER];
 volatile int core_num_jobs[MAX_NUM_CORES];
 volatile bool initialized = false;
+
+void atomic_add_1(int *val) {
+  asm("li t0, 1\n\t"
+      "amoadd.w t2,t0,%0\n\t"
+      : "+A"(*val)
+      :
+      : "memory");
+}
+
 void memcpy(void *dest, const void *src, size_t n) {
   for (size_t i = 0; i < n; i++) {
     ((char *)dest)[i] = ((char *)src)[i];
@@ -28,21 +38,17 @@ void mark_done() {
   int curr_idx, id;
   get_hartid(&id);
   get_curr_idx(&curr_idx, id);
+  atomic_add_1(&core_num_jobs[id]);
   if (threads[curr_idx].parent == NULL) {
-    // we are the last thread
     initialized = false;
-    return;
   }
-  core_num_jobs[id]++;
-  threads[curr_idx].is_done = true;
   // atomically increase the value by 1
-  asm("li t0, 1\n\t"
-      "amoadd.w t1,t0,(%0)\n\t"
-      : "=r"(threads[curr_idx].parent->value)
-      :);
+  atomic_add_1(&threads[curr_idx].parent->value);
+  threads[curr_idx].is_done = true;
+  secondary_main();
 }
 
-void merge(int res[], int l, int m, int r) {
+void merge(int *res, int l, int m, int r) {
   int lelem, relem;
   int i, j, k;
   int length_left = m - l + 1;
@@ -71,17 +77,21 @@ void merge(int res[], int l, int m, int r) {
     k++;
   }
   // empty left list if anything is left
-  while (l < length_left) {
-    res[k] = left[l];
-    l++;
+  while (i < length_left) {
+    res[k] = left[i];
+    i++;
     k++;
   }
   // empty right list if anything is left
-  while (r < length_right) {
-    res[k] = right[l];
-    l++;
+  while (j < length_right) {
+    res[k] = right[j];
+    j++;
     k++;
   }
+}
+
+void parallel_merge(int *res, int l, int m, int r) {
+  merge(res, l, m, r);
   mark_done();
 }
 // Utility function to find minimum of two integers
@@ -127,15 +137,18 @@ void parallel_merge_sort(int *input_list, size_t length) {
   int depth = setBitNumber(MAX_NUM_CORES) + 1;
   int k, j, i;
   int l, m, r;
+  int curr_size, mid, right_end;
   int temp;
   int idx = 0;
   for (i = 0; i < depth; i++) {
     k = pow_2(i);
 
     if (k == 1) {
+      right_end = length - 1;
+      mid = right_end / 2;
       thread_create(&threads[idx]);
-      libucontext_makecontext(&threads[idx].context, (void (*)())merge, 4,
-                              input_list, 0, length / 2, length);
+      libucontext_makecontext(&threads[idx].context, (void (*)())parallel_merge,
+                              4, input_list, 0, mid, right_end);
 
       threads[0].parent = NULL;
       threads[0].value = 0;
@@ -156,8 +169,13 @@ void parallel_merge_sort(int *input_list, size_t length) {
         // though there are none)
         threads[idx].value = 2;
       } else {
-        libucontext_makecontext(&threads[idx].context, (void (*)())merge, 4,
-                                input_list, l, (l + r) / 2, r);
+        // for the merge, r is inclusive.
+        curr_size = (r - l) / 2;
+        mid = min(l + curr_size - 1, r - 1);
+        right_end = min(l + 2 * curr_size - 1, r - 1);
+        libucontext_makecontext(&threads[idx].context,
+                                (void (*)())parallel_merge, 4, input_list, l,
+                                mid, right_end);
         threads[idx].value = 0;
       }
       // index of parent is i - 1 + j/2
@@ -168,14 +186,9 @@ void parallel_merge_sort(int *input_list, size_t length) {
   printf("Done with parallel setup\n");
 }
 
-libucontext_ucontext_t secondary_main_context;
-
+extern int main();
 void secondary_main() {
   int id, curr_idx;
-
-  while (!initialized) {
-    // spin lock until mhartid 0 has created all jobs
-  }
 
   get_hartid(&id);
   get_curr_idx(&curr_idx, id);
@@ -183,7 +196,14 @@ void secondary_main() {
     // No more jobx for this mhart to do
     while (!threads[0].is_done) {
     }
+    if (id == 0) {
+      // we are thread 0
+      main();
+    }
     secondary_main();
+  }
+  while (!initialized) {
+    // spin lock until mhartid 0 has created all jobs
   }
   while (threads[curr_idx].value < 2) {
     // spin lock until children are done
@@ -194,11 +214,6 @@ void secondary_main() {
 
 int main() {
   init_palloc();
-  libucontext_getcontext(&secondary_main_context);
-  secondary_main_context.uc_stack.ss_size = THREAD_STACK_SIZE;
-  secondary_main_context.uc_stack.ss_sp =
-      palloc(secondary_main_context.uc_stack.ss_size);
-  libucontext_makecontext(&secondary_main_context, secondary_main, 0);
   for (int i = 0; i < MAX_NUM_CORES; i++) {
     core_num_jobs[i] = 0;
   }
