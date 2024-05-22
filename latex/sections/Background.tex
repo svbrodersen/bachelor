@@ -1,24 +1,58 @@
 \ssection{Background}
 \subsection{Accelerator-based Computer Architecture}
-The concept of offloading is nothing new.
-In a team where each member specializes, it seems logical when discussing our day-to-day work environment.
-Effective communication between entities while focusing on what we do best seems logical when speaking about work.
-However, when it comes to computer architecture, we have heavily relied on the Central Processing Unit (CPU).
-An accelerator is a separate substructure designed with different objectives than the base processor.
-With this design, the substructure can be optimized for its specific task, often leading to both performance increases and less energy consumption\cite{AA}.
-Prominent examples of accelerators include the Graphics Processing Unit (GPU), which is a major component in most computers today.
+The concept of offloading is nothing new. In a team where each member
+specializes, it seems logical when discussing our day-to-day work environment.
+Effective communication between entities while focusing on what we do best seems
+logical when speaking about work. However, when it comes to computer
+architecture, we heavily rely on the Central Processing Unit (CPU). The goal of
+an accelerator would be to offload the CPU, by providing a separate
+substructure designed with different objectives than the CPU itself.
+With this design, the substructure can be optimized for its
+specific tasks, often leading to both performance increases and less energy
+consumption\cite{AA}. Prominent examples of accelerators include the Graphics
+Processing Unit (GPU), which is a major component in most computers today. The
+goal of this thesis is to examine the feasability of following a similair design
+pattern in creating computational storage devices.
 
 \subsection{RISC-V}
-Reduced Intruction Set Computer(RISC), more specifically the fifth version (RISC-V). Is an Instruction Set Architecture(ISA), that aims to make the process of
-making custom processors targeting a variety of end applications more feasible. Previous ISAs have often been created by private companies, which leads to patents
-and a need for a license to develop a specialised processor. These licenses could often take months to negotiate without mentioning the large sum of money involved.
-It is assumed that creating a free and open sourced ISA could reduce the barrier of entry and greatly increase innovation along with afforability\cite{ISAfree}.
+Reduced Intruction Set Computer(RISC), more specifically the fifth version
+(RISC-V). Is an Instruction Set Architecture(ISA), that aims to make the process
+of making custom processors targeting a variety of end applications more
+feasible. Previous ISAs have often been created by private companies, which
+leads to patents and a need for a license to develop a specialised processor.
+These licenses could often take months to negotiate without mentioning the large
+sum of money involved. It is assumed that creating a free and open sourced ISA
+could reduce the barrier of entry and greatly increase innovation along with
+afforability\cite{ISAfree}.
 
-RISC-V aims to provide a small core of instructions which compilers, assemblers, linkers and operating systems can generally rely on, while still being extendable for more specialised
-accelerators. In RISC-V there  are two primary base integer variants, RV32I and RV64I, whcih provide the 32-bit and 64-bit user-level address spaces respectively. However, RISC-V is already
-in the works with a RV128I variant which would provide the foundation needed for a 128-bit user address space in the future. In gereral, RISC-V provides standard and non-standard extensions,
-where standard extensions should not conflict with other standard extensions, and the non-standard extensions are more highly specialised.
+RISC-V aims to provide a small core of instructions which compilers, assemblers,
+linkers and operating systems can generally rely on, while still being
+extendable for more specialised accelerators. In RISC-V there  are two primary
+base integer variants, RV32I and RV64I, whcih provide the 32-bit and 64-bit
+user-level address spaces respectively. However, RISC-V is already in the works
+with a RV128I variant which would provide the foundation needed for a 128-bit
+user address space in the future. In gereral, RISC-V provides standard and
+non-standard extensions, where standard extensions should not conflict with
+other standard extensions, and the non-standard extensions are more highly
+specialised.
 
 
 \subsection{Toolchain}
+\begin{lstlisting}[caption=Installing QEMU, float=*, label=lst:qemu_install]
+git clone git clone https://github.com/qemu/qemu  # Clone the qemu repo
+./configure --target-list=riscv32-softmmu  # Configure the 32-bit RISC-V target
+make -j $(nproc)  # build the project with all num cores jobs
+sudo make install
+\end{lstlisting}
+\subsubsection{QEMU}
+QEMU is a system emulator, which has the capabilities of emulating both a 32-bit
+and 64-bit RISC-V processor \cite{QEMU}. With QEMU I am able to create code intented
+for a processor running the RISC-V instruction set even if my development
+environment is running a different ISA. For the puposes of this thesis it is the
+RISC-V 32-bit version of the qemu virtual machine that will be used.
+Following the instructions by RISC-V's getting started guide
+we can build the QEMU RISC-V system emulators by running the code
+provided in Listing~\ref{lst:qemu_install}\cite{RISC-V_GS}.
+
+\subsubsection{RISC-V-GNU-Toolchain}
 
