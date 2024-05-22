@@ -48,19 +48,19 @@
 
 \subsection{Memory}
 \subsubsection{Getting system information}\label{sec:sys-info}
-Now that there is a working tool chain, we can move on to the development of the
-bare metal C version. First, we need information about the development
-environment we are currently working on, such that we are able to set up a stack
-for the bare metal C program. With QEMU it is possible to get the necessary
-machine info by running:
+ Now that there is a working toolchain, we can move on to the development of the
+ bare metal C version. First, we need information about the development
+ environment we are currently working on so that we can set up a stack for the
+ bare metal C program. With QEMU, it is possible to get the necessary machine
+ info by running:
 \begin{lstlisting}
 qemu-system-riscv32 -machine virt \
 -machine dumpdtb=riscv32.dtb
 \end{lstlisting}
-This creates a Devicetree Blob(dtb) data file, which contains information about
-the virt qemu-system-riscv32 virtual machine. This format is not usable by us at
-the moment, but by using the Device Tree Compiler(dtc) package we can convert it
-from the binary dtb format to a human-readable dts format.
+ This creates a Device Tree Blob (dtb) data file, which contains information
+ about the virt qemu-system-riscv32 virtual machine. This format is not usable
+ by us at the moment, but by using the Device Tree Compiler (dtc) package, we
+ can convert it from the binary dtb format to a human-readable dts format.
 \begin{lstlisting}
 sudo apt install dtc
 dtc -I dtb -O dts -o riscv32.dts riscv32.dtb
@@ -112,23 +112,24 @@ saving static values such as .bss and .data sections
   \caption{Memory layout with a core stack size of 2048 bytes and a thread stack
   size of 1024}\label{fig:mem_layout}
 \end{figure*}
-As mentioned all created threads need to have a seperate stack for the context
-switching to work. Thus when creating a thread we have to allocate some location
-in ram to the task the thread has to perform. In Figure~\ref{fig:mem_layout}
-this memory area is denoted with the thread x STACK area. As a design choice, I
-chose to seperate the thread stacks in the opposite end of ram from where the
-core stacks would be allocated. That way, if I ran into a thread stack overflow,
-I would know it was caused by the threads themselves and vice versa with the
-core stacks. Different sizes of threads stacks have not been tested, but a size
-of 1024 seemed to work without issues on relatively small lists.
+ As mentioned, all created threads need to have a separate stack for context
+ switching to work. Thus, when creating a thread, we have to allocate some
+ location in RAM to the task the thread has to perform. In
+ Figure~\ref{fig:mem_layout}, this memory area is denoted with the "thread x
+ STACK" area. As a design choice, I chose to separate the thread stacks in the
+ opposite end of RAM from where the core stacks would be allocated. That way, if
+ I ran into a thread stack overflow, I would know it was caused by the threads
+ themselves and vice versa with the core stacks. Different sizes of thread
+ stacks have not been tested, but a size of 1024 seemed to work without issues
+ on relatively small lists.
 
-At the end of the RAM section is where the individual core stacks would be
-allocated. Again the specific size has not been tested, but with 8 cores and the
-chosen stack size of 2048 bytes, assuming a thread stack size of 1024 bytes, we
-would be able to have approximately 130.032 amount of individual thread stacks
-without the two different stack areas overlapping. \footnote{ $0x88000000 -
-  8*0x800 = 0x87ffc000$ would be the end of core stacks. $0x87ffc000 - x*0x400 =
-  0x80100000 \implies x = 130.032$. However, as the .data .bss and .text
-sections might be saved in the RAM area by the linker script, we don't know the
-definitive value of \_stack\_size until the program is fully compiled. }
+ At the end of the RAM section is where the individual core stacks would be
+ allocated. Again, the specific size has not been tested, but with 8 cores and
+ the chosen stack size of 2048 bytes, assuming a thread stack size of 1024
+ bytes, we would be able to have approximately 130.032 individual thread stacks
+ without the two different stack areas overlapping.\footnote{$0x88000000 -
+ 8*0x800 = 0x87ffc000$ would be the end of core stacks. $0x87ffc000 - x*0x400 =
+0x80100000 \implies x = 130.032$. However, as the .data, .bss and .text sections
+might be saved in the RAM area by the linker script, we don't know the
+definitive value of \_stack\_size until the program is fully compiled.}
 
