@@ -79,52 +79,6 @@ this project.
 \end{itemize}
 
 
-\subsection{Getting system information}\label{sec:sys-info}
-Now that there is a working tool chain, we can move on to the development of the
-bare metal C version. First, we need information about the development
-environment we are currently working on, such that we are able to set up a stack
-for the bare metal C program. With QEMU it is possible to get the necessary
-machine info by running:
-\begin{lstlisting}
-qemu-system-riscv32 -machine virt \
--machine dumpdtb=riscv32.dtb
-\end{lstlisting}
-This creates a Devicetree Blob(dtb) data file, which contains information about
-the virt qemu-system-riscv32 virtual machine. This format is not usable by us
-at the moment, but by using the Device Tree Compiler(dtc) package we can convert
-it from the binary dtb format to a human-readable dts format.
-\begin{lstlisting}
-sudo apt install dtc
-dtc -I dtb -O dts -o riscv32.dts riscv32.dtb
-\end{lstlisting}
-Opening the file up in your favorite text editor you should see a lot of
-information regarding the qemu-system-riscv32 virtual machine. First we note,
-that the Devicetree specification states, that the memory node describes the
-physical memory layout for the system. As we want the programs stack
-to live within the memory section, this is section we should find information
-about starting address and length of the memory section. The memory node has
-two required sections, first the device\_type, which must simply be 'memory', and
-secondly the reg value. The reg value ''Consists of an arbitrary number of
-address and size pairs that specify the physical address and size of the memory
-ranges' \cite{DTS}. Furthermore, it is stated, that the property name reg has
-the value encoded as a number of (address, length) pairs. It also states, that
-the number of <u32> cells required to specify the address and length are
-bus-specific and are specified by the \#address-cells and \#size-cells properties
-in the parent of the device node.
-Looking through our riscv32.dts file, we find the relevant information to be:
-\begin{lstlisting}
-#address-cells = <0x02>;
-#size-cells = <0x02>;
-
-memory@80000000 {
-  device_type = "memory";
-  reg = <0x00 0x80000000 0x00 0x8000000>
-};
-\end{lstlisting}
-With the information previously provided, we know that the starting
-address of the memory section is at address $0x00 + 0x80000000 = 0x80000000$ and has a size of
-$0x00 + 0x8000000$ bytes, which is equivalent to 128MB.
-
 \subsection{Creating a linker script}
 The linker script is used to tell the linker which parts of the file to include
 in the final output file, as well as where each section is stored in memory. As
