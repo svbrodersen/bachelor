@@ -1,17 +1,17 @@
 CC=clang
 CFLAGS=-g -O0 -ffreestanding -nostartfiles
 CFLAGS+=-nostdlib -nodefaultlibs --target=riscv32 -march=rv32imac_zicsr
-CFLAGS+=--sysroot=/opt/riscv/riscv64-unknown-elf/
+CFLAGS+=--sysroot=/opt/riscv/riscv64-unknown-elf/ -v
 LINKER_SCRIPT=./linker/ram.ld
 KERNEL=main.elf
 
 QEMU=qemu-system-riscv32
-QEMU_FLAGS=-machine virt -smp 4
+QEMU_FLAGS=-machine virt
 QEMU_FLAGS+=-nographic
-QEMU_FLAGS+= -device loader,file=./$(KERNEL),cpu-num=0
-QEMU_FLAGS+= -device loader,file=./$(KERNEL),cpu-num=1
-QEMU_FLAGS+= -device loader,file=./$(KERNEL),cpu-num=2
-QEMU_FLAGS+= -device loader,file=./$(KERNEL),cpu-num=3
+EXTRA_QEMU_FLAGS=  -smp 4 -device loader,file=./$(KERNEL),cpu-num=0
+EXTRA_QEMU_FLAGS+= -device loader,file=./$(KERNEL),cpu-num=1
+EXTRA_QEMU_FLAGS+= -device loader,file=./$(KERNEL),cpu-num=2
+EXTRA_QEMU_FLAGS+= -device loader,file=./$(KERNEL),cpu-num=3
 
 SOURCES = $(shell find -name '*.c')
 SOURCES += $(shell find -name '*.S')
@@ -32,8 +32,10 @@ run: all
 	$(QEMU) $(QEMU_FLAGS)
 
 debug: all
-	$(QEMU) -s -S $(QEMU_FLAGS)
+	$(QEMU) -s -S $(QEMU_FLAGS) $(EXTRA_QEMU_FLAGS)
 
+debug_single: all
+	$(QEMU) -s -S $(QEMU_FLAGS) -smp 1 -device loader,file=./$(KERNEL),cpu-num=0
 %.s : %.c
 	$(CC) -c $(CFLAGS) $< -S -o $@
 

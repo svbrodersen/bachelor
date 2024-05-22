@@ -1,4 +1,4 @@
-#include "uart.h"
+#include "../include/uart.h"
 #include <stdint.h>
 #define LCR 0x03          // Line control register
 #define LSR 0x05          // Line status register

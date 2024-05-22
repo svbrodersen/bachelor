@@ -1,20 +1,15 @@
 #include "include/defines.h"
 #include <stddef.h>
 
-extern unsigned char *_end;
-volatile unsigned char *curr_mem[MAX_NUM_CORES];
+unsigned char *cur_location;
 
-int init_palloc() {
-  for (int i = 0; i < MAX_NUM_CORES; i++) {
-    curr_mem[i] = (unsigned char *)(_end + (i * STACK_SIZE));
-  }
-  return 0;
-}
+void init_palloc() { asm("la %0, _stack_start\n\t" : "=r"(cur_location) :); }
+
+void get_hartid(int *id) { asm volatile("csrr %0, mhartid\n\t" : "=r"(*id) :); }
 
 unsigned char *palloc(size_t size) {
-  int id;
-  asm volatile("la $1, mhartid\n\t" : "=r"(id) :);
-  unsigned char *ret = (unsigned char *)curr_mem[id];
-  curr_mem[id] += size;
+
+  unsigned char *ret = cur_location;
+  cur_location += size;
   return ret;
 }
