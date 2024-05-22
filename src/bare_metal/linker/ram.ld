@@ -10,17 +10,16 @@ MEMORY
 
 SECTIONS
 {
-
 .text : ALIGN(CONSTANT(MAXPAGESIZE))
 	{
 		*(.text .text.*)
-	} >rom AT>rom
+	}
 
 	.rodata : ALIGN(CONSTANT(MAXPAGESIZE))
 	{
 		*(.rdata)
 		*(.rodata .rodata.*)
-	} >rom AT>rom
+	}
 
 	.data : ALIGN(CONSTANT(MAXPAGESIZE))
 	{
@@ -28,20 +27,20 @@ SECTIONS
     /*RISCV convention to have __global_pointer aligned to 8 bytes*/
 		. = ALIGN(8);
 		PROVIDE( __global_pointer$ = . + 0x800 );
-	} >ram AT>rom
+	}
 
 	.bss : ALIGN(CONSTANT(MAXPAGESIZE))
 	{
 		*(.bss .bss.*)
-	} >ram AT>rom
+	}
 
+  /* It is standard to have
+  the stack aligned to 16 bytes*/
+	. = ALIGN(16);
 	_end = .;
 
 	.stack : ALIGN(CONSTANT(MAXPAGESIZE))
 	{
-    /* It is standard to have the stack aligned to 16 bytes*/
-		. = ALIGN(16);
-    PROVIDE(_stack_end = .);
 		_stack_top = ORIGIN(ram) + LENGTH(ram);
-	} >ram AT>ram
+	}
 }

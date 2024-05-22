@@ -22,7 +22,7 @@ void uart_init(void) {
 static void uart_put(uint8_t c) { *(uint8_t *)(UART_ADDR + RBR) = c; }
 static uint8_t uart_get(uintptr_t addr) { return *(uint8_t *)(addr); }
 
-void outbyte(unsigned char c) {
+void putchar(unsigned char c) {
   volatile uintptr_t ptr = (uintptr_t)UART_ADDR;
   // make sure there is nothing else in FIFO
   while ((uart_get(ptr + LSR) & LSR_THRE) == 0) {

@@ -25,9 +25,9 @@
 
 */
 
-#include "uart.h"
+#include "../include/uart.h"
 #include <stdarg.h>
-#define putchar(c) outbyte(c)
+extern void putchar(unsigned char c);
 
 static int tiny_print(char **out, const char *format, va_list args,
                       unsigned int buflen);
