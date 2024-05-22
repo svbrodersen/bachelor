@@ -3,8 +3,7 @@ ENTRY(_start)
 
 MEMORY
 {
-	ram (wxa) : ORIGIN = 0x81000000, LENGTH = 127M
-  rom (rxa) : ORIGIN = 0x80000000, LENGTH = 1M
+	ram (wxa) : ORIGIN = 0x80000000, LENGTH = 128M
 }
 
 SECTIONS
