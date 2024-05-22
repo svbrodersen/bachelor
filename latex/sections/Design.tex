@@ -10,39 +10,36 @@
  decreased performance.
 
 \subsubsection{Working on multiple cores}
-The first method of implementing a multicore merge sort involved working with
-threading and a scheduler. When we split a given list into two halves, we would
-create a thread which would be assigned the job of sorting said sublist. These
-two lists would be added to the queue of available threads after which the job
-of merging the two lists could be added to the back of the queue. The merge job
-would have to check whether the two sublists have finished being sorted, but
-otherwise assuming a round-robin scheduler would in theory automatically allow
-for the correct ordering for the parallelized merge sort algorithm. However,
-this approach is filled with race conditions. The primary one being that of
-implementing a queue, which is capable of handling concurrent access. The
-simplest method would be to implement a lock, which would allow for mutual
-exclusion when adding to and removing from the queue. The downside of
-implementing a locking queue is that of synchronization. The goal of the sorting
-algorithm is to go as fast as possible, thus synchronizing would lead to issues
-in regards to performance. Another method would be to implement a lock-free
-queue. This approach should remove any synchronization issues and would most
-likely be a viable solution. However, when implementing this approach I ran into
-issues with a child thread (one which was created to sort a sublist) telling its
-parent when it has finished sorting the sublist. Each core would need some way
-of keeping track of the current thread running and then through that tell a
-parent thread (a thread whose job is to sort the child's list and another
-sublist) when it has finished. I still believe this approach is possible, but
-was at the time scrapped for the following design.
+ The first method of implementing a multicore merge sort involved using
+ threading and a scheduler. When we split a given list into two halves, we would
+ create a thread assigned to sort each sublist. These two lists would be added
+ to the queue of available threads, after which the job of merging the two lists
+ could be added to the back of the queue. The merge job would have to check
+ whether the two sublists have finished being sorted, but otherwise, assuming a
+ round-robin scheduler would automatically allow for the correct ordering for
+ the parallelized merge sort algorithm. However, this approach introduces
+ multiple race conditions race conditions, the primary one being implementing a
+ queue capable of handling concurrent access. The simplest method would be to
+ implement a lock, allowing mutual exclusion when adding to and removing from
+ the queue. The downside of implementing a locking queue is that synchronization
+ can lead to performance issues. Another method would be to implement a
+ lock-free queue, which should remove any synchronization issues and be a viable
+ solution. However, I ran into problems with a child thread (created to sort a
+ sublist) notifying its parent when it has finished sorting the sublist. Each
+ core would need some way of keeping track of the current thread running and
+ telling the parent thread (whose job is to sort the child's list and another
+ sublist) when it has finished. Although this approach is possible, it was
+ scrapped for the following design due to these challenges.
 
-First, to simplify initialization, a single core would have the job of splitting
-the initial array into sublists until every core would have a single sublist to
-work on. While doing the splitting, it would also create threads which had the
-job of merging the sublists once they are finished. This approach would remove
-the need for a queue and scheduler in the first place, as each core would
-through its own core id know what thread it would have to complete. The issue of
-communication with the parent merge would still exist, but the same index used
-to find the thread initially could be used to find the parent as well. The
-implementation of this approach can be seen in the implementation section.
+ To simplify initialization, a single core would have the job of splitting the
+ initial array into sublists until every core has a single sublist to work on.
+ While doing the splitting, it would also create threads which have the job of
+ merging the sublists once they are finished. This approach would remove the
+ need for a queue and scheduler in the first place, as each core would, through
+ its own core ID, know what thread it would have to complete. The issue of
+ communication with the parent merge would still exist, but the same index used
+ to find the thread initially could be used to find the parent as well. The
+ implementation of this approach can be seen in the Implementation section.
 
 
 \subsection{Context switching}
