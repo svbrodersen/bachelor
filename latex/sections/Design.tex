@@ -10,36 +10,36 @@
  decreased performance.
 
 \subsubsection{Working on multiple cores}
- The first method of implementing a multicore merge sort involved using
- threading and a scheduler. When we split a given list into two halves, we would
- create a thread assigned to sort each sublist. These two lists would be added
- to the queue of available threads, after which the job of merging the two lists
- could be added to the back of the queue. The merge job would have to check
- whether the two sublists have finished being sorted, but otherwise, assuming a
- round-robin scheduler would automatically allow for the correct ordering for
- the parallelized merge sort algorithm. However, this approach introduces
- multiple race conditions race conditions, the primary one being implementing a
- queue capable of handling concurrent access. The simplest method would be to
- implement a lock, allowing mutual exclusion when adding to and removing from
- the queue. The downside of implementing a locking queue is that synchronization
- can lead to performance issues. Another method would be to implement a
- lock-free queue, which should remove any synchronization issues and be a viable
- solution. However, I ran into problems with a child thread (created to sort a
- sublist) notifying its parent when it has finished sorting the sublist. Each
- core would need some way of keeping track of the current thread running and
- telling the parent thread (whose job is to sort the child's list and another
- sublist) when it has finished. Although this approach is possible, it was
- scrapped for the following design due to these challenges.
+The first method for implementing a multicore merge sort involved using
+threading and a scheduler. When we split a given list into two halves, we would
+create a thread assigned to sort each sublist. These two lists would be added to
+the queue of available threads, after which the job of merging the two lists
+could be added to the back of the queue. The merge job would have to check
+whether the two sublists have finished being sorted, but otherwise, assuming a
+round-robin scheduler, it would automatically allow for the correct ordering for
+the parallelized merge sort algorithm. However, this approach introduces
+multiple race conditions; the primary one being implementing a queue capable of
+handling concurrent access. The simplest method would be to implement a lock,
+allowing mutual exclusion when adding to and removing from the queue. The
+downside of implementing a locking queue is that synchronization can lead to
+performance issues. Another method would be to implement a lock-free queue,
+which should remove any synchronization issues and be a viable solution.
+However, I ran into problems with a child thread (created to sort a sublist)
+notifying its parent when it has finished sorting the sublist. Each core would
+need some way of keeping track of the current thread running and telling the
+parent thread (whose job is to sort the child's list and another sublist) when
+it has finished. Although this approach is possible, it was scrapped for the
+following design due to these challenges.
 
- To simplify initialization, a single core would have the job of splitting the
- initial array into sublists until every core has a single sublist to work on.
- While doing the splitting, it would also create threads which have the job of
- merging the sublists once they are finished. This approach would remove the
- need for a queue and scheduler in the first place, as each core would, through
- its own core ID, know what thread it would have to complete. The issue of
- communication with the parent merge would still exist, but the same index used
- to find the thread initially could be used to find the parent as well. The
- implementation of this approach can be seen in the Implementation section.
+To simplify initialization, a single core would have the job of splitting the
+initial array into sublists until every core has a single sublist to work on.
+While doing the splitting, it would also create threads which have the job of
+merging the sublists once they are finished. This approach would remove the need
+for a queue and scheduler in the first place, as each core would, through its
+own core ID, know what thread it would have to complete. The issue of
+communication with the parent merge would still exist, but the same index used
+to find the thread initially could be used to find the parent as well. The
+implementation of this approach can be seen in the Implementation section.
 
 
 \subsection{Context switching}
@@ -48,11 +48,9 @@
 
 \subsection{Memory}
 \subsubsection{Getting system information}\label{sec:sys-info}
- Now that there is a working toolchain, we can move on to the development of the
- bare metal C version. First, we need information about the development
- environment we are currently working on so that we can set up a stack for the
- bare metal C program. With QEMU, it is possible to get the necessary machine
- info by running:
+To properly use the memory, we need some information about the system we are
+working on. As this thesis is created on a QEMU system, we are able to get the
+system information by running the following:
 \begin{lstlisting}
 qemu-system-riscv32 -machine virt \
 -machine dumpdtb=riscv32.dtb
