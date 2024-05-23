@@ -7,6 +7,15 @@ implementations.
 
 \subsection{Dependencies}
 \subsubsection{QEMU}
+\begin{lstlisting}[caption=Installing QEMU, float=*, label=lst:qemu_install]
+git clone git clone https://github.com/qemu/qemu  # Clone the qemu repo
+./configure --target-list=riscv32-softmmu  # Configure the 32-bit RISC-V target
+make -j $(nproc)  # build the project with all num cores jobs
+sudo make install
+\end{lstlisting}
+Following the instructions by RISC-V's getting started guide
+we can build the QEMU RISC-V system emulators by running the code
+provided in Listing~\ref{lst:qemu_install}\cite{RISC-V_GS}.
 \subsubsection{Installing LLVM compiler infrastructure}
 \begin{lstlisting}[caption=Installing LLVM compiler infastructure with RISC-V
 32-bit as native target., float=*, label=lst:llvm_install]
@@ -19,28 +28,14 @@ sudo apt-get -y install \
   zlib1g-dev libexpat1-dev libmpc-dev \
   libglib2.0-dev libfdt-dev libpixman-1-dev
 
-# Installing the RISC-V-gnu-toolchain
+# Installing the RISC-V-gnu-toolchain with llvm support
 git clone https://github.com/riscv-collab/riscv-gnu-toolchain  # clone
 riscv-gnu-toolchain
 cd riscv-gnu-toolchain  # change directory
-./configure --prefix=/opt/riscv --enable-multilib
+./configure --prefix=/opt/riscv --with-arch=rv32gc -disable-linux --enable-llvm
 # prefix is install path used by llvm
-# --enable-multilib allows us to compile for 32-bit
 sudo make -j$(nproc)
 cd ..
-
-# Installing LLVM
-git clone https://github.com/llvm/llvm-project.git # clone llvm-project
-cd llvm-project
-mkdir build
-pushd build
-sudo cmake -S ../llvm -G Ninja \
--DCMAKE_BUILD_TYPE="Release" -DBUILD_SHARED_LIBS=True \
--DLLVM_BUILD_TESTS=False \
--DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;lld" \
--DCMAKE_INSTALL_PREFIX=/opt/llvm \
--DLLVM_TARGETS_TO_BUILD="RISCV"
-sudo cmake --build . --target install
 popd
 \end{lstlisting}
 When it comes to clang there are two methods of installing, that are relevant to

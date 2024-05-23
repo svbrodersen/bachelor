@@ -55,21 +55,12 @@ with the ever growing need for large volume of data processing.
 
 
 \subsection{Toolchain}
-\begin{lstlisting}[caption=Installing QEMU, float=*, label=lst:qemu_install]
-git clone git clone https://github.com/qemu/qemu  # Clone the qemu repo
-./configure --target-list=riscv32-softmmu  # Configure the 32-bit RISC-V target
-make -j $(nproc)  # build the project with all num cores jobs
-sudo make install
-\end{lstlisting}
 \subsubsection{QEMU}
 QEMU is a system emulator, which has the capabilities of emulating both a 32-bit
 and 64-bit RISC-V processor \cite{QEMU}. With QEMU I am able to create code intented
 for a processor running the RISC-V instruction set even if my development
 environment is running a different ISA. For the puposes of this thesis it is the
 RISC-V 32-bit version of the qemu virtual machine that will be used.
-Following the instructions by RISC-V's getting started guide
-we can build the QEMU RISC-V system emulators by running the code
-provided in Listing~\ref{lst:qemu_install}\cite{RISC-V_GS}.
 
 \subsubsection{LLVM and RISC-V GNU Toolchain}
 The LLVM project is a collection of reusable compiler and toolchain
@@ -82,6 +73,10 @@ such as an Language Server Protocol(LSP). Generally clang also provides more
 sophisticated error reports making the overall debugging easier. Moreover, clang
 provides a crosscompiler capable of targeting the RISC-V 32-bit architecture.
 
-
-
+At the time of writing, the lldb debugger connection to the RISC-V QEMU machine
+was inadequete for the needs of this thesis. As such the GNU gdb debugger for
+the RISC-V target was compiled for use as a debugger for the implementation
+section. Furthermore, the RISC-V GNU toolchain provides necessary header files
+for the stdlib, which allows for some rudimentary implementations of algorithms
+for the compiler to use, one such instance is that of memcpy.
 
