@@ -1,57 +1,56 @@
 \ssection{Background}
 \subsection{Accelerator-based Computer Architecture}\label{sec:ACA}
-The concept of offloading is nothing new. In a team where each member
-specializes, it seems logical when discussing our day-to-day work environment.
-Effective communication between entities while focusing on what we do best seems
-logical when speaking about work. However, when it comes to computer
-architecture, we heavily rely on the Central Processing Unit (CPU). The goal of
-an accelerator would be to offload the CPU, by providing a separate
-substructure designed with different objectives than the CPU itself.
-With this design, the substructure can be optimized for its
-specific tasks, often leading to both performance increases and less energy
-consumption\cite{AA}. Prominent examples of accelerators include the Graphics
-Processing Unit (GPU), which is a major component in most computers today. The
-goal of this thesis is to examine the feasability of following a similair design
-pattern in creating computational storage devices.
+The notion of offloading has long been established in specialized teams, where
+each member focuses on their area of expertise. This concept seems inherently
+logical when discussing day-to-day work environments. Effective communication
+between entities, with an emphasis on performing tasks best suited to our
+skills, appears to be the foundation of efficient collaboration.
+Contrary, computer architecture relies heavily on the Central Processing Unit
+(CPU) for executing various operations. An accelerator serves as a separate
+substructure designed with distinct objectives compared to the CPU itself. By
+offloading the CPU, accelerators can optimize performance and reduce energy
+consumption\cite{AA}. A prime example of an accelerator is the Graphics
+Processing Unit (GPU), a crucial component in contemporary computers.
+This thesis aims to explore the feasibility of adopting a similar design
+approach for creating computational storage devices.
 
 \subsection{RISC-V}
-Reduced Intruction Set Computer(RISC), more specifically the fifth version
-(RISC-V). Is an Instruction Set Architecture(ISA), that aims to make the process
-of making custom processors targeting a variety of end applications more
-feasible. Previous ISAs have often been created by private companies, which
-leads to patents and a need for a license to develop a specialised processor.
-These licenses could often take months to negotiate without mentioning the large
-sum of money involved. It is assumed that creating a free and open sourced ISA
-could reduce the barrier of entry and greatly increase innovation along with
-afforability\cite{ISAfree}.
+Reduced Instruction Set Computing (RISC), particularly its fifth iteration,
+RISC-V, represents an Instruction Set Architecture (ISA) designed to simplify
+the development of custom processors for various applications. Unlike
+proprietary ISAs created by private companies, RISC-V offers a free and
+open-source solution that minimizes intellectual property concerns and reduces
+entry barriers, promoting innovation and affordability in processor
+development.\cite{ISAfree}.
 
 RISC-V aims to provide a small core of instructions which compilers, assemblers,
-linkers and operating systems can generally rely on, while still being
-extendable for more specialised accelerators. In RISC-V there  are two primary
-base integer variants, RV32I and RV64I, whcih provide the 32-bit and 64-bit
+linkers, and operating systems can generally rely on, while still being
+extendable for more specialized accelerators. In RISC-V there are two primary
+base integer variants, RV32I and RV64I, which provide the 32-bit and 64-bit
 user-level address spaces respectively. However, RISC-V is already in the works
 with a RV128I variant which would provide the foundation needed for a 128-bit
-user address space in the future. In gereral, RISC-V provides standard and
+user address space in the future. In general, RISC-V provides standard and
 non-standard extensions, where standard extensions should not conflict with
-other standard extensions, and the non-standard extensions are more highly
-specialised.
+other standard extensions, and the non-standard extensions are highly
+specialized.
 
 With the rise of ARM\footnote{short for Advanced RISC Machine} based machines
 with comparble and in some cases better performance than that of a Complex
 Instruction Set Computing(CISC) alternative.\cite{Power_Struggle} RISC-V aims to
-provide the same benefits in an open sourced environment and as such RISC-V was
-chosen for the development os this thesis.
+provide the same benefits in an open sourced environment. With this RISC-V, more
+specifically the 32-bit version, was chosen as the ISA for developement in this
+thesis.
 
 \subsection{Computational Storage}
-Computational storage can be seen as a subsection of the Accelerator-based
-Computer architecture. Firstly, it aims to offload the host processor as
-described in Section~\ref{sec:ACA} by providing a secondary processors optimized
-for specific computational tasks. Secondly, it aims to reduce data movement
-between the storage device and the host processor. This would allow the read and
-writes to be distributed among multiple ram sections rather than a single
-processors. This could be an integral part of the issues presented in
-Section~\ref{sec:context}, as a computational storage device would be scalable
-with the ever growing need for large volume of data processing.
+Computational storage can be seen as a subsection of Accelerator-based Computer
+architecture. Firstly, it aims to offload the host processor as described in
+Section~\ref{sec:ACA} by providing a secondary processors optimized for specific
+computational tasks. Secondly, it aims to reduce data movement between the
+storage device and the host processor. This would allow the read and writes to
+be distributed among multiple RAM sections rather than a single processor. This
+could be an integral part of the issues presented in Section~\ref{sec:context},
+as a computational storage device would be scalable with the ever-growing need
+for large volumes of data processing.
 
 
 \subsection{Toolchain}

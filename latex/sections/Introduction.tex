@@ -1,63 +1,63 @@
 \ssection{Introduction}
 \subsection{Context}\label{sec:context}
-Data centers are becoming an ever integral part of the IT world. Whether it is
-Google's cloud platform, Microsoft Azure or Amazons web services, news about a
-new data center seem like daily occurences. With such scale there is an ever
-growing need for custom solutions and cutting edge technologies to both reduce
-power consumption and improve overall performance.
+Data centres are becoming increasingly essential in the IT sector. Whether it is
+Google's cloud platform, Microsoft Azure, or Amazon's web services, news about
+new data centres seems like a daily occurrence. With such scale comes an
+ever-growing need for custom solutions and cutting-edge technologies to both
+reduce power consumption and improve overall performance.
 
-Historically, solid state drives(SSDs) were a drop in replacement for the
-magnetic disks of the past. They would implement a similair interface allowing
+Historically, solid-state drives (SSDs) were a drop-in replacement for the
+magnetic disks of the past. They would implement a similar interface, allowing
 for seamless integration. But the use of SSDs came with multiple improvements
-over the magnetic disks of the past, which were hindred by said interface. As
-such there was a rapid movement towards Open-channel SSDs, that do not have a
-firmware Flash Translation Layer, and instead leaves the management of the
+over the magnetic disks of the past, which were hindered by said interface. As
+such, there was a rapid movement towards Open-channel SSDs that do not have a
+firmware Flash Translation Layer and instead leave the management of the
 physical SSD to the computer's operating system. This solves the issue mentioned
-previously, but instead introduces further data transfering between the CPU and
-the SSD. However in recent years, the discrepancy between a storage devices
-READ and WRITE operations and a CPUs ability to perform READ and WRITE memory
-operations has been ever increasing. If this trend keeps up, the CPU will soon
-be a bottleneck for performance.
+previously but introduces further data transferring between the CPU and the SSD.
+However, in recent years, the discrepancy between a storage device's READ and
+WRITE operations and a CPU's ability to perform READ and WRITE memory operations
+has been ever increasing. If this trend continues, the CPU will soon become a
+bottleneck for performance in the data centers.
 
-A solution to the problem would be to offload the CPU, and provide computation
-at the SSD. Such a solution has been described as a computational storage
-device(CSD). Such a solution would provide implementations of the most often use
-data manipulations. Whether that would be indexing into an SSD or more complex
-manipulations such as sorting. Within this thesis the issue of implementing a
-high performance sorting running on a stand-alone bare metal processor has been
+A solution to the problem would be to offload the CPU and provide computation at
+the SSD level. Such a solution has been described as a computational storage
+device (CSD). This would involve implementing the most commonly used data
+manipulations, such as indexing into an SSD or more complex manipulations like
+sorting. Within this thesis, the issue of implementing a high-performance
+sorting algorithm running on a stand-alone bare metal processor has been
 investigated.
 
 
 \subsection{Problem}
-For computational storage to be a viable solution to the ever growing need of
-massive amount of data computations, it first must be investigated whether
-implemneting a processor deisgned for such a goal is feasible. As such we are
-left with the following open questions. (1) What computation should be handled
-by a storage device? (2) Is it feasible to implement such a computation on a
-bare metal processor?
+For computational storage to be a viable solution for meeting the ever-growing
+demand for massive data computations, it is essential to investigate whether
+implementing a processor designed for such a purpose is feasible. Consequently,
+several open questions remain unanswered. (1) What type of computation should be
+performed by a storage device? (2) Is it possible to implement such computation
+on a bare-metal processor?
 
 \subsubsection*{What computation should be handled by a storage device?}
 Although there are multiple cases of large data transfers between a CPU and an
 SSD, one of the more prominent is that of sorting a given array. Sorting plays
 an integral part in multiple programming scenarios. From being an integral part
-of much searching algorithm to use in data science fast sorting is a necessicty
-for fast performance. With a running time of O(n log n), merge sort was the
-algorithm chosen for further investigation. Not only that, but parallel versions
-of the merge sort algorithms should be possible in theory.
+of many searching algorithms to its use in data science, fast sorting is a
+necessity for fast performance. With a running time of O(n log n), merge sort
+was the algorithm chosen for further investigation. Not only that, but parallel
+versions of the merge sort algorithm should be possible on bare-metal.
 
 \subsubsection*{Is it feasible to implement such a computation on a bare metal
 RISC-V processor?}
-As the main goal is to offload the main CPU, we must investigate, whether it is
-at all possible to create a high performance sorting algorithm without the need
-of an underlying operating system.
+As the main goal is to offload the primary CPU, we must investigate whether it
+is at all possible to create a high-performance sorting algorithm without the
+need of an underlying operating system.
 
 \subsection{Approach}
-For this thesis an experimental approach was taken. First, a feasible design
-developed for implementing on a bare metal processor is inroduced. Secondly, an
+For this thesis, an experimental approach was taken. First, a feasible design
+developed for implementing on a bare metal processor is introduced. Secondly, an
 implementation of said designed is presented. Third, the viability and validity
-of the implementation is evaluated. Atlast, shortcomings and proposed
-further research is presented. These implementations will be carried out on a
-QEMU virtual machine where the code is loaded via the general loader.
+of the implementation is evaluated. Lastly, shortcomings and proposed further
+research are presented. These implementations will be carried out on a QEMU
+virtual machine where the code is loaded via a general loader.
 
 \subsection{Contribution}
 
