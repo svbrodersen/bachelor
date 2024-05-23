@@ -111,12 +111,19 @@ saving static values such as .bss and .data sections
     \memsection{}{}{4}{$\downarrow$}\\
     \memsection{}{}{4}{$\uparrow$}\\
     \memsection{$\_stack\_start$ \\ $+ 2*0x400$}{}{4}{thread 1 STACK}\\
-    \memsection{$\_stack\_start$ \\ $+ 0x400$}{\_stack\_start}{4}{thread 0 STACK}
+    \memsection{$\_stack\_start$ \\ $+ 0x400$}{\_stack\_start}{4}{thread 0 STACK} \\
+    \memsection{}{}{2}{.stack section} \\
+    \memsection{}{}{2}{.bss section} \\
+    \memsection{}{}{2}{.data section}
+  \end{rightwordgroup}\\
+  \begin{rightwordgroup}{ROM Memory}
+    \memsection{0x80100000}{}{2}{.rodata section}\\
+    \memsection{}{0x80000000}{2}{.text section}
   \end{rightwordgroup}
   \end{bytefield}
 }
-  \caption{Memory layout with a core stack size of 2048 bytes and a thread stack
-  size of 1024}\label{fig:mem_layout}
+  \caption{Memory layout of the QEMU virt machine with a core stack size of 2048
+  bytes and a thread stack size of 1024}\label{fig:mem_layout}
 \end{figure*}
  As mentioned, all created threads need to have a separate stack for context
  switching to work. Thus, when creating a thread, we have to allocate some

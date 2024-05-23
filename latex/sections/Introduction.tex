@@ -1,12 +1,41 @@
 \ssection{Introduction}
-\subsection{Context}
+\subsection{Context}\label{sec:context}
+Data centers are becoming an ever integral part of the IT world. Whether it is
+Google's cloud platform, Microsoft Azure or Amazons web services, news about a
+new data center seem like daily occurences. With such scale there is an ever
+growing need for custom solutions and cutting edge technologies to both reduce
+power consumption and improve overall performance.
+
+Historically, solid state drives(SSDs) were a drop in replacement for the
+magnetic disks of the past. They would implement a similair interface allowing
+for seamless integration. But the use of SSDs came with multiple improvements
+over the magnetic disks of the past, which were hindred by said interface. As
+such there was a rapid movement towards Open-channel SSDs, that do not have a
+firmware Flash Translation Layer, and instead leaves the management of the
+physical SSD to the computer's operating system. This solves the issue mentioned
+previously, but instead introduces further data transfering between the CPU and
+the SSD. However in recent years, the discrepancy between a storage devices
+READ and WRITE operations and a CPUs ability to perform READ and WRITE memory
+operations has been ever increasing. If this trend keeps up, the CPU will soon
+be a bottleneck for performance.
+
+A solution to the problem would be to offload the CPU, and provide computation
+at the SSD. Such a solution has been described as a computational storage
+device(CSD). Such a solution would provide implementations of the most often use
+data manipulations. Whether that would be indexing into an SSD or more complex
+manipulations such as sorting. Within this thesis the issue of implementing a
+high performance sorting running on a stand-alone bare metal processor has been
+investigated.
 
 
 \subsection{Problem}
 
 
+
 \subsection{Approach}
 
 \subsection{Contribution}
+
+\subsection{Related work}
 
 

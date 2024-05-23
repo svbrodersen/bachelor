@@ -1,5 +1,5 @@
 \ssection{Background}
-\subsection{Accelerator-based Computer Architecture}
+\subsection{Accelerator-based Computer Architecture}\label{sec:ACA}
 The concept of offloading is nothing new. In a team where each member
 specializes, it seems logical when discussing our day-to-day work environment.
 Effective communication between entities while focusing on what we do best seems
@@ -36,6 +36,23 @@ non-standard extensions, where standard extensions should not conflict with
 other standard extensions, and the non-standard extensions are more highly
 specialised.
 
+With the rise of ARM\footnote{short for Advanced RISC Machine} based machines
+with comparble and in some cases better performance than that of a Complex
+Instruction Set Computing(CISC) alternative.\cite{Power_Struggle} RISC-V aims to
+provide the same benefits in an open sourced environment and as such RISC-V was
+chosen for the development os this thesis.
+
+\subsection{Computational Storage}
+Computational storage can be seen as a subsection of the Accelerator-based
+Computer architecture. Firstly, it aims to offload the host processor as
+described in Section~\ref{sec:ACA} by providing a secondary processors optimized
+for specific computational tasks. Secondly, it aims to reduce data movement
+between the storage device and the host processor. This would allow the read and
+writes to be distributed among multiple ram sections rather than a single
+processors. This could be an integral part of the issues presented in
+Section~\ref{sec:context}, as a computational storage device would be scalable
+with the ever growing need for large volume of data processing.
+
 
 \subsection{Toolchain}
 \begin{lstlisting}[caption=Installing QEMU, float=*, label=lst:qemu_install]
@@ -54,5 +71,9 @@ Following the instructions by RISC-V's getting started guide
 we can build the QEMU RISC-V system emulators by running the code
 provided in Listing~\ref{lst:qemu_install}\cite{RISC-V_GS}.
 
+\subsubsection{llvm}
+
+
 \subsubsection{RISC-V-GNU-Toolchain}
+
 
