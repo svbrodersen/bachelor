@@ -14,7 +14,6 @@
 #include "bits.h"
 #include "defs.h"
 #include "libucontext.h"
-#include <__stdarg_va_list.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>

@@ -29,12 +29,38 @@ investigated.
 
 
 \subsection{Problem}
+For computational storage to be a viable solution to the ever growing need of
+massive amount of data computations, it first must be investigated whether
+implemneting a processor deisgned for such a goal is feasible. As such we are
+left with the following open questions. (1) What computation should be handled
+by a storage device? (2) Is it feasible to implement such a computation on a
+bare metal processor?
 
+\subsubsection*{What computation should be handled by a storage device?}
+Although there are multiple cases of large data transfers between a CPU and an
+SSD, one of the more prominent is that of sorting a given array. Sorting plays
+an integral part in multiple programming scenarios. From being an integral part
+of much searching algorithm to use in data science fast sorting is a necessicty
+for fast performance. With a running time of O(n log n), merge sort was the
+algorithm chosen for further investigation. Not only that, but parallel versions
+of the merge sort algorithms should be possible in theory.
 
+\subsubsection*{Is it feasible to implement such a computation on a bare metal
+RISC-V processor?}
+As the main goal is to offload the main CPU, we must investigate, whether it is
+at all possible to create a high performance sorting algorithm without the need
+of an underlying operating system.
 
 \subsection{Approach}
+For this thesis an experimental approach was taken. First, a feasible design
+developed for implementing on a bare metal processor is inroduced. Secondly, an
+implementation of said designed is presented. Third, the viability and validity
+of the implementation is evaluated. Atlast, shortcomings and proposed
+further research is presented. These implementations will be carried out on a
+QEMU virtual machine where the code is loaded via the general loader.
 
 \subsection{Contribution}
+
 
 \subsection{Related work}
 

@@ -71,9 +71,17 @@ Following the instructions by RISC-V's getting started guide
 we can build the QEMU RISC-V system emulators by running the code
 provided in Listing~\ref{lst:qemu_install}\cite{RISC-V_GS}.
 
-\subsubsection{llvm}
+\subsubsection{LLVM and RISC-V GNU Toolchain}
+The LLVM project is a collection of reusable compiler and toolchain
+technologies. Most noteably for the context of this thesis clang. Clang is a gcc
+compatibile frontend compiler, which aims to provide fast compile times and low
+memory use. In tandem with the LLVM compiler back end, clang provides a
+library-based architecture such that the compiler can work together with other
+tool. This allows for the use of more sophisticated development environments
+such as an Language Server Protocol(LSP). Generally clang also provides more
+sophisticated error reports making the overall debugging easier. Moreover, clang
+provides a crosscompiler capable of targeting the RISC-V 32-bit architecture.
 
 
-\subsubsection{RISC-V-GNU-Toolchain}
 
 
