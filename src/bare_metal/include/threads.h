@@ -1,5 +1,6 @@
 #include "../threads/context/libucontext.h"
 #include <stdbool.h>
+#include <stdint.h>
 #include <sys/types.h>
 
 #define MAX_NUM_THREADS 100
@@ -12,10 +13,14 @@ typedef struct thread {
   Tid thread_id;
   volatile struct thread *parent;
   volatile int value;
+  int l;
+  int mid;
+  int r
 } thread_t;
 
 /* Initiates a thread with the target function. Must be called with makecontext
- * on the context element afterwards*/
+ * on the context element afterwards. The context is the function returned to
+ * when finished running the context*/
 int thread_create(thread_t *);
 int thread_get(thread_t **, Tid);
 
