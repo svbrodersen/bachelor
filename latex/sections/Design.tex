@@ -49,9 +49,13 @@ execution at a later point. Not only can one save the state of the current
 process, one can also modify the context such that instead of continuing at the
 point of initialization it instead continues execution at a target function.
 Modifying specific registers would also allow for preset values to be loaded as
-function parameters. When creating the thread structure mentioned previously, it
+function parameters. This is done by saving the values of the registers, such
+that they all can be restored at a later point to continue execution.
+
+When creating the thread structure mentioned previously, it
 would then be possible to create context for computing both the mergesort and
 merge for a given section of a sublist.
+
 
 
 \subsection{Memory}

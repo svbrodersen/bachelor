@@ -6,7 +6,7 @@ most notably for this project is the clang compiler. Furthermore, QEMU will be u
 implementations.
 
 \subsection{Dependencies}
-\subsubsection{QEMU}
+\subsubsection*{QEMU}
 \begin{lstlisting}[caption=Installing QEMU, float=*, label=lst:qemu_install]
 git clone git clone https://github.com/qemu/qemu  # Clone the qemu repo
 ./configure --target-list=riscv32-softmmu  # Configure the 32-bit RISC-V target
@@ -33,34 +33,45 @@ git clone https://github.com/riscv-collab/riscv-gnu-toolchain  # clone
 riscv-gnu-toolchain
 cd riscv-gnu-toolchain  # change directory
 ./configure --prefix=/opt/riscv --with-arch=rv32gc -disable-linux --enable-llvm
-# prefix is install path used by llvm
+# prefix is install path used
 sudo make -j$(nproc)
 cd ..
 popd
 \end{lstlisting}
-When it comes to clang there are two methods of installing, that are relevant to
-this project. If running on a Debian based system, then you can simply install
-llvm-tools package. The issue with this approach is that the general build is
-for use with the current system installation is on, which unless you are running
-a RISC-V computer architecture natively will lead to issues when trying to cross
-compile if the given targets use any of the standard libraries, such as
-freeRTOS. A fix to this issue is to explicitly tell clang to make use of the
-RISC-V gnu tool chain on every compilation.
 
-The second approach is to build LLVM with the RISC-V 32-bit target as the native
-target. This approach is documented in Listing~\ref{lst:llvm_install}. After
-installation it is important to add both clang build and RISC-V gnu tool chain to
-PATH. However, adding the following flags to compilation
-should lead to the same results, although the second approach is used throughout
-this project.
-\begin{itemize}
-  \item --sys-root={Path to RISC-V install}/riscv64-unknown-elf
-  \item --taget=riscv32
-  \item --gcc-toolchain={Path to RISC-V install}
-\end{itemize}
+\subsubsection*{LLVM and RISC-V-gnu-toolchain}
+Although the LLVM clang compiler comes with an available crosscompiler, I found
+that it often caused issues with missing header files compatible with my
+implementation. Furthermore, the lldb debugger was unable to provide a working
+debugger for the multicore remote debugging on QEMU. These are issues, which
+might only be affecting me, as information revolving the issues were scarce. As
+such, the following steps of building llvm and the RISC-V 32-bit gdb might be
+obsolete, but are left here as a known working toolchain. Running the code in
+Listing~\ref{lst:llvm_install} installs a RISC-V compatible clang compiler and gdb debugger in
+the /opt/riscv/ directory. For the use outside this folder, make sure to add it
+to PATH.
 
 
 \subsection{Creating a linker script}
+The linker script is used to tell the linker which parts of the file to include
+in the final output file, as well as where each section is stored in memory. As
+we are working on an embedded system, we have to stray from the default and
+create our own linker script. The clang uses the LLVM lld linker, which is
+compatible with the general linker scripts implementations of the GNU ld linker
+\cite{llvm-org-linker}. Thus, we can make use of the GNU ld manual for modifying
+the linker script in freeRTOS for our bare metal application instead of writing
+the entire thing from scratch \cite{GNU-linker}.
+
+memory@80000000 {
+  device_type = "memory";
+  reg = <0x00 0x80000000 0x00 0x8000000>
+};
+\end{lstlisting}
+With the information previously provided, we know that the starting
+address of the memory section is at address $0x00 + 0x80000000 = 0x80000000$ and has a size of
+$0x00 + 0x8000000$ bytes, which is equivalent to 128MB.
+
+\subsubsection{Creating a linker script}
 The linker script is used to tell the linker which parts of the file to include
 in the final output file, as well as where each section is stored in memory. As
 we are working on an embedded system, we have to stray from the default and
@@ -85,66 +96,77 @@ Second, we define the MEMORY area to consist of both a writable memory region an
 memory region. We name these regions 'ram' and 'rom,' respectively. With that we move on to define the SECTIONS element of the linker script.
 
 \begin{lstlisting}
-SECTIONS
-{
-.text : ALIGN(CONSTANT(MAXPAGESIZE))
-{
-  *(.text .text.*)
-}
+  SECTIONS
+  {
+    .text : ALIGN(CONSTANT(MAXPAGESIZE))
+    {
+    *(.text .text.*)
+  } > rom
 
-.rodata : ALIGN(CONSTANT(MAXPAGESIZE))
-{
-  *(.rdata)
-  *(.rodata .rodata.*)
-}
+  .rodata : ALIGN(CONSTANT(MAXPAGESIZE))
+  {
+    *(.rdata)
+    *(.rodata .rodata.*)
+  } > rom
 
-.data : ALIGN(CONSTANT(MAXPAGESIZE))
-{
-  *(.data .data.*)
-  /*RISCV convention to have __global_pointer
-  aligned to 8 bytes*/
-  . = ALIGN(8);
-  PROVIDE( __global_pointer$ = . + 0x800 );
-}
+  .data : ALIGN(CONSTANT(MAXPAGESIZE))
+  {
+    *(.data .data.*)
+    /*RISCV convention to have __global_pointer aligned to 8 bytes*/
+    . = ALIGN(8);
+    PROVIDE( __global_pointer$ = . + 0x800 );
+  } > ram
 
-.bss : ALIGN(CONSTANT(MAXPAGESIZE))
-{
-  *(.bss .bss.*)
-}
+  .bss : ALIGN(CONSTANT(MAXPAGESIZE))
+  {
+    *(.bss .bss.*)
+  } > ram
 
-/* It is standard to have
-the stack aligned to 16 bytes*/
-. = ALIGN(16);
-_end = .;
+  /* It is standard to have
+  the stack aligned to 16 bytes*/
+  . = ALIGN(16);
+  _end = .;
 
-.stack : ALIGN(CONSTANT(MAXPAGESIZE))
-{
-  _stack_top = ORIGIN(ram) + LENGTH(ram);
-}
+  .stack : ALIGN(CONSTANT(MAXPAGESIZE))
+  {
+    . = ALIGN(8);
+    PROVIDE(_stack_start = .);
+    PROVIDE(_stack_top = ORIGIN(ram) + LENGTH(ram));
+  } > ram
 }
 \end{lstlisting}
-The text, rodata, data and bss sections follows the same general procedure. We align the
-section to the maximum size of a page, and the match all the data which we care about for
-the given sections. I have opted to disregard specifying where the linker has to save
-all the data, and instead opted to let the linker itself find a suited location looking at
-the attributes we gave to memory previously.
-In the data section, we also provide a global pointer, which is used to access global variables
-within our later code implementation. \footnote{In general the global pointer is used together
-with an offset in much the same manner as a stack pointer and offset.}
+The text, rodata, data and bss sections follows the same general procedure. We
+align the section to the maximum size of a page, and the match all the data
+which we care about for the given sections. By specifying the > rom, we tell the
+linker to save the given section in the rom section and the same is true for the
+> ram. From the Figure~\ref{fig:mem_layout}, we can see the ram and rom
+correspond to the ROM and RAM section of the figure.\footnote{rom stands for
+  read-only memory, and ram stands for random-access memory. Generally it is not
+necesarrily needed to split the two up as done here, but it is a good practise
+to seperate what can change and what can not change in memory.}
 
-Then I align the end with 16 bytes as is the custom. Reason this is moved outside the stack
-is that I use the \_end variable later, and as such it should be aligned as well.
-Then within the stack section we define the \_stack\_top as being the end of the random access
-memory section (ram), as the stack grows downwards.
+In the data section, we also provide a global pointer, which is used to access
+global variables within our later code implementation. The global pointer is
+used together with an offset to save global variables. As such we allow for
+0x800=2048 bytes of global variables. With the implementation being quite
+reliant on global variables, it might need to be increased for lists of large
+sizes.
+
+The last section is the .stack section. We align the starting of the
+\_stack\_start with 8 bytes. Generally not necesarry in this instance, but stil
+a good custom. This is point from where each thread stack will be allocated.
+Next, we specify that the \_stack\_top will reside at the end of the ram
+section, such that we with an offset can allocate a stack for each core.
 
 \subsection{Getting into the main function}
 In the linker script we specified the entry point of our program as \_start. Next up
 is implementing said entry point in assembly. Within a new assembly file we add the following.
-\begin{lstlisting}
+\begin{lstlisting}[numbers=left]
 .extern main
 .section .init
 .globl _start
 .type _start,@function
+#include "../include/defines.h"
 
 _start:
   .cfi_startproc
@@ -155,14 +177,38 @@ _start:
   .option pop
   // load _stack_top into the sp register
   la sp, _stack_top
-  add s0, sp, zero
+  csrr a0, mhartid
+  bnez a0, 2f
+  1:
+    // argc, argv is 0 and jump to main
+    li  a0, 0
+    li  a1, 0
+    jal main
+  1:
+    // loop
+    j 1b
 
-  // argc, argv, envp is 0 and jump to main
-  li  a0, 0
-  li  a1, 0
-  li  a2, 0
-  jal main
-  .cfi_endproc // We end the proccess
+  2:
+    csrr a0, mhartid
+    la sp, _stack_top
+    la t1, 2048
+    li t0, 0
+  1:
+    andi sp, sp, -16
+    beq a0, t0, 1f
+    sub sp, sp, t1
+    addi t0, t0, 1
+    j 1b
+  1:
+    // argc, argv is 0 and jump to main
+    li  a0, 0
+    li  a1, 0
+    jal secondary_main
+  1:
+    // loop
+    j 1b
+
+    .cfi_endproc  // We should never really reach this
 \end{lstlisting}
 First we specify that externally there will be implemented a main entry point. Next we tell the
 linker to save the following code in the .init section and initialize a global label \_start,
@@ -176,65 +222,5 @@ shorter GP-relative sequences when possible, the initial load of GP must not be 
 register, and then also save it in the s0 register, which stores the frame pointer.
 Then the last step is loading 0 into argc, argv and envp and the jump to the externally
 defined main function.
-
-\subsection{Printing with UART}
-\begin{lstlisting}[float=*, label=lst:putchar, caption=Implementation of putchar of stdarg lib]
-#include <stdint.h>
-#define UART_ADDR 0x10000000
-#define LCR 0x03          // Line control register
-#define LSR 0x05          // Line status register
-#define FCR 0x02          // FIFO control reigster
-#define RBR 0x00          // Receiver buffer register
-#define IER 0x01          // Interrupt enable register
-#define LSR_THRE 0b110000 //
-void uart_init(void) {
-  volatile uint8_t *ptr = (uint8_t *)UART_ADDR;
-
-  // Set word length to 8 (LCR[1:0])
-  *(ptr + LCR) = 0b11;
-
-  // Enable FIFO (FCR[0])
-  *(ptr + FCR) = 0b1;
-
-  // Enable receiver buffer interrupts (IER[0])
-  *(ptr + IER) = 0b1;
-}
-
-static void uart_put(uint8_t c) { *(uint8_t *)(UART_ADDR + RBR) = c; }
-static uint8_t uart_get(uintptr_t addr) { return *(uint8_t *)(addr); }
-
-void putchar(unsigned char c) {
-  volatile uintptr_t ptr = (uintptr_t)UART_ADDR;
-  // make sure there is nothing else in FIFO
-  while ((uart_get(ptr + LSR) & LSR_THRE) == 0) {
-    // do nothing
-  }
-  // add the char to reciver buffer register
-  uart_put(c);
-}
-\end{lstlisting}
-As we are working with bare metal, the standard printf function will not work. However, QEMU
-allows the use of universal asynchronous receiver / transmitter (UART) protocol, which allows
-us to implement a printf function, that writes to the terminal without the need for the QEMU
-GUI interface. Furthermore, there exists open source bare-metal versions of the printf function,
-which makes the effort of printing a lot easier. One such example is Georges Menie's stdarg,
-which depends on a single function called putchar, which has to take a character and place it
-somewhere. One such implementation can be seen in Listing~\ref{lst:putchar}. Again this code is
-a modified version of what is seen in freeRTOS. From the previous dtc file created
-in Section~\ref{sec:sys-info} there is also information regarding the UART configuration.
-\begin{lstlisting}
-serial@10000000 {
-  interrupts = <0x0a>;
-  interrupt-parent = <0x03>;
-  clock-frequency = "\08@";
-  reg = <0x00 0x10000000 0x00 0x100>;
-  compatible = "ns16550a";
-};
-\end{lstlisting}
-First it states the address of the uart is, 0x10000000, and it states that it is ns16550a compatible \cite{uart}. In Listing~\ref{lst:putchar} you can see the needed implementations for the
-uart to work, which is a slightly modified version of what is seen in freeRTOS. First,
-we define the register values as stated in the uart documentation, and initialize the uart.
-Next, we define af uart\_put and uart\_get function to read from and write to addresses. With this we are able to define the putchar function. It works by busy waiting until the FIFO queue is
-empty, and then gives the character to the reciver buffer register.
 
 \subsection{libucontext}

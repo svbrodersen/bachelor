@@ -1,4 +1,5 @@
 CC=clang
+NUM_CORES=16
 CFLAGS=-g -O0 -ffreestanding -nostartfiles
 CFLAGS+=-nostdlib -nodefaultlibs --target=riscv32 -march=rv32imac_zicsr
 CFLAGS+=--sysroot=/opt/llvm-riscv/riscv32-unknown-elf/ -v
@@ -8,11 +9,9 @@ KERNEL=main.elf
 QEMU=qemu-system-riscv32
 QEMU_FLAGS=-machine virt
 QEMU_FLAGS+=-nographic
-EXTRA_QEMU_FLAGS=  -smp 4 -device loader,file=./$(KERNEL),cpu-num=0
-EXTRA_QEMU_FLAGS+= -device loader,file=./$(KERNEL),cpu-num=1
-EXTRA_QEMU_FLAGS+= -device loader,file=./$(KERNEL),cpu-num=2
-EXTRA_QEMU_FLAGS+= -device loader,file=./$(KERNEL),cpu-num=3
-
+EXTRA_QEMU_FLAGS=  -smp $(NUM_CORES)
+NUM_RANGE := $(shell seq 0 $(shell echo ${NUM_CORES}-1 | bc))
+EXTRA_QEMU_FLAGS+= $(foreach N, $(NUM_RANGE), -device loader,file=./$(KERNEL),cpu-num=$N)
 SOURCES = $(shell find -name '*.c')
 SOURCES += $(shell find -name '*.S')
 OBJS_c = $(SOURCES:%.c=%.o)

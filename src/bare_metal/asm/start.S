@@ -1,5 +1,4 @@
 .extern main
-.section .init
 .globl _start
 .type _start,@function
 #include "../include/defines.h"
@@ -27,7 +26,7 @@ la gp, __global_pointer$
 2:
   csrr a0, mhartid
   la sp, _stack_top
-  la t1, 2048
+  la t1, STACK_SIZE
   li t0, 0
 1:
   andi sp, sp, -16
