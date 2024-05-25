@@ -1,8 +1,8 @@
 \section{Implementation}
-The implementations created as part of this bachelor thesis aimed
-to make use of the LLVM compiler infrastructure.
-LLVM is a collection of modular and reusable compiler and tool chain technologies,
-most notably for this project is the clang compiler. Furthermore, QEMU will be used extensively while testing the
+The implementations created as part of this bachelor thesis aimed to make use of
+the LLVM compiler infrastructure. LLVM is a collection of modular and reusable
+compiler and tool chain technologies, most notably for this project is the clang
+compiler. Furthermore, QEMU will be used extensively while testing the
 implementations.
 
 \subsection{Dependencies}
@@ -47,12 +47,12 @@ debugger for the multicore remote debugging on QEMU. These are issues, which
 might only be affecting me, as information revolving the issues were scarce. As
 such, the following steps of building llvm and the RISC-V 32-bit gdb might be
 obsolete, but are left here as a known working toolchain. Running the code in
-Listing~\ref{lst:llvm_install} installs a RISC-V compatible clang compiler and gdb debugger in
-the /opt/riscv/ directory. For the use outside this folder, make sure to add it
-to PATH.
+Listing~\ref{lst:llvm_install} installs a RISC-V compatible clang compiler and
+gdb debugger in the /opt/riscv/ directory. For the use outside this folder, make
+sure to add it to PATH.
 
 
-\subsection{Creating a linker script}
+\subsubsection{Creating a linker script}
 The linker script is used to tell the linker which parts of the file to include
 in the final output file, as well as where each section is stored in memory. As
 we are working on an embedded system, we have to stray from the default and
@@ -61,23 +61,6 @@ compatible with the general linker scripts implementations of the GNU ld linker
 \cite{llvm-org-linker}. Thus, we can make use of the GNU ld manual for modifying
 the linker script in freeRTOS for our bare metal application instead of writing
 the entire thing from scratch \cite{GNU-linker}.
-
-memory@80000000 {
-  device_type = "memory";
-  reg = <0x00 0x80000000 0x00 0x8000000>
-};
-\end{lstlisting}
-With the information previously provided, we know that the starting
-address of the memory section is at address $0x00 + 0x80000000 = 0x80000000$ and has a size of
-$0x00 + 0x8000000$ bytes, which is equivalent to 128MB.
-
-\subsubsection{Creating a linker script}
-The linker script is used to tell the linker which parts of the file to include
-in the final output file, as well as where each section is stored in memory. As
-we are working on an embedded system, we have to stray from the default and
-create our own linker script. The clang uses the LLVM lld linker, which is compatible
-with the general linker scripts implementations of the GNU ld linker \cite{llvm-org-linker}.
-Thus, we can make use of the GNU ld manual for modifying the linker script in freeRTOS for our bare metal application instead of writing the entire thing from scratch \cite{GNU-linker}.
 
 \begin{lstlisting}
 OUTPUT_ARCH('riscv')
@@ -161,45 +144,43 @@ section, such that we with an offset can allocate a stack for each core.
 \subsection{Getting into the main function}
 In the linker script we specified the entry point of our program as \_start. Next up
 is implementing said entry point in assembly. Within a new assembly file we add the following.
-\begin{lstlisting}[numbers=left]
-.extern main
-.section .init
+\begin{lstlisting}[numbers=left, escapechar=|]
+.extern main |\label{line:header_start}|
+.extern secondary_main
 .globl _start
 .type _start,@function
-#include "../include/defines.h"
+#include "../include/defines.h" |\label{line:header_end}|
 
-_start:
+_start: |\label{line:_start}|
   .cfi_startproc
   .cfi_undefined ra
   .option push
   .option norelax
   la gp, __global_pointer$
-  .option pop
+  .option pop |\label{line:pop}|
   // load _stack_top into the sp register
-  la sp, _stack_top
+  la sp, _stack_top | \label{line:stack_top}|
   csrr a0, mhartid
-  bnez a0, 2f
+  bnez a0, 2f | \label{line:break_zero}|
   1:
     // argc, argv is 0 and jump to main
     li  a0, 0
     li  a1, 0
-    jal main
+    jal main | \label{line:jump_main} |
   1:
     // loop
     j 1b
 
   2:
-    csrr a0, mhartid
-    la sp, _stack_top
-    la t1, 2048
+    la t1, STACK_SIZE | \label{line:STACK_SIZE} |
     li t0, 0
   1:
-    andi sp, sp, -16
+    andi sp, sp, -16 | \label{line:align_stack} |
     beq a0, t0, 1f
-    sub sp, sp, t1
+    sub sp, sp, t1 | \label{line:sub_stack} |
     addi t0, t0, 1
-    j 1b
-  1:
+    j 1b |\label{line:j_1b}|
+  1: |\label{line:jump_secondary}|
     // argc, argv is 0 and jump to main
     li  a0, 0
     li  a1, 0
@@ -210,17 +191,45 @@ _start:
 
     .cfi_endproc  // We should never really reach this
 \end{lstlisting}
-First we specify that externally there will be implemented a main entry point. Next we tell the
-linker to save the following code in the .init section and initialize a global label \_start,
-and note that it is a function.
+Lines \ref{line:header_start}-\ref{line:header_end} provide the setup for the
+assembly file. We specify that a main and secondary\_main label will be defined outside of the file,
+that \_start is a global label and that \_start is a function type. Atlast, we
+include the defines.h file, which includes definitions of the STACK\_SIZE.
 
-Next the \_start is defined, and define .cfi\_startproc such that we have an entry in the
-.eh\_frame. Next we define the return address register(ra) as being undefined, as we are in
-the start of the entire program. Since the linker usually relaxes addressing sequences to
-shorter GP-relative sequences when possible, the initial load of GP must not be relaxed
-\cite{GNU_BIN}. However, we do not need the same for loading the \_stack\_top into the sp
-register, and then also save it in the s0 register, which stores the frame pointer.
-Then the last step is loading 0 into argc, argv and envp and the jump to the externally
-defined main function.
+On lines \ref{line:_start}-\ref{line:pop} we give call frame information (cfi)
+for there being no return address and that the process starts here. Then when
+initializing the global pointer, we must specify options push, norelax and pop
+as described in GNU Binutils. \cite{GNU_bin} After linker relaxation this would
+produce the expected code:
+\begin{lstlisting}
+auipc gp, %pcrel_hi(__global_pointer$)
+addi gp, gp, %pcrel_lo(__global_pointer$)
+\end{lstlisting}
+
+On lines \ref{line:stack_top}-\ref{line:break_zero}, we load the value of
+\_stack\_top, which the linker provides through the linker script defined
+previously, and save it into the stack pointer(sp) register. We read the current
+machine hart identifier(mhartid), which contains a unique identifier for each
+core on the processor. This is what allows for differentiation between the
+different cores. Line \ref{line:break_zero} moves execution to line
+\ref{line:STACK_SIZE} if the machine hart identifier is not 0. As such only
+mhartid 0 will be allowed to continue execution to line \ref{line:jump_main},
+where it jumps to the main function.
+
+All other cores continue execution at line \ref{line:STACK_SIZE}, where they
+load the value STACK\_SIZE defined in defines.h into the temporary register t1.
+We also load immediately(li) the value 1 into the temporary register 1. Line
+\ref{line:align_stack} aligns the current value in the stack pointer to -16.
+Afterwards, we compare the value in register a0, which holds the value of the
+mhartid, to the value in t0. If they are equal, we jump to line
+\ref{line:jump_secondary}, which makes us jump to the externally defined
+secondary\_main function. Otherwise, we continue on line \ref{line:sub_stack},
+where we subtract the register t1 (STACK\_SIZE) from the value stored in the sp
+register. We increment the value in t0 by one, and jump back to line
+\ref{line:align_stack}. With this loop, we are setting up a stack of size
+STACK\_SIZE for all the different cores defined, such that we get the desired
+memory layout shown at the top of Figure~\ref{fig:mem_layout}.
+
+
 
 \subsection{libucontext}
