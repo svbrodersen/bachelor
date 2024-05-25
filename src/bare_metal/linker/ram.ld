@@ -40,7 +40,7 @@ SECTIONS
 	.stack : ALIGN(CONSTANT(MAXPAGESIZE))
 	{
     . = ALIGN(8);
-    PROVIDE(_stack_start = . + 0x800);
+    PROVIDE(_stack_start = .);
 		PROVIDE(_stack_top = ORIGIN(ram) + LENGTH(ram));
 	}
 }

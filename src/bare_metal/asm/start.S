@@ -1,5 +1,4 @@
 .extern main
-.section .init
 .globl _start
 .type _start,@function
 #include "../include/defines.h"

@@ -1,0 +1,152 @@
+\section{Design}
+\subsection{Single vs Multicore}
+ When designing for bare metal implementation, implementing context switching on
+ a single core would result in slower running algorithms than a standard
+ implementation of mergesort. Context switching requires each thread to have an
+ allocated stack, which takes time to set up. Additionally, each context switch
+ requires time to set the context for a specific core to that of the function it
+ now needs to run. Therefore, working on a single core did not seem viable for
+ the purpose of this thesis, as it would likely lead to inefficiencies and
+ decreased performance.
+
+\subsubsection{Working on multiple cores}
+The first method for implementing a multicore merge sort involved using
+threading and a scheduler. When we split a given list into two halves, we would
+create a thread assigned to sort each sublist. These two lists would be added to
+the queue of available threads, after which the job of merging the two lists
+could be added to the back of the queue. The merge job would have to check
+whether the two sublists have finished being sorted, but otherwise, assuming a
+round-robin scheduler, it would automatically allow for the correct ordering for
+the parallelized merge sort algorithm. However, this approach introduces
+multiple race conditions; the primary one being implementing a queue capable of
+handling concurrent access. The simplest method would be to implement a lock,
+allowing mutual exclusion when adding to and removing from the queue. The
+downside of implementing a locking queue is that synchronization can lead to
+performance issues. Another method would be to implement a lock-free queue,
+which should remove any synchronization issues and be a viable solution.
+However, I ran into problems with a child thread (created to sort a sublist)
+notifying its parent when it has finished sorting the sublist. Each core would
+need some way of keeping track of the current thread running and telling the
+parent thread (whose job is to sort the child's list and another sublist) when
+it has finished. Although this approach is possible, it was scrapped for the
+following design due to these challenges.
+
+To simplify initialization, a single core would have the job of splitting the
+initial array into sublists until every core has a single sublist to work on.
+While doing the splitting, it would also create threads which have the job of
+merging the sublists once they are finished. This approach would remove the need
+for a queue and scheduler in the first place, as each core would, through its
+own core ID, know what thread it would have to complete. The issue of
+communication with the parent merge would still exist, but the same index used
+to find the thread initially could be used to find the parent as well. The
+implementation of this approach can be seen in the Implementation section.
+
+
+\subsection{Context switching}
+Context switching is an integral part of multithreading. It is the act of
+storing the state of the process so that it can later be restored and resume
+execution at a later point. Not only can one save the state of the current
+process, one can also modify the context such that instead of continuing at the
+point of initialization it instead continues execution at a target function.
+Modifying specific registers would also allow for preset values to be loaded as
+function parameters. This is done by saving the values of the registers, such
+that they all can be restored at a later point to continue execution.
+
+When creating the thread structure mentioned previously, it
+would then be possible to create context for computing both the mergesort and
+merge for a given section of a sublist.
+
+
+
+\subsection{Memory}
+\subsubsection{Getting system information}\label{sec:sys-info}
+To properly use the memory, we need some information about the system we are
+working on. As this thesis is created on a QEMU system, we are able to get the
+system information by running the following:
+\begin{lstlisting}
+qemu-system-riscv32 -machine virt \
+-machine dumpdtb=riscv32.dtb
+\end{lstlisting}
+ This creates a Device Tree Blob (dtb) data file, which contains information
+ about the virt qemu-system-riscv32 virtual machine. This format is not usable
+ by us at the moment, but by using the Device Tree Compiler (dtc) package, we
+ can convert it from the binary dtb format to a human-readable dts format.
+\begin{lstlisting}
+sudo apt install dtc
+dtc -I dtb -O dts -o riscv32.dts riscv32.dtb
+\end{lstlisting}
+Opening the file up in your favorite text editor you should see a lot of
+information regarding the qemu-system-riscv32 virtual machine. First we note,
+that the Devicetree specification states, that the memory node describes the
+physical memory layout for the system. As we want the programs stack to live
+within the memory section, this is section we should find information about
+starting address and length of the memory section. The memory node has two
+required sections, first the device\_type, which must simply be 'memory', and
+secondly the reg value. The reg value ''Consists of an arbitrary number of
+address and size pairs that specify the physical address and size of the memory
+ranges' \cite{DTS}. Furthermore, it is stated, that the property name reg has
+the value encoded as a number of (address, length) pairs. It also states, that
+the number of <u32> cells required to specify the address and length are
+bus-specific and are specified by the \#address-cells and \#size-cells
+properties in the parent of the device node. Looking through our riscv32.dts
+file, we find the relevant information to be:
+\begin{lstlisting}
+#address-cells = <0x02>;
+#size-cells = <0x02>;
+
+memory@80000000 {
+  device_type = "memory";
+  reg = <0x00 0x80000000 0x00 0x8000000>
+};
+\end{lstlisting}
+With the information previously provided, we know that the starting address of
+the memory section is at address $0x00 + 0x80000000 = 0x80000000$ and has a size
+of $0x00 + 0x8000000$ bytes, which is equivalent to 128MB. To allow space for
+saving static values such as .bss and .data sections
+
+\subsubsection{Memory Layout}
+\begin{figure*}
+  \centering
+  {
+  \begin{bytefield}{24}
+  \begin{rightwordgroup}{RAM Memory}
+    \memsection{0x88000000}{0x87FFF800}{4}{mhartid 0 STACK} \\
+    \memsection{}{0x87FFF000}{4}{mhartid 1 STACK} \\
+    \memsection{}{}{4}{$\downarrow$}\\
+    \memsection{}{}{4}{$\uparrow$}\\
+    \memsection{$\_stack\_start$ \\ $+ 2*0x400$}{}{4}{thread 1 STACK}\\
+    \memsection{$\_stack\_start$ \\ $+ 0x400$}{\_stack\_start}{4}{thread 0 STACK} \\
+    \memsection{}{}{2}{.stack section} \\
+    \memsection{}{}{2}{.bss section} \\
+    \memsection{}{}{2}{.data section}
+  \end{rightwordgroup}\\
+  \begin{rightwordgroup}{ROM Memory}
+    \memsection{0x80100000}{}{2}{.rodata section}\\
+    \memsection{}{0x80000000}{2}{.text section}
+  \end{rightwordgroup}
+  \end{bytefield}
+}
+  \caption{Memory layout of the QEMU virt machine with a core stack size of 2048
+  bytes and a thread stack size of 1024}\label{fig:mem_layout}
+\end{figure*}
+ As mentioned, all created threads need to have a separate stack for context
+ switching to work. Thus, when creating a thread, we have to allocate some
+ location in RAM to the task the thread has to perform. In
+ Figure~\ref{fig:mem_layout}, this memory area is denoted with the "thread x
+ STACK" area. As a design choice, I chose to separate the thread stacks in the
+ opposite end of RAM from where the core stacks would be allocated. That way, if
+ I ran into a thread stack overflow, I would know it was caused by the threads
+ themselves and vice versa with the core stacks. Different sizes of thread
+ stacks have not been tested, but a size of 1024 seemed to work without issues
+ on relatively small lists.
+
+ At the end of the RAM section is where the individual core stacks would be
+ allocated. Again, the specific size has not been tested, but with 8 cores and
+ the chosen stack size of 2048 bytes, assuming a thread stack size of 1024
+ bytes, we would be able to have approximately 130.032 individual thread stacks
+ without the two different stack areas overlapping.\footnote{$0x88000000 -
+ 8*0x800 = 0x87ffc000$ would be the end of core stacks. $0x87ffc000 - x*0x400 =
+0x80100000 \implies x = 130.032$. However, as the .data, .bss and .text sections
+might be saved in the RAM area by the linker script, we don't know the
+definitive value of \_stack\_size until the program is fully compiled.}
+
