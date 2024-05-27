@@ -1,13 +1,13 @@
-\section{Design}
+\section{Design}\label{sec:Design}
 \subsection{Single vs Multicore}
- When designing for bare metal implementation, implementing context switching on
- a single core would result in slower running algorithms than a standard
- implementation of mergesort. Context switching requires each thread to have an
- allocated stack, which takes time to set up. Additionally, each context switch
- requires time to set the context for a specific core to that of the function it
- now needs to run. Therefore, working on a single core did not seem viable for
- the purpose of this thesis, as it would likely lead to inefficiencies and
- decreased performance.
+When designing for bare metal implementation, implementing context switching on
+a single core would result in slower running algorithms than a standard
+implementation of mergesort. Context switching requires each thread to have an
+allocated stack, which takes time to set up. Additionally, each context switch
+requires time to set the context for a specific core to that of the function it
+now needs to run. Therefore, working on a single core did not seem viable for
+the purpose of this thesis, as it would likely lead to inefficiencies and
+decreased performance.
 
 \subsubsection{Working on multiple cores}
 The first method for implementing a multicore merge sort involved using
@@ -59,7 +59,7 @@ merge for a given section of a sublist.
 
 
 \subsection{Memory}
-\subsubsection{Getting system information}\label{sec:sys-info}
+\subsubsection*{Getting system information}\label{sec:sys-info}
 To properly use the memory, we need some information about the system we are
 working on. As this thesis is created on a QEMU system, we are able to get the
 system information by running the following:
@@ -104,8 +104,8 @@ the memory section is at address $0x00 + 0x80000000 = 0x80000000$ and has a size
 of $0x00 + 0x8000000$ bytes, which is equivalent to 128MB. To allow space for
 saving static values such as .bss and .data sections
 
-\subsubsection{Memory Layout}
-\begin{figure*}
+\subsubsection*{Memory Layout}
+\begin{figure}
   \centering
   {
   \begin{bytefield}{24}
@@ -128,7 +128,7 @@ saving static values such as .bss and .data sections
 }
   \caption{Memory layout of the QEMU virt machine with a core stack size of 2048
   bytes and a thread stack size of 1024}\label{fig:mem_layout}
-\end{figure*}
+\end{figure}
  As mentioned, all created threads need to have a separate stack for context
  switching to work. Thus, when creating a thread, we have to allocate some
  location in RAM to the task the thread has to perform. In

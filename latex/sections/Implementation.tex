@@ -16,7 +16,6 @@ sudo make install
 Following the instructions by RISC-V's getting started guide
 we can build the QEMU RISC-V system emulators by running the code
 provided in Listing~\ref{lst:qemu_install}\cite{RISC-V_GS}.
-\subsubsection{Installing LLVM compiler infrastructure}
 \begin{lstlisting}[caption=Installing LLVM compiler infastructure with RISC-V
 32-bit as native target., float=*, label=lst:llvm_install]
 # Dependencies
@@ -51,8 +50,17 @@ Listing~\ref{lst:llvm_install} installs a RISC-V compatible clang compiler and
 gdb debugger in the /opt/riscv/ directory. For the use outside this folder, make
 sure to add it to PATH.
 
+\subsubsection*{libucontext}
+Libucontext is an open sourced library which provides the ucontext.h C api. Most
+noteably for the project of this thesis, it is able to deploy on bare metal
+RISC-V 32 bit with newlib. Building the library from scratch lead to some issues
+on my end, and as such the necesarry files were copied and linked together with
+my implementation upon building. With this, I am able to use getcontext,
+makecontext and setcontext, which allows me to do the necesarry context
+swithcing described within Section~\ref{sec:Design}.
 
-\subsubsection{Creating a linker script}
+
+\subsection{Creating a linker script}
 The linker script is used to tell the linker which parts of the file to include
 in the final output file, as well as where each section is stored in memory. As
 we are working on an embedded system, we have to stray from the default and
@@ -61,9 +69,6 @@ compatible with the general linker scripts implementations of the GNU ld linker
 \cite{llvm-org-linker}. Thus, we can make use of the GNU ld manual for modifying
 the linker script in freeRTOS for our bare metal application instead of writing
 the entire thing from scratch \cite{GNU-linker}.
-
-\subsection{libucontext}
-
 
 \begin{lstlisting}
 OUTPUT_ARCH('riscv')
@@ -233,5 +238,49 @@ register. We increment the value in t0 by one, and jump back to line
 STACK\_SIZE for all the different cores defined, such that we get the desired
 memory layout shown at the top of Figure~\ref{fig:mem_layout}.
 
-
+\subsection{Initializing the thread jobs}
+\begin{algorithm}
+  \begin{algorithmic}[1]
+    \Require threads[] \# Empty thread array
+    \Procedure {Initialize\_Threads}{$A$}
+    \State $depth \leftarrow MostSignificantBit(NUM\_CORES)$
+    \State $idx \leftarrow 0$
+    \For{$i:=0, i < 0$}
+    \State $k \leftarrow 2^k$
+    \If{$k == 1$}
+    \State \# Top level thread
+    \State $ct \leftarrow threads[idx]$
+    \State mid \leftarrow Length(A)/2
+    \State $thread\_create(ct, parallel\_merge)$
+    \State $ct.l = 0$
+    \State $ct.mid = mid$
+    \State $ct.r = Length(A)$
+    \State idx++
+    \State \textbf{continue}
+    \EndIf
+    \For{$j:= 0, j < k$}
+    \State $parent\_thread \leftarrow threads[(idx - 1)/2]$
+    \State $ct \leftarrow thread[idx]$
+    \If{$j \% 2 == 0$}
+    \State $ct.l = parent\_thread.l$
+    \State $ct.r = parent\_thread.mid$
+    \Else
+    \State $ct.l = parent\_thread.mid$
+    \State $ct.r = parent\_thread.r$
+    \EndIf
+    \State $ct.mid = ct.l + (ct.r - ct.l)/2$
+    \If{$2*k > NUM\_CORES$}
+    \State \# Just regular mergesort
+    \State thread\_create(ct, mergesort)
+    \Else
+    \State \# Merge given section
+    \State thread\_create(ct, parallel\_merge)
+    \EndIf
+    \State idx++
+    \EndFor
+    \EndFor
+  \EndProcedure
+  \end{algorithmic}
+  \caption{Initialization of the threads}\label{algo:threads}
+\end{algorithm}
 
