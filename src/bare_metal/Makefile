@@ -1,8 +1,9 @@
 CC=clang
-NUM_CORES=16
+NUM_CORES=8
 CFLAGS=-g -O0 -ffreestanding -nostartfiles
 CFLAGS+=-nostdlib -nodefaultlibs --target=riscv32 -march=rv32imac_zicsr
 CFLAGS+=--sysroot=/opt/llvm-riscv/riscv32-unknown-elf/ -v
+CFLAGS+= -DNUM_CORES=$(NUM_CORES)
 LINKER_SCRIPT=./linker/ram.ld
 KERNEL=main.elf
 

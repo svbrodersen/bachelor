@@ -1,8 +1,19 @@
 \section{Evaluation}
 
-%testing different number of cores and so on
 \subsection{Testing}
+Testing has been accomplished by providing a random\_numbers.py file. With 3
+seperate integer parameters it creates a random list using pythons standard
+random library. The inputs include a lower and upper bound for the list to
+generate, together with the length of the list. Once the list is create, running
+make will create a .elf file, which contains the parallel mergesort algorithm
+with the unsorted list hardcoded within. Once the .elf file is loaded on a
+RISC-V processor, it will immediately begin sorting the hardcoded list. The
+implementation also needs the value NUM\_CORES defined within the Makefile,
+where it both defines a constant NUM\_CORES for the .elf file to use, and the
+same value is used for running the QEMU virtual machine.
 
+
+\subsection{Future work}
 NUM CORES HAS TO BE A POWER OF TWO
 
 
