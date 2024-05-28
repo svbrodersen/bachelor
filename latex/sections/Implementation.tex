@@ -149,7 +149,7 @@ a good custom. This is point from where each thread stack will be allocated.
 Next, we specify that the \_stack\_top will reside at the end of the ram
 section, such that we with an offset can allocate a stack for each core.
 
-\subsection{Getting into the main function}
+\subsection{Getting into the main function}\label{sec:get_main}
 In the linker script we specified the entry point of our program as \_start. Next up
 is implementing said entry point in assembly. Within a new assembly file we add the following.
 \begin{lstlisting}[numbers=left, escapechar=|]
@@ -238,16 +238,15 @@ register. We increment the value in t0 by one, and jump back to line
 STACK\_SIZE for all the different cores defined, such that we get the desired
 memory layout shown at the top of Figure~\ref{fig:mem_layout}.
 
-\subsection{Initializing the thread jobs}
+\subsection{Initializing the thread jobs}\label{sec:init_threads}
 \begin{algorithm}
   \begin{algorithmic}[1]
     \Require threads[] \# Empty thread array
     \Procedure {Initialize\_Threads}{$A$}
     \State $depth \leftarrow MostSignificantBit(NUM\_CORES)$
     \State $idx \leftarrow 0$
-    \For{$i:=0, i < 0$}
-    \State $k \leftarrow 2^k$
-    \If{$k == 1$}
+    \For{$i=0, i < 0$}
+    \If{$i == 0$} \label{alg:early_escape}
     \State \# Top level thread
     \State $ct \leftarrow threads[idx]$
     \State mid \leftarrow Length(A)/2
@@ -258,18 +257,19 @@ memory layout shown at the top of Figure~\ref{fig:mem_layout}.
     \State idx++
     \State \textbf{continue}
     \EndIf
-    \For{$j:= 0, j < k$}
+    \State $k \leftarrow 2^k$
+    \For{$j= 0, j < k$}
     \State $parent\_thread \leftarrow threads[(idx - 1)/2]$
     \State $ct \leftarrow thread[idx]$
-    \If{$j \% 2 == 0$}
+    \If{$j \% 2 == 0$} \label{alg:left_right}
     \State $ct.l = parent\_thread.l$
     \State $ct.r = parent\_thread.mid$
     \Else
     \State $ct.l = parent\_thread.mid$
     \State $ct.r = parent\_thread.r$
     \EndIf
-    \State $ct.mid = ct.l + (ct.r - ct.l)/2$
-    \If{$2*k > NUM\_CORES$}
+    \State $ct.mid = ct.l + (ct.r - ct.l)/2$ \label{alg:left_right_end}
+    \If{$i == depth-1$} \label{alg:depth_check}
     \State \# Just regular mergesort
     \State thread\_create(ct, mergesort)
     \Else
@@ -283,4 +283,52 @@ memory layout shown at the top of Figure~\ref{fig:mem_layout}.
   \end{algorithmic}
   \caption{Initialization of the threads}\label{algo:threads}
 \end{algorithm}
+A pseudocode implementation of initializing the parallel mergesort algorithm is
+provided in Algorithm~\ref{algo:threads}. First it is important to note, that it
+is assumed NUM\_CORES is a multiple of 2. Next, as described in the
+Section~\ref{sec:singlevsmulti} it is never in our interest to do uneccesary
+context swithcing, when working on a single core. As such, we can calculate the
+depth we want our mergetree to be simply by the number of cores. This can be
+done by taking $\log_2(NUM\_CORES)$, or equivilantly looking at the most
+significant bit of NUM\_CORES as it is a multiple of 2. At line~\ref{alg:early_escape}
+we have an early escape, which takes care of the single thread which will have
+no parent thread. If we are not on the very top level of the mergetree, we
+instead let k be the number of threads for the given level, and partition the
+list to create threads that target a given sublist. lines \ref{alg:left_right} -
+\ref{alg:left_right_end} take care of finding which subsection of the list a
+given thread has to take care of. Line~\ref{alg:depth_check} is where we make
+sure, that we do not create more active threads, than what the available number
+of cores are capable of handling. After the algorithm has run, we will have
+a threads array, which contains $2 \cdot NUM\_CORES - 1$ different threads, each
+of which has a given subsection of the list, they either have to merge, or do
+sequential mergesort on.
+
+\subsection{Reducing synchronization}
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=0.85\textwidth]{figures/mergesort.png}
+  \end{center}
+  THREADS := [(A, 0, 8, MERGE), (A, 0, 4, MERGE), (A, 4, 8, MERGE), (A, 0, 2, MERGESORT),
+  (A, 2, 4, MERGESORT), (A, 4, 6, MERGESORT), (A, 6, 8, MERGESORT)]
+  \caption{Example of partitioning a random list using Algorithm~\ref{algo:threads}}\label{fig:mergesort}
+\end{figure}
+
+The idea behind initializing the threads array as described in
+Section~\ref{sec:init_threads}, is  that we can reduce the need for
+synchronization between threads, once the partitioning of the list is done. An
+example can be seen in Figure~\ref{fig:mergesort} with the corresponding
+finished THREADS array. This example would be on a system with 4 cores. As seen
+in Section~\ref{sec:get_main} each core has a unique \textbf{id}, mhartid, from 0 to 3.
+With this each core can index into the list with the number of jobs it has
+already completed and the length of the array list, such that:
+\begin{align}
+  index &= LENGTH(A) - \text{NUM\_COMPLETED\_JOBS}\cdot id
+\end{align}
+With this, each thread is capable of retrieving a thread job without having to
+consider the state of any other thread, as the job is preassigned during the
+initialization. There are two caveats to this. Each merge must still wait on the
+child thread (the direction of the arrow in Figure~\ref{fig:mergesort}) to
+finish before starting a merge.
+
+
 
