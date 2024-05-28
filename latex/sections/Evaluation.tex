@@ -12,6 +12,43 @@ implementation also needs the value NUM\_CORES defined within the Makefile,
 where it both defines a constant NUM\_CORES for the .elf file to use, and the
 same value is used for running the QEMU virtual machine.
 
+This gives the following work flow for creating and running a test:
+\begin{itemize}
+  \item Run random\_numbers.py to generate alist.c with an unsorted list.
+  \item Change the NUM\_CORES variable in the Makefile to the desired number of
+    cores.
+  \item run "make test" to generate the .elf file and host qemu.
+  \item run "python3 validate.py", which takes the output of the non-sorted
+    array, sorts it via. pythons inbuilt sort function, and compares it to the
+    output generate by running the .elf file
+\end{itemize}
+
+Within the directory there exists a .gdbinit file, which takes care of
+connecting to the qemu session. It also provides a break point in the main
+function.
+
+\subsection{Validation}
+\begin{table}
+  \caption{Table of tests run}\label{tab:tests}
+  \begin{center}
+    \begin{tabular}[c]{l|l|l|l|l|l|l}
+      & \multicolumn{6}{c}{NUM\_CORES}\\
+      \cline{2-7}
+       Range & 1 & 2 & 3 & 4 & 8 & 16 \\
+      \hline
+      -100:0:100 & false & true & false & true & true & true \\
+      \hline
+      0:100:100 & false & true & false & true & true & true \\
+      \hline
+      -50:50:100 & false & true & false & true & true & true
+    \end{tabular}
+  \end{center}
+\end{table}
+
+For demonstration the elf file first prints out the array it was given to
+stdout, and then again prints it once the array, once it has been sorted in
+place.
+
 
 \subsection{Future work}
 NUM CORES HAS TO BE A POWER OF TWO
