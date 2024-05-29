@@ -17,40 +17,55 @@ This gives the following work flow for creating and running a test:
   \item Run random\_numbers.py to generate alist.c with an unsorted list.
   \item Change the NUM\_CORES variable in the Makefile to the desired number of
     cores.
-  \item run "make test" to generate the .elf file and host qemu.
-  \item run "python3 validate.py", which takes the output of the non-sorted
-    array, sorts it via. pythons inbuilt sort function, and compares it to the
-    output generate by running the .elf file
+  \item run "make clean" to remove all files built with previous settings.
+  \item run "make test" to generate the .elf file and host qemu. This step will
+    create a test.txt file, as the stdout of qemu is redirected to said file.
+  \item run "python3 validate.py". This reads the test.txt file, which sorts the
+    unsorted array with pythons built in sort function, and compares that sorted
+    array with the one produced by the .elf file running in qemu.
 \end{itemize}
 
-Within the directory there exists a .gdbinit file, which takes care of
-connecting to the qemu session. It also provides a break point in the main
-function.
 
-\subsection{Validation}
+\subsection{Validation}\label{sec:validate}
 \begin{table}
   \caption{Table of tests run}\label{tab:tests}
   \begin{center}
     \begin{tabular}[c]{l|l|l|l|l|l|l}
       & \multicolumn{6}{c}{NUM\_CORES}\\
       \cline{2-7}
-       Range & 1 & 2 & 3 & 4 & 8 & 16 \\
+      Lower:Upper:Number & 2 & 4 & 8 & 16 & 32 & 64\\
       \hline
-      -100:0:100 & false & true & false & true & true & true \\
+      -100:0:100 & true & true & true & true & true & true \\
       \hline
-      0:100:100 & false & true & false & true & true & true \\
+      0:100:100 & true & true & true & true & true & true\\
       \hline
-      -50:50:100 & false & true & false & true & true & true
-    \end{tabular}
+      -50:50:100 & true & true & true & true & true & true \\
+      \hline
+      -1000:1000:1000 & true* & true* & true* & true* & true* & **false
+    \end{tabular} \\
+    \vspace{1em}
+    \raggedright{\footnotesize *This run initially failed due to stack overflow. After
+    increasing the size of STACK\_SIZE to 8192 bytes, THREAD\_STACK\_SIZE to
+  8192 and the global pointer to 8192 bytes it worked.} \\
+    \raggedright{\footnotesize **Was unable to find values which made this run work.}
   \end{center}
 \end{table}
 
-For demonstration the elf file first prints out the array it was given to
-stdout, and then again prints it once the array, once it has been sorted in
-place.
-
+When running a test, the elf file first prints the unsorted array, and then once
+sorting is done, it prints it again. When running "make test" the QEMU virtual
+machine prinst the stdout to a file called test.txt. Afterwards, running python3
+validate.py reads this file to see if sorting was performed correctly. In
+Table~\ref{tab:tests} an overview of some tests I ran can be seen. On the left,
+the formatting is specified as the lower bound of randomly selected numbers, the
+upper bound and the number of random elements in the list. A value of true is
+an instance where the validate.py file ran without throwing an assertion error.
+The tests were initially run with a global stack of 0x800\footnote{defined in
+ram.ld. Equates to 2048 bytes.}, a STACK\_SIZE of 2048 and a THREAD\_STACK\_SIZE
+of 1024. If a fail occured, then changes to these three values were made in an
+attempt to pass the test.
 
 \subsection{Future work}
-NUM CORES HAS TO BE A POWER OF TWO
+\subsubsection*{Short comings}
+
 
 

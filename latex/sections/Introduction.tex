@@ -64,5 +64,18 @@ virtual machine where the code is loaded via a general loader.
 
 
 \subsection{Related work}
+\subsubsection*{freeRTOS}
+RTOS stands for Real-time operating system. The goal of a RTOS is to provide a
+small and simple design, which is easy to port to different architectures.
+Furthermore, freeRTOS provides fast execution speeds and methods for
+multi-threading, mutexes, sempaphores, software timers and more. FreeRTOS
+specifically is a leading open-source RTOS, and thus fits with the open-source
+idea provided with RISC-V aswell. Using a RTOS like freeRTOS would allow for
+creating a similar implementation of a parallelised mergesort as provided in
+this thesis. It would also provide easier portability between different
+architectures. However, using freeRTOS would always provide a small overhead
+compared with a complete bare-metal implementation and as the aim of this thesis
+was to asses the viability of high performance processsors in the data center,
+a more custom implementation was instead chosen.
 
 
