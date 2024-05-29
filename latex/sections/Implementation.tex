@@ -9,6 +9,7 @@ implementations.
 \subsubsection*{QEMU}
 \begin{lstlisting}[caption=Installing QEMU, float=*, label=lst:qemu_install]
 git clone git clone https://github.com/qemu/qemu  # Clone the qemu repo
+cd qemu
 ./configure --target-list=riscv32-softmmu  # Configure the 32-bit RISC-V target
 make -j $(nproc)  # build the project with all num cores jobs
 sudo make install
@@ -27,12 +28,9 @@ sudo apt-get -y install \
   zlib1g-dev libexpat1-dev libmpc-dev \
   libglib2.0-dev libfdt-dev libpixman-1-dev
 
-# Installing the RISC-V-gnu-toolchain with llvm support
-git clone https://github.com/riscv-collab/riscv-gnu-toolchain  # clone
-riscv-gnu-toolchain
+git clone https://github.com/riscv-collab/riscv-gnu-toolchain
 cd riscv-gnu-toolchain  # change directory
 ./configure --prefix=/opt/riscv --with-arch=rv32gc -disable-linux --enable-llvm
-# prefix is install path used
 sudo make -j$(nproc)
 cd ..
 popd
@@ -245,7 +243,7 @@ memory layout shown at the top of Figure~\ref{fig:mem_layout}.
     \Procedure {Initialize\_Threads}{$A$}
     \State $depth \leftarrow MostSignificantBit(NUM\_CORES)$
     \State $idx \leftarrow 0$
-    \For{$i=0, i < 0$}
+    \For{$i=0, i < depth$}
     \If{$i == 0$} \label{alg:early_escape}
     \State \# Top level thread
     \State $ct \leftarrow threads[idx]$
