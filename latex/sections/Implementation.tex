@@ -179,7 +179,6 @@ _start: |\label{line:_start}|
   1:
     // loop
     j 1b
-
   2:
     la t1, STACK_SIZE | \label{line:STACK_SIZE} |
     li t0, 0
@@ -197,18 +196,18 @@ _start: |\label{line:_start}|
   1:
     // loop
     j 1b
-
     .cfi_endproc  // We should never really reach this
 \end{lstlisting}
 Lines \ref{line:header_start}-\ref{line:header_end} provide the setup for the
-assembly file. We specify that a main and secondary\_main label will be defined outside of the file,
-that \_start is a global label and that \_start is a function type. Atlast, we
-include the defines.h file, which includes definitions of the STACK\_SIZE.
+assembly file. We specify that a main and secondary\_main label will be defined
+outside of the file, that \_start is a global label and that \_start is a
+function type. At last, we include the defines.h file, which includes
+definitions of the STACK\_SIZE.
 
 On lines \ref{line:_start}-\ref{line:pop} we give call frame information (cfi)
 for there being no return address and that the process starts here. Then when
-initializing the global pointer, we must specify options push, norelax and pop
-as described in GNU Binutils. \cite{GNU_bin} After linker relaxation this would
+initializing the global pointer, we must specify options push, norelax, and pop
+as described in GNU Binutils. \cite{GNU_bin} After linker relaxation, this would
 produce the expected code:
 \begin{lstlisting}
 auipc gp, %pcrel_hi(__global_pointer$)
@@ -221,23 +220,24 @@ previously, and save it into the stack pointer(sp) register. We read the current
 machine hart identifier(mhartid), which contains a unique identifier for each
 core on the processor. This is what allows for differentiation between the
 different cores. Line \ref{line:break_zero} moves execution to line
-\ref{line:STACK_SIZE} if the machine hart identifier is not 0. As such only
+\ref{line:STACK_SIZE} if the machine hart identifier is not 0. As such, only
 mhartid 0 will be allowed to continue execution to line \ref{line:jump_main},
 where it jumps to the main function.
 
 All other cores continue execution at line \ref{line:STACK_SIZE}, where they
 load the value STACK\_SIZE defined in defines.h into the temporary register t1.
-We also load immediately(li) the value 1 into the temporary register 1. Line
-\ref{line:align_stack} aligns the current value in the stack pointer to -16.
-Afterwards, we compare the value in register a0, which holds the value of the
-mhartid, to the value in t0. If they are equal, we jump to line
-\ref{line:jump_secondary}, which makes us jump to the externally defined
-secondary\_main function. Otherwise, we continue on line \ref{line:sub_stack},
-where we subtract the register t1 (STACK\_SIZE) from the value stored in the sp
-register. We increment the value in t0 by one, and jump back to line
-\ref{line:align_stack}. With this loop, we are setting up a stack of size
-STACK\_SIZE for all the different cores defined, such that we get the desired
-memory layout shown at the top of Figure~\ref{fig:mem_layout}.
+We also load immediately(li) the value
+1 into the temporary register r1. Line \ref{line:align_stack} aligns the current
+value in the stack pointer to -16. Afterwards, we compare the value in
+register a0, which holds the value of the mhartid, to the value in t0. If they
+are equal, we jump to line \ref{line:jump_secondary}, which makes us jump to
+the externally defined secondary\_main function. Otherwise, we continue on
+line \ref{line:sub_stack}, where we subtract the register t1 (STACK\_SIZE)
+from the value stored in the sp register. We increment the value in t0 by one,
+and jump back to line \ref{line:align_stack}. With this loop, we are setting
+up a stack of size STACK\_SIZE for all the different cores defined, such that
+we get the desired memory layout shown at the top of
+Figure~\ref{fig:mem_layout}.
 
 \subsection{Initializing the thread jobs}\label{sec:init_threads}
 \begin{algorithm}
@@ -284,24 +284,25 @@ memory layout shown at the top of Figure~\ref{fig:mem_layout}.
   \end{algorithmic}
   \caption{Initialization of the threads}\label{algo:threads}
 \end{algorithm}
-A pseudocode implementation of initializing the parallel mergesort algorithm is
-provided in Algorithm~\ref{algo:threads}. First it is important to note, that it
-is assumed NUM\_CORES is a multiple of 2. Next, as described in the
-Section~\ref{sec:singlevsmulti} it is never in our interest to do uneccesary
-context swithcing, when working on a single core. As such, we can calculate the
-depth we want our mergetree to be simply by the number of cores. This can be
-done by taking $\log_2(NUM\_CORES)$, or equivilantly looking at the most
-significant bit of NUM\_CORES as it is a multiple of 2. At line~\ref{alg:early_escape}
-we have an early escape, which takes care of the single thread which will have
-no parent thread. If we are not on the very top level of the mergetree, we
-instead let k be the number of threads for the given level, and partition the
-list to create threads that target a given sublist. lines \ref{alg:left_right} -
-\ref{alg:left_right_end} take care of finding which subsection of the list a
-given thread has to take care of. Line~\ref{alg:depth_check} is where we make
-sure, that we do not create more active threads, than what the available number
-of cores are capable of handling. After the algorithm has run, we will have
-a threads array, which contains $2 \cdot NUM\_CORES - 1$ different threads, each
-of which has a given subsection of the list, they either have to merge, or do
+A pseudocode implementation for initializing the parallel mergesort algorithm is
+provided in Algorithm~\ref{algo:threads}. Initially, it should be noted that it
+is assumed NUM\_CORES is a multiple of 2. Next, as described in
+Section~\ref{sec:singlevsmulti}, it is never in our interest to perform
+unnecessary context switching when working on a single core. Consequently, we
+can calculate the depth desired for our mergetree by employing the number of
+cores. This may be achieved by taking $\log_2(NUM\_CORES)$ or, equivalently, by
+examining the most significant bit of NUM\_CORES since it is a multiple of 2. At
+line~\ref{alg:early_escape}, an early escape mechanism is implemented which
+takes care of the single thread that will have no parent thread. If we are not
+positioned at the very top level of the mergetree, we assign the variable 'k' as
+the number of threads for the given level and partition the list to create
+threads targeting a specific sublist. Lines \ref{alg:left_right} -
+\ref{alg:left_right_end} address the task of determining which subsection of the
+list each thread is responsible for. Finally, line~\ref{alg:depth_check} ensures
+that we do not generate more active threads than what the available number of
+cores can effectively handle. Upon completion of the algorithm, a threads array
+will be produced containing $2 \cdot NUM\_CORES - 1$ different threads, each
+assigned with a specific subsection of the list to either merge or perform
 sequential mergesort on.
 
 \subsection{Reducing synchronization}

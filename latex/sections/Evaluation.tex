@@ -52,20 +52,33 @@ This gives the following work flow for creating and running a test:
 \end{table}
 
 When running a test, the ELF file first prints the unsorted array, and then once
-sorting is done, it prints it again. When running "make test", the QEMU virtual
-machine prints the stdout to a file called test.txt. Afterwards, running python3
-validate.py reads this file to see if sorting was performed correctly. In
-Table~\ref{tab:tests}, an overview of some tests I ran can be seen. On the left,
-the formatting is specified as the lower bound of randomly selected numbers, the
-upper bound, and the number of random elements in the list. A value of true is
-an instance where the validate.py file ran without throwing an assertion error.
-The tests were initially run with a global stack of 0x800\footnote{defined in
-ram.ld. Equates to 20,48 bytes.}, a STACK\_SIZE of 2048 and a
-THREAD\_STACK\_SIZE of 1024. If a fail occurred, then changes to these three
-values were made in an attempt to pass the test.
+sorting is done, it prints it again. When executing "make test", the QEMU
+virtual machine outputs the stdout to a file called test.txt. Subsequently,
+invoking python3 validate.py reads this file to ascertain if sorting was
+performed correctly. In Table 6, an overview of some tests I conducted can be
+seen. On the left, the formatting is specified as the lower bound of randomly
+selected numbers, the upper bound, and the number of random elements in the
+list. A value of true signifies that the validate.py file executed without
+throwing an assertion error. The tests were initially performed with a global
+stack of 0x800,\footnote{defined in ram.ld. Equates to 20,48 bytes.} a
+STACK\_SIZE of 2048 and a THREAD\_STACK\_SIZE of 1024. If a failure occurred,
+modifications were made to these three values in an attempt to pass the test.
 
 \subsection{Future work}
-\subsubsection*{Short comings}
+The implementation proposed in this thesis is more a proof of concept, and as
+such comes with a few shortcomings. First, as seen in Table~\ref{tab:tests},
+when we both increase the number of cores and the size of the list to be
+shorted, we run into memory issues. With the current method of creating thread
+stacks, we allocate the same number bytes to each thread stack without taking
+into account the amount of work each thread has to do. Whenever a thread has to
+do a merge operation on a subsection of a list, it has to copy both sides into
+seperate lists, before it can sort the array in place. This means, that a list
+doing a merge on the entire lists, has to create a copy of the entire list.
+Similairly a list, which has to only sort half the list, would in theory only
+need half the amount of stack size (not taking into account other factors than
+just the list copying).
+
+
 
 
 
