@@ -15,13 +15,13 @@ typedef struct thread {
   volatile int value;
   int l;
   int mid;
-  int r
+  int r;
 } thread_t;
 
 /* Initiates a thread with the target function. Must be called with makecontext
  * on the context element afterwards. The context is the function returned to
  * when finished running the context*/
-int thread_create(thread_t *);
+int thread_create(thread_t *, size_t);
 int thread_get(thread_t **, Tid);
 
 void init_scheduler();
