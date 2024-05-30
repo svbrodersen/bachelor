@@ -44,9 +44,6 @@ void mark_done() {
   get_hartid(&id);
   get_curr_idx(&curr_idx, id);
   core_num_jobs[id] += 1;
-  if (threads[curr_idx].parent == NULL) {
-    initialized = false;
-  }
   // if we are the last thread
   if (threads[curr_idx].parent == NULL) {
     initialized = false;
@@ -195,7 +192,6 @@ void parallel_merge_sort(int *input_list, size_t length) {
       idx++;
     }
   }
-  printf("Done with parallel setup\n");
 }
 
 void secondary_main() {
@@ -225,6 +221,10 @@ void secondary_main() {
 
 int main() {
   libucontext_ucontext_t main_ctx;
+  for (int i = 0; i < alist_size; i++) {
+    printf("%d,", alist[i]);
+  }
+  printf("\n");
   libucontext_getcontext(&main_ctx);
   int id, curr_idx;
   get_hartid(&id);
@@ -232,13 +232,22 @@ int main() {
   if (curr_idx < 0) {
     // No more jobs for this mhart to do, if you wait for is_done != 0, it will
     // reset and run again
+    while (is_done != 1) {
+    }
+    for (int i = 0; i < alist_size; i++) {
+      printf("%d,", alist[i]);
+    }
+    printf("\n");
+    // spin loop to not start over again. Might be an idea to jump to _start and
+    // reset completely
     while (1) {
     }
+
     initialized = false;
     is_done = 0;
   }
   // not done yet
-  if (is_done < 1 && initialized) {
+  if (is_done != 1 && initialized) {
     threads[curr_idx].context.uc_mcontext.__gregs[REG_S1] =
         (libucontext_greg_t)&main_ctx;
     libucontext_setcontext(&threads[curr_idx].context);

@@ -1,5 +1,5 @@
 CC=clang
-NUM_CORES=2
+NUM_CORES=64
 CFLAGS=-g -O0 -ffreestanding -nostartfiles
 CFLAGS+=-nostdlib -nodefaultlibs --target=riscv32 -march=rv32imac_zicsr
 CFLAGS+=--sysroot=/opt/llvm-riscv/riscv32-unknown-elf/
