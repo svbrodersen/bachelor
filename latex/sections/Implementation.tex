@@ -126,28 +126,28 @@ script.
   } > ram
 }
 \end{lstlisting}
-The text, rodata, data and bss sections follows the same general procedure. We
-align the section to the maximum size of a page, and the match all the data
-which we care about for the given sections. By specifying the > rom, we tell the
-linker to save the given section in the rom section and the same is true for the
-> ram. From the Figure~\ref{fig:mem_layout}, we can see the ram and rom
-correspond to the ROM and RAM section of the figure.\footnote{rom stands for
-  read-only memory, and ram stands for random-access memory. Generally it is not
-necesarrily needed to split the two up as done here, but it is a good practise
-to seperate what can change and what can not change in memory.}
+The text, rodata, data and bss sections follow the same general procedure. We
+align the section to the maximum size of a page, and match all the data which we
+care about for the given sections. By specifying the > rom, we tell the linker
+to save the given section in the rom section and the same is true for the > ram.
+From the Figure~\ref{fig:mem_layout}, we can see the ram and rom correspond to
+the ROM and RAM section of the figure.\footnote{rom stands for read-only memory,
+and ram stands for random-access memory. Generally it is not necessarily needed
+to split the two up as done here, but it is a good practice to separate what can
+change and what cannot change in memory.}
 
 In the data section, we also provide a global pointer, which is used to access
 global variables within our later code implementation. The global pointer is
 used together with an offset to save global variables. As such we allow for
-0x800=2048 bytes of global variables. With the implementation being quite
+0x800=20,48 bytes of global variables. With the implementation being quite
 reliant on global variables, it might need to be increased for lists of large
 sizes.
 
 The last section is the .stack section. We align the starting of the
-\_stack\_start with 8 bytes. Generally not necesarry in this instance, but stil
-a good custom. This is point from where each thread stack will be allocated.
+\_stack\_start with 8 bytes. Generally not necessary in this instance, but still
+a good custom. This is the point from where each thread stack will be allocated.
 Next, we specify that the \_stack\_top will reside at the end of the ram
-section, such that we with an offset can allocate a stack for each core.
+section, such that we can allocate a stack for each core with an offset.
 
 \subsection{Getting into the main function}\label{sec:get_main}
 In the linker script we specified the entry point of our program as \_start.
