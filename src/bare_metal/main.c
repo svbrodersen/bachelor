@@ -173,7 +173,7 @@ void parallel_merge_sort(int *input_list, size_t length) {
         curr_thread->r = parent_thread->r;
       }
       curr_thread->mid = curr_thread->l + (curr_thread->r - curr_thread->l) / 2;
-      thread_create(curr_thread, THREAD_STACK_SIZE);
+      thread_create(curr_thread, (THREAD_STACK_SIZE / pow_2(i)));
       if (k == NUM_CORES) {
         libucontext_makecontext(&curr_thread->context, (void (*)())mergeSort, 3,
                                 input_list, curr_thread->l, curr_thread->r);
@@ -248,6 +248,9 @@ int main() {
   }
   // not done yet
   if (is_done != 1 && initialized) {
+    while (threads[curr_idx].value < 2) {
+      // spin lock until children are done
+    }
     threads[curr_idx].context.uc_mcontext.__gregs[REG_S1] =
         (libucontext_greg_t)&main_ctx;
     libucontext_setcontext(&threads[curr_idx].context);

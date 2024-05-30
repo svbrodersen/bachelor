@@ -41,13 +41,13 @@ This gives the following work flow for creating and running a test:
       \hline
       -50:50:100 & true & true & true & true & true & true \\
       \hline
-      -1000:1000:1000 & true* & true* & true* & true* & true* & **false
+      -1000:1000:1000 & true* & true* & true* & true* & true* & **true
     \end{tabular} \\
     \vspace{1em}
     \raggedright{\footnotesize *This run initially failed due to stack overflow. After
     increasing the size of STACK\_SIZE to 8192 bytes, THREAD\_STACK\_SIZE to
-  8192 and the global pointer to 8192 bytes it worked.} \\
-    \raggedright{\footnotesize **Was unable to find values which made this run work.}
+  8192 and GLOBAL\_STACK\_SIZE 10MB bytes it worked.} \\
+    \raggedright{\footnotesize **This run passed }
   \end{center}
 \end{table}
 

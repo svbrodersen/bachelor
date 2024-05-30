@@ -3,14 +3,13 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-#define MAX_NUM_THREADS 100
+#define MAX_NUM_THREADS 0
 #define THREAD_STACK_SIZE 16384
 
 typedef uint32_t Tid;
 
 typedef struct thread {
   libucontext_ucontext_t context;
-  Tid thread_id;
   volatile struct thread *parent;
   volatile int value;
   int l;
