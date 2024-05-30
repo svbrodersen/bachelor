@@ -4,7 +4,7 @@
 #include <sys/types.h>
 
 #define MAX_NUM_THREADS 100
-#define THREAD_STACK_SIZE 1024
+#define THREAD_STACK_SIZE 16384
 
 typedef uint32_t Tid;
 

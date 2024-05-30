@@ -25,7 +25,7 @@ SECTIONS
 		*(.data .data.*)
     /*RISCV convention to have __global_pointer aligned to 8 bytes*/
 		. = ALIGN(8);
-		PROVIDE( __global_pointer$ = . + 0x800 );
+		PROVIDE( __global_pointer$ = . + GLOBAL_STACK_SIZE );
 	} > ram
 
 	.bss : ALIGN(CONSTANT(MAXPAGESIZE))

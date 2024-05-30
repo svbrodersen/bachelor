@@ -176,7 +176,7 @@ void parallel_merge_sort(int *input_list, size_t length) {
         curr_thread->r = parent_thread->r;
       }
       curr_thread->mid = curr_thread->l + (curr_thread->r - curr_thread->l) / 2;
-      thread_create(curr_thread, THREAD_STACK_SIZE / (idx + 1));
+      thread_create(curr_thread, THREAD_STACK_SIZE);
       if (k == NUM_CORES) {
         libucontext_makecontext(&curr_thread->context, (void (*)())mergeSort, 3,
                                 input_list, curr_thread->l, curr_thread->r);
@@ -195,7 +195,6 @@ void parallel_merge_sort(int *input_list, size_t length) {
       idx++;
     }
   }
-  printf("Done with parallel setup\n");
 }
 
 void secondary_main() {

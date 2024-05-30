@@ -1,14 +1,15 @@
 CC=clang
-NUM_CORES=2
+GLOBAL_STACK_SIZE=0x989680
+NUM_CORES=64
 CFLAGS=-g -O0 -ffreestanding -nostartfiles
 CFLAGS+=-nostdlib -nodefaultlibs --target=riscv32 -march=rv32imac_zicsr
-CFLAGS+=--sysroot=/opt/llvm-riscv/riscv32-unknown-elf/
+CFLAGS+=--sysroot=/opt/riscv/riscv32-unknown-elf/
 CFLAGS+= -DNUM_CORES=$(NUM_CORES)
 LINKER_SCRIPT=./linker/ram.ld
 KERNEL=main.elf
 
 QEMU=qemu-system-riscv32
-QEMU_FLAGS=-machine virt
+QEMU_FLAGS=-machine virt -bios none
 QEMU_FLAGS+=-nographic
 QEMU_TEST_FLAGS= -chardev file,id=c1,path=test.txt,signal=off,server=off -serial chardev:c1
 EXTRA_QEMU_FLAGS= -smp $(NUM_CORES)
@@ -21,7 +22,8 @@ OBJS = $(OBJS_c:%.S=%.o)
 
 
 all: $(OBJS)
-	$(CC) $^ $(CFLAGS) -T $(LINKER_SCRIPT) -o $(KERNEL)
+	$(CC) $^ $(CFLAGS) -T $(LINKER_SCRIPT) \
+	-Wl,'--defsym=GLOBAL_STACK_SIZE=$(GLOBAL_STACK_SIZE)'  -o $(KERNEL)
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $< -o $@
