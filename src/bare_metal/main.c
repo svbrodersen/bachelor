@@ -152,7 +152,7 @@ void parallel_merge_sort(int *input_list, size_t length) {
 
     if (k == 1) {
       int mid = length / 2;
-      thread_create(&threads[idx]);
+      thread_create(&threads[idx], THREAD_STACK_SIZE);
       libucontext_makecontext(&threads[idx].context, (void (*)())parallel_merge,
                               4, input_list, 0, mid, length);
 
@@ -176,8 +176,8 @@ void parallel_merge_sort(int *input_list, size_t length) {
         curr_thread->r = parent_thread->r;
       }
       curr_thread->mid = curr_thread->l + (curr_thread->r - curr_thread->l) / 2;
-      thread_create(curr_thread);
-      if (2 * k > NUM_CORES) {
+      thread_create(curr_thread, THREAD_STACK_SIZE / (idx + 1));
+      if (k == NUM_CORES) {
         libucontext_makecontext(&curr_thread->context, (void (*)())mergeSort, 3,
                                 input_list, curr_thread->l, curr_thread->r);
         // Make it such that it looks like both children are finished (even
