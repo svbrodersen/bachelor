@@ -1,16 +1,16 @@
 \section{Evaluation}
 
 \subsection{Testing}
-Testing has been accomplished by providing a random\_numbers.py file. With 3
-seperate integer parameters it creates a random list using pythons standard
+Testing has been accomplished by providing a random\_numbers.py file. With three
+separate integer parameters, it creates a random list using Python's standard
 random library. The inputs include a lower and upper bound for the list to
-generate, together with the length of the list. Once the list is create, running
-make will create a .elf file, which contains the parallel mergesort algorithm
-with the unsorted list hardcoded within. Once the .elf file is loaded on a
-RISC-V processor, it will immediately begin sorting the hardcoded list. The
-implementation also needs the value NUM\_CORES defined within the Makefile,
-where it both defines a constant NUM\_CORES for the .elf file to use, and the
-same value is used for running the QEMU virtual machine.
+generate, together with the length of the list. Once the list is created,
+running make will create a .elf file, which contains the parallel mergesort
+algorithm with the unsorted list hardcoded within. Once the .elf file is loaded
+on a RISC-V processor, it will immediately begin sorting the hardcoded list. The
+implementation also needs the value NUM\_CORES defined within the Makefile, where
+it both defines a constant NUM\_CORES for the .elf file to use, and the same
+value is used for running the QEMU virtual machine.
 
 This gives the following work flow for creating and running a test:
 \begin{itemize}
@@ -51,18 +51,18 @@ This gives the following work flow for creating and running a test:
   \end{center}
 \end{table}
 
-When running a test, the elf file first prints the unsorted array, and then once
+When running a test, the ELF file first prints the unsorted array, and then once
 sorting is done, it prints it again. When running "make test" the QEMU virtual
-machine prinst the stdout to a file called test.txt. Afterwards, running python3
+machine prints the stdout to a file called test.txt. Afterwards, running python3
 validate.py reads this file to see if sorting was performed correctly. In
 Table~\ref{tab:tests} an overview of some tests I ran can be seen. On the left,
 the formatting is specified as the lower bound of randomly selected numbers, the
-upper bound and the number of random elements in the list. A value of true is
+upper bound, and the number of random elements in the list. A value of true is
 an instance where the validate.py file ran without throwing an assertion error.
 The tests were initially run with a global stack of 0x800\footnote{defined in
-ram.ld. Equates to 2048 bytes.}, a STACK\_SIZE of 2048 and a THREAD\_STACK\_SIZE
-of 1024. If a fail occured, then changes to these three values were made in an
-attempt to pass the test.
+ram.ld. Equates to 20,48 bytes.}, a STACK\_SIZE of 2048 and a
+THREAD\_STACK\_SIZE of 1024. If a fail occurred, then changes to these three
+values were made in an attempt to pass the test.
 
 \subsection{Future work}
 \subsubsection*{Short comings}

@@ -79,10 +79,12 @@ rom (rxa) : ORIGIN = 0x80000000, LENGTH = 1M
 ram (wxa) : ORIGIN = 0x80100000, LENGTH = 127M
 }
 \end{lstlisting}
-First, we must specify that we want the RISC-V architecture and designate the entry point
-of the program at a function named '\_start,' which we will define later.
-Second, we define the MEMORY area to consist of both a writable memory region and a read-only
-memory region. We name these regions 'ram' and 'rom,' respectively. With that we move on to define the SECTIONS element of the linker script.
+First, we must specify that we want the RISC-V architecture and designate the
+entry point of the program at a function named '\_start,' which we will define
+later. Second, we define the MEMORY area to consist of both a writable memory
+region and a read-only memory region. We name these regions 'ram' and 'rom,'
+respectively. With that, we move on to define the SECTIONS element of the linker
+script.
 
 \begin{lstlisting}
   SECTIONS
@@ -148,8 +150,9 @@ Next, we specify that the \_stack\_top will reside at the end of the ram
 section, such that we with an offset can allocate a stack for each core.
 
 \subsection{Getting into the main function}\label{sec:get_main}
-In the linker script we specified the entry point of our program as \_start. Next up
-is implementing said entry point in assembly. Within a new assembly file we add the following.
+In the linker script we specified the entry point of our program as \_start.
+Next up is implementing said entry point in assembly. Within a new assembly file
+we add the following.
 \begin{lstlisting}[numbers=left, escapechar=|]
 .extern main |\label{line:header_start}|
 .extern secondary_main
