@@ -14,6 +14,7 @@ value is used for running the QEMU virtual machine.
 
 This gives the following work flow for creating and running a test:
 \begin{itemize}
+  \item change directory to src/bare_metal
   \item Run random\_numbers.py to generate alist.c with an unsorted list.
   \item Change the NUM\_CORES variable in the Makefile to the desired number of
     cores.
@@ -24,6 +25,45 @@ This gives the following work flow for creating and running a test:
     unsorted array with pythons built in sort function, and compares that sorted
     array with the one produced by the .elf file running in qemu.
 \end{itemize}
+
+\subsubsection*{Debugging}
+\begin{figure}
+  \centering
+  \begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{./figures/debug1.png}
+    \caption{Connecting gdb-server}
+
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{./figures/debug2.png}
+    \caption{A break at mark\_done}
+  \end{subfigure}
+  \caption{Debugging the QEMU virtual machine}\label{fig:debug}
+\end{figure}
+
+
+To access and debug the multicore system, QEMU provides a way for a remote
+gdb-server to connect at the start of execution.\cite{QEMU} In a system where
+each core is equivalent gdb will automatically detect the cores, but will
+display them as threads. This allows one to debug the QEMU virtual machine with
+the same methodology used when debugging multithreaded execution. The workflow shown in Figure~\ref{fig:debug} is as follows:
+\begin{itemize}
+  \item Change directory to src/bare_metal.
+  \item Initialize the alist.c file with an array and a given size.
+  \item Run "make debug" to initialize the QEMU virtual machine.
+  \item In a seperate terminal instance run "riscv32-unknown-elf-gdb". This will
+    automatically run the commands in the ".gdbinit" file and connect to the
+    QEMU virtual machine.
+  \item Break at mark\_done. This function is run whenever a given thread job is
+    finished.
+  \item Run "info threads" to get an overview of all threads.
+\end{itemize}
+
+
+
 
 
 \subsection{Validation}\label{sec:validate}

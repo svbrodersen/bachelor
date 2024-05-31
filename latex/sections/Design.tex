@@ -1,15 +1,13 @@
 \section{Design}\label{sec:Design}
-\subsection{Single vs Multicore}\label{sec:singlevsmulti}
-When designing for bare metal implementation, implementing context switching on
-a single core would result in slower running algorithms than a standard
-implementation of mergesort. Context switching requires each thread to have an
-allocated stack, which takes time to set up. Additionally, each context switch
-requires time to set the context for a specific core to that of the function it
-now needs to run. Therefore, working on a single core did not seem viable for
-the purpose of this thesis, as it would likely lead to inefficiencies and
-decreased performance.
+\subsection{Requirements}
 
-\subsubsection{Working on multiple cores}
+
+\subsection{Single vs Multicore}\label{sec:singlevsmulti}
+
+
+
+
+\subsubsection*{Working on multiple cores}
 The first method for implementing a multicore merge sort involved using
 threading and a scheduler. When we split a given list into two halves, we would
 create a thread assigned to sort each sublist. These two lists would be added to
