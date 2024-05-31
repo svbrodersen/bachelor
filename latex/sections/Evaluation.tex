@@ -14,7 +14,7 @@ value is used for running the QEMU virtual machine.
 
 This gives the following work flow for creating and running a test:
 \begin{itemize}
-  \item change directory to src/bare_metal
+  \item change directory to src/bare\_metal
   \item Run random\_numbers.py to generate alist.c with an unsorted list.
   \item Change the NUM\_CORES variable in the Makefile to the desired number of
     cores.
@@ -29,21 +29,21 @@ This gives the following work flow for creating and running a test:
 \subsubsection*{Debugging}
 \begin{figure}
   \centering
-  \begin{subfigure}[b]{0.49\textwidth}
+  \begin{subfigure}[b]{0.45\textwidth}
     \centering
     \includegraphics[width=\textwidth]{./figures/debug1.png}
-    \caption{Connecting gdb-server}
-
+    \caption{Connecting gdb by running "riscv32-unknown-elf-gdb and breaking at
+    mark\_done"}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[b]{0.49\textwidth}
+  \begin{subfigure}[b]{0.45\textwidth}
     \centering
     \includegraphics[width=\textwidth]{./figures/debug2.png}
-    \caption{A break at mark\_done}
+    \caption{Hit breakpoint, where alist is sorted by core 1 from
+    index 7 to 10 (10 exclusive).}
   \end{subfigure}
-  \caption{Debugging the QEMU virtual machine}\label{fig:debug}
+  \caption{Debugging the QEMU virtual machine with 4 cores.}\label{fig:debug}
 \end{figure}
-
 
 To access and debug the multicore system, QEMU provides a way for a remote
 gdb-server to connect at the start of execution.\cite{QEMU} In a system where
@@ -51,7 +51,7 @@ each core is equivalent gdb will automatically detect the cores, but will
 display them as threads. This allows one to debug the QEMU virtual machine with
 the same methodology used when debugging multithreaded execution. The workflow shown in Figure~\ref{fig:debug} is as follows:
 \begin{itemize}
-  \item Change directory to src/bare_metal.
+  \item Change directory to src/bare\_metal.
   \item Initialize the alist.c file with an array and a given size.
   \item Run "make debug" to initialize the QEMU virtual machine.
   \item In a seperate terminal instance run "riscv32-unknown-elf-gdb". This will
@@ -61,10 +61,9 @@ the same methodology used when debugging multithreaded execution. The workflow s
     finished.
   \item Run "info threads" to get an overview of all threads.
 \end{itemize}
-
-
-
-
+As an example Figure~\ref{fig:debug} shows a list of size 10, where core 1 has
+sorted the subsection of the list from index 7 to 10. This section corresponds
+to one fourth of the list, as the number of cores available is 4.
 
 \subsection{Validation}\label{sec:validate}
 \begin{table}
@@ -106,18 +105,39 @@ modifications were made to these three values in an attempt to pass the test.
 
 \subsection{Future work}
 The implementation proposed in this thesis is more a proof of concept, and as
-such comes with a few shortcomings. First, as seen in Table~\ref{tab:tests},
-when we both increase the number of cores and the size of the list to be
-shorted, we run into memory issues. With the current method of creating thread
-stacks, we allocate the same number bytes to each thread stack without taking
-into account the amount of work each thread has to do. Whenever a thread has to
-do a merge operation on a subsection of a list, it has to copy both sides into
-seperate lists, before it can sort the array in place. This means, that a list
-doing a merge on the entire lists, has to create a copy of the entire list.
-Similairly a list, which has to only sort half the list, would in theory only
-need half the amount of stack size (not taking into account other factors than
-just the list copying).
+such comes with a few shortcomings. Firstly, with the current implementation
+there is a heavy reliance on the GLOBAL\_STACK\_SIZE. The array to be sorted is
+hardcoded and saved on the global stack, which with large arrays can take up a
+lot of space. Furthermore, the array of thread jobs is also saved on the global
+stack. with the current implementation each thread type has a size of 848 bytes.
+Thus, a solution which allows for less overall use of the global stack, or a
+better method of detecting the size of the global stack would allow for a more
+reliable solution.
 
+Whenever a mergesort splits the into to halves, there is created a new thread
+with an allocated stack size of THREAD\_STACK\_SIZE. The top level thread job,
+which has to sort the entire array, must first create a copy of the array, before
+it can sort in place. The same goes for all other thread jobs, but the amount of
+the array they need to copy is halved for each level we move down in the
+mergesort tree shown in Figure~\ref{fig:mergesort}. In theory this allows for
+halving the size of the allocated thread stack for each level we move down. This
+does not take into account the constant space needed for the declared variables,
+so the thread stack size might instead be represented by:
+\begin{align}
+  \text{THREAD\_STACK\_SIZE} = \text{INITIAL\_STACK\_SIZE} / 2^i + C
+\end{align}
+Where i is the depth level, and C is some constant used to store the variables
+needed during computation. This constant C would then be different depending on
+whether the given thread has to perform mergesort or just merge over the array.
+Expermiments determining the size of C could be carried out to optimize the
+memory better.
+
+As it stands the only method of loading an array onto the processor is by hard
+coding the list into the .elf file. Although, this works to show the entire
+sorting algorithm, it would not be usefull in an actual datacenter unless some
+sort of communication protocol is established between the host CPU and the
+computational storage device. This communication is left as a problem, that
+later has to be solved.
 
 
 

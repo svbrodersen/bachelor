@@ -27,6 +27,8 @@ sorting. Within this thesis, the issue of implementing a high-performance
 sorting algorithm running on a stand-alone bare metal processor has been
 investigated.
 
+\subsubsection{bare-metal}\label{sec:bare-metal}
+
 
 \subsection{Problem}
 For computational storage to be a viable solution for meeting the ever-growing
@@ -36,22 +38,23 @@ several open questions remain unanswered. (1) What type of computation should be
 performed by a storage device? (2) Is it possible to implement such computation
 on a bare-metal processor?
 
-\subsubsection*{What computation should be handled by a storage device?}
+\subsubsection*{What computation should be handled by a storage
+device?}\label{sec:computational}
 Although there are multiple cases of large data transfers between a CPU and an
 SSD, one of the more prominent is that of sorting a given array. Sorting plays
 an integral part in multiple programming scenarios. From being an integral part
 of many searching algorithms to its use in data science, fast sorting is a
-necessity for fast performance. With a running time of O(n log n), merge sort
+necessity for fast performance. With a running time of O(n log n), mergesort
 was the algorithm chosen for further investigation. Not only that, but parallel
 versions of the merge sort algorithm should be possible on bare-metal.
 
 \subsubsection*{Is it feasible to implement such a computation on a bare metal
 RISC-V processor?}
 As the main goal is to offload the primary CPU, we must investigate whether it
-is at all possible to create a high-performance sorting algorithm without the
-need of an underlying operating system.
+is at all possible to create a high-performance sorting algorithm on a
+bare-metal processor.
 
-\subsection{Approach}
+\subsection{Approach}\label{sec:approach}
 For this thesis, an experimental approach was taken. First, a feasible design
 developed for implementing on a bare metal processor is introduced. Secondly, an
 implementation of said designed is presented. Third, the viability and validity
