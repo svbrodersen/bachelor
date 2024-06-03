@@ -1,10 +1,11 @@
 CC=clang
 GLOBAL_STACK_SIZE=0x989680
-NUM_CORES=64
+NUM_CORES=4
 CFLAGS=-g -O0 -ffreestanding -nostartfiles
 CFLAGS+=-nostdlib -nodefaultlibs --target=riscv32 -march=rv32imac_zicsr
 CFLAGS+=--sysroot=/opt/riscv/riscv32-unknown-elf/
 CFLAGS+= -DNUM_CORES=$(NUM_CORES)
+CFLAGS+= -Wl,'--defsym=GLOBAL_STACK_SIZE=$(GLOBAL_STACK_SIZE)'
 LINKER_SCRIPT=./linker/ram.ld
 KERNEL=main.elf
 
@@ -22,8 +23,7 @@ OBJS = $(OBJS_c:%.S=%.o)
 
 
 all: $(OBJS)
-	$(CC) $^ $(CFLAGS) -T $(LINKER_SCRIPT) \
-	-Wl,'--defsym=GLOBAL_STACK_SIZE=$(GLOBAL_STACK_SIZE)'  -o $(KERNEL)
+	$(CC) $^ $(CFLAGS) -T $(LINKER_SCRIPT) -o $(KERNEL)
 
 %.o : %.c
 	$(CC) -c $(CFLAGS) $< -o $@
