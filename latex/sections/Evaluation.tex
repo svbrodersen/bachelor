@@ -130,6 +130,17 @@ whether the given thread has to perform mergesort or just merge over the array.
 Experiments determining the size of C could be carried out to optimize the
 memory better.
 
+Furthermore, in regards to memory the application does not check whether memory
+is out of bounds. Rather, it assumes that the sorting is able to be done with
+the allocated memory, and simply lets the application run if there is a stack
+overflow on any of the cores or thread stacks. The bounds checking would be
+extra overhead, but might still be something worth looking into.
+
+It is not possible for performance testing as the application is running on a
+qemu version. Implementing a timing library might be needed to access whether
+the performance of multiple cores is significant.
+%TODO: this section might need more info.
+
 As it stands the implementation also requires that the number of cores is a
 power of 2. This is due to how the initialization builds the threads up. This
 issue has a few ways it can be fixed. Firstly, instead of stopping at the same
