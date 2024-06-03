@@ -4,9 +4,9 @@ Testing has been accomplished by providing a random\_numbers.py file. With three
 separate integer parameters, it creates a random list using Python's standard
 random library. The inputs include a lower and upper bound for the list to
 generate, together with the length of the list. Once the list is created,
-running make will create a .elf file, which contains the parallel mergesort
-algorithm with the unsorted list hardcoded within. Once the .elf file is loaded
-on a RISC-V processor, it will immediately begin sorting the hardcoded list. The
+running make will create a .elf file, which contains the parallel merge sort
+algorithm with the unsorted list hard-coded within. Once the .elf file is loaded
+on a RISC-V processor, it will immediately begin sorting the hard-coded list. The
 implementation also needs the value NUM\_CORES defined within the Makefile, where
 it both defines a constant NUM\_CORES for the .elf file to use, and the same
 value is used for running the QEMU virtual machine.
@@ -18,11 +18,11 @@ This gives the following work flow for creating and running a test:
   \item Change the NUM\_CORES variable in the Makefile to the desired number of
     cores.
   \item run "make clean" to remove all files built with previous settings.
-  \item run "make test" to generate the .elf file and host qemu. This step will
-    create a test.txt file, as the stdout of qemu is redirected to said file.
+  \item run "make test" to generate the .elf file and host QEMU. This step will
+    create a test.txt file, as the stdout of QEMU is redirected to said file.
   \item run "python3 validate.py". This reads the test.txt file, which sorts the
     unsorted array with Python's built in sort function, and compares that sorted
-    array with the one produced by the .elf file running in qemu.
+    array with the one produced by the .elf file running in QEMU.
 \end{itemize}
 
 \subsubsection*{Debugging}
@@ -105,19 +105,19 @@ modifications were made to these three values in an attempt to pass the test.
 The implementation proposed in this thesis is more a proof of concept, and as
 such comes with a few shortcomings. Firstly, with the current implementation
 there is a heavy reliance on the GLOBAL\_STACK\_SIZE. The array to be sorted is
-hardcoded and stored on the global stack, which can occupy substantial space
+hard-coded and stored on the global stack, which can occupy substantial space
 when dealing with large arrays. Furthermore, the array of thread jobs is also
-saved on the global stack. with the current implementation each thread type has
+saved on the global stack. With the current implementation each thread type has
 a size of 848 bytes. Thus, a solution that reduces overall overall usage of the
 global stack, or a better method of detecting the size of the global stack would
 allow for a more reliable solution.
 
-Whenever a mergesort splits the into to halves, there is created a new thread
+Whenever a merge sort splits the into to halves, there is created a new thread
 with an allocated stack size of THREAD\_STACK\_SIZE. The top level thread job,
 which has to sort the entire array, must first create a copy of the array, before
 it can sort in place. The same goes for all other thread jobs, but the amount of
 the array they need to copy is halved for each level we move down in the
-mergesort tree shown in Figure~\ref{fig:mergesort}. In theory this allows for
+merge sort tree shown in Figure~\ref{fig:mergesort}. In theory this allows for
 halving the size of the allocated thread stack for each level we move down. This
 does not take into account the constant space needed for the declared variables,
 so the thread stack size might instead be represented by:
@@ -126,7 +126,7 @@ so the thread stack size might instead be represented by:
 \end{align}
 Where i is the depth level, and C is some constant used to store the variables
 needed during computation. This constant C would then be different depending on
-whether the given thread has to perform mergesort or just merge over the array.
+whether the given thread has to perform merge sort or just merge over the array.
 Experiments determining the size of C could be carried out to optimize the
 memory better.
 
@@ -137,7 +137,7 @@ overflow on any of the cores or thread stacks. The bounds checking would be
 extra overhead, but might still be something worth looking into.
 
 It is not possible for performance testing as the application is running on a
-qemu version. Implementing a timing library might be needed to access whether
+QEMU version. Implementing a timing library might be needed to access whether
 the performance of multiple cores is significant.
 %TODO: this section might need more info.
 
@@ -145,16 +145,16 @@ As it stands the implementation also requires that the number of cores is a
 power of 2. This is due to how the initialization builds the threads up. This
 issue has a few ways it can be fixed. Firstly, instead of stopping at the same
 level for all the merge sorts, it could theoretically split only a few of the
-sublist given, such that instead of having to be a power of 2 it would instead
+sub list given, such that instead of having to be a power of 2 it would instead
 only require that it is a multiple of 2. This would still allow for all cores to
-work on a sublist at the same time. Another approach would be to allow a subset
+work on a sub list at the same time. Another approach would be to allow a subset
 of the number of cores to busy loop until the two child threads as described in
 Section~\ref{sec:init_threads}. The former approach seems more promising, but is
 left as something which can later be addressed.
 
 As it stands the only method of loading an array onto the processor is by hard
 coding the list into the .elf file. Although, this works to show the entire
-sorting algorithm, it would not be useful in an actual datacenter unless some
+sorting algorithm, it would not be useful in an actual data center unless some
 sort of communication protocol is established between the host CPU and the
 computational storage device. This communication is left as a problem, that
 later has to be solved.

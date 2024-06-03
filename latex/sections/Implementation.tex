@@ -8,7 +8,7 @@ implementations.
 \subsection{Dependencies}
 \subsubsection*{QEMU}
 \begin{lstlisting}[caption=Installing QEMU, label=lst:qemu_install, float]
-git clone git clone https://github.com/qemu/qemu  # Clone the qemu repo
+git clone git clone https://github.com/qemu/qemu  # Clone the QEMU repo
 cd qemu
 ./configure --target-list=riscv32-softmmu  # Configure the 32-bit RISC-V target
 make -j $(nproc)  # build the project with all num cores jobs
@@ -37,7 +37,7 @@ we can build the QEMU RISC-V system emulators by running the code
 provided in Listing~\ref{lst:qemu_install}\cite{RISC-V_GS}.
 
 \subsubsection*{LLVM and RISC-V-gnu-toolchain}
-Although the LLVM clang compiler comes with an available crosscompiler, I found
+Although the LLVM clang compiler comes with an available cross-compiler, I found
 that it often caused issues with missing header files compatible with my
 implementation. Furthermore, the lldb debugger was unable to provide a working
 debugger for the multicore remote debugging on QEMU. These are issues, which
@@ -50,12 +50,12 @@ sure to add it to PATH.
 
 \subsubsection*{libucontext}
 Libucontext is an open sourced library which provides the ucontext.h C api. Most
-noteably for the project of this thesis, it is able to deploy on bare metal
+notably for the project of this thesis, it is able to deploy on bare metal
 RISC-V 32 bit with newlib. Building the library from scratch lead to some issues
-on my end, and as such the necesarry files were copied and linked together with
+on my end, and as such the necessary files were copied and linked together with
 my implementation upon building. With this, I am able to use getcontext,
-makecontext and setcontext, which allows me to do the necesarry context
-swithcing described within Section~\ref{sec:Design}.
+makecontext and setcontext, which allows me to do the necessary context
+switching described within Section~\ref{sec:Design}.
 
 
 \subsection{Creating a linker script}
@@ -87,10 +87,9 @@ respectively. With that, we move on to define the SECTIONS element of the linker
 script.
 
 \begin{lstlisting}[caption=Linker scripts SECTIONS.]
-  SECTIONS
+SECTIONS {
+  .text : ALIGN(CONSTANT(MAXPAGESIZE))
   {
-    .text : ALIGN(CONSTANT(MAXPAGESIZE))
-    {
     *(.text .text.*)
   } > rom
 
@@ -208,7 +207,7 @@ definitions of the STACK\_SIZE.
 On lines \ref{line:_start}-\ref{line:pop} we give call frame information (cfi)
 for there being no return address and that the process starts here. Then when
 initializing the global pointer, we must specify options push, norelax, and pop
-as described in GNU Binutils. \cite{GNU_bin} After linker relaxation, this would
+as described in GNU binutils. \cite{GNU_bin} After linker relaxation, this would
 produce the expected code:
 \begin{lstlisting}
 auipc gp, %pcrel_hi(__global_pointer$)
@@ -272,8 +271,8 @@ Figure~\ref{fig:mem_layout}.
     \EndIf
     \State $ct.mid = ct.l + (ct.r - ct.l)/2$ \label{alg:left_right_end}
     \If{$i == depth-1$} \label{alg:depth_check}
-    \State \# Just regular mergesort
-    \State thread\_create(ct, mergesort)
+    \State \# Just regular merge sort
+    \State thread\_create(ct, merge sort)
     \Else
     \State \# Merge given section
     \State thread\_create(ct, parallel\_merge)
@@ -285,26 +284,26 @@ Figure~\ref{fig:mem_layout}.
   \end{algorithmic}
   \caption{Initialization of the threads}\label{algo:threads}
 \end{algorithm}
-A pseudocode implementation for initializing the parallel mergesort algorithm is
+A pseudocode implementation for initializing the parallel merge sort algorithm is
 provided in Algorithm~\ref{algo:threads}. Initially, it should be noted that it
 is assumed NUM\_CORES is a multiple of 2. Next, as described in
 Section~\ref{sec:singlevsmulti}, it is never in our interest to perform
 unnecessary context switching when working on a single core. Consequently, we
-can calculate the depth desired for our mergetree by employing the number of
+can calculate the depth desired for our merge tree by employing the number of
 cores. This may be achieved by taking $\log_2(NUM\_CORES)$ or, equivalently, by
 examining the most significant bit of NUM\_CORES since it is a multiple of 2. At
 line~\ref{alg:early_escape}, an early escape mechanism is implemented which
 takes care of the single thread that will have no parent thread. If we are not
-positioned at the very top level of the mergetree, we assign the variable 'k' as
+positioned at the very top level of the merge tree, we assign the variable 'k' as
 the number of threads for the given level and partition the list to create
-threads targeting a specific sublist. Lines \ref{alg:left_right} -
+threads targeting a specific sub list. Lines \ref{alg:left_right} -
 \ref{alg:left_right_end} address the task of determining which subsection of the
 list each thread is responsible for. Finally, line~\ref{alg:depth_check} ensures
 that we do not generate more active threads than what the available number of
 cores can effectively handle. Upon completion of the algorithm, a threads array
 will be produced containing $2 \cdot NUM\_CORES - 1$ different threads, each
 assigned with a specific subsection of the list to either merge or perform
-sequential mergesort on.
+sequential merge sort on.
 
 \subsection{Reducing synchronization}
 \begin{figure}

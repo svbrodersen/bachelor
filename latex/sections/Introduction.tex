@@ -13,11 +13,11 @@ past, which were hindered by said interface. As such, there was a rapid movement
 towards Open-channel SSDs that do not have a firmware Flash Translation Layer
 and instead leave the management of the physical SSD to the computer's operating
 system. This solves the issue mentioned previously but introduces further data
-transferring between the CPU and the SSD. However, in recent years, the
-discrepancy between a storage device's READ and WRITE operations and a CPU's
-ability to perform READ and WRITE memory operations has been ever increasing. If
-this trend continues, the CPU will soon become a bottleneck for performance in
-the data centers.
+transferring between the Central Processing Unit(CPU) and the SSD. However, in
+recent years, the discrepancy between a storage device's READ and WRITE
+operations and a CPU's ability to perform READ and WRITE memory operations has
+been ever increasing. If this trend continues, the CPU will soon become a
+bottleneck for performance in the data centers.
 
 A solution to the problem would be to offload the CPU and provide computation at
 the SSD level. Such a solution has been described as a computational storage
@@ -36,22 +36,25 @@ several open questions remain unanswered. (1) What type of computation should be
 performed by a storage device? (2) Is it possible to implement such computation
 on a bare-metal processor?
 
-\subsubsection*{What computation should be handled by a storage
-device?}\label{sec:computational}
-Although there are multiple cases of large data transfers between a CPU and an
-SSD, one of the more prominent is that of sorting a given array. Sorting plays
-an integral part in multiple programming scenarios. From being an integral part
-of many searching algorithms to its use in data science, fast sorting is a
-necessity for fast performance. With a running time of O(n log n), mergesort
-was the algorithm chosen for further investigation. Moreover, parallel versions
-of the mergesort algorithm should be feasible on bare-metal\footnote{Bare metal
-is described further in Section~\ref{sec:bare-metal}}.
+\begin{enumerate}
+  \item {\large \textbf{What computation should be handled by a storage
+    device?}}\label{sec:computational} \\
+    Although there are multiple cases of large data transfers between a CPU and
+    an SSD, one of the more prominent is that of sorting a given array. Sorting
+    plays an integral part in multiple programming scenarios. From being an
+    integral part of many searching algorithms to its use in data science, fast
+    sorting is a necessity for fast performance. With a running time of O(n log
+    n), mergesort was the algorithm chosen for further investigation. Moreover,
+    parallel versions of the mergesort algorithm should be feasible on
+    bare-metal\footnote{Bare metal is described further in
+    Section~\ref{sec:bare-metal}}.
+  \item {\large \textbf{ Is it feasible to implement such a computation on a
+    bare metal RISC-V processor?}} \\
+    As the main goal is to offload the primary CPU, we must investigate whether
+    it is at all possible to create a high-performance sorting algorithm on a
+    bare-metal processor.
+\end{enumerate}
 
-\subsubsection*{Is it feasible to implement such a computation on a bare metal
-RISC-V processor?}
-As the main goal is to offload the primary CPU, we must investigate whether it
-is at all possible to create a high-performance sorting algorithm on a
-bare-metal processor.
 
 \subsection{Approach}\label{sec:approach}
 For this thesis, an experimental approach was taken. First, a feasible design
