@@ -1,10 +1,68 @@
 \section{Design}\label{sec:Design}
 \subsection{Requirements}
-As described in Section~\ref{sec:computational} the design goal is to implement a
-mergesort algorithm running on a bare-metal RISC-V processor. The implementation
-should be usable for lists of varying sizes, and should be easily customisable
-given different hardwarde specifications within the RISC-V ecosystem. This
-should all be done without the need of an operating system as described in Section~\ref{sec:bare-metal}.
+As described in Section~\ref{sec:computational} the design goal is to implement
+a mergesort algorithm running on a bare-metal RISC-V processor. The
+implementation should be usable for lists of varying sizes, and should be easily
+customisable given different hardwarde specifications within the RISC-V
+ecosystem. This should all be done without the need of an operating system as
+described in Section~\ref{sec:bare-metal}.
+
+\subsection{Development platform}
+\subsubsection{freeRTOS}
+RTOS stands for Real-time operating system. The goal of a RTOS is to provide a
+small and simple design, which is easy to port to different architectures.
+Furthermore, freeRTOS provides fast execution speeds and methods for
+multi-threading, mutexes, sempaphores, software timers and more. FreeRTOS
+specifically is a leading open-source RTOS, and thus fits with the open-source
+idea provided with RISC-V aswell. Using a RTOS like freeRTOS would allow for
+creating a similar implementation of a parallelised mergesort as provided in
+this thesis. It would also facilitate easier portability across various
+architectures. However, using freeRTOS would always provide a small overhead
+compared with a complete bare-metal implementation and as the aim of this thesis
+was to asses the viability of high performance processsors in the data center, a
+more custom implementation was instead chosen.
+
+\subsubsection{Unikernel}
+A unikernel can be seen as a small footprint single-address space kernel. It
+allows a single application to run as if a fully fledge operating system is in
+the background. Thus, it removes many of the obstacles by developing on
+bare-metal as described in Section~\ref{sec:bare-metal}. Generally these are
+used to create specialized images, which bridge the gap between having a fully
+fledged operating system and working directly on bare-metal. However, in the
+field of RISC-V the most prominent seems to be Nanos. Nanos aims to provide an
+alternative than the Linux operating system, when creating images meant for
+virtual machines. This could be cloud computing where something like Docker
+might be used together with Linux today. Although unikernels can be created for
+specific hardware applications for now it seems sparse in the RISC-V
+developement environment.
+
+\subsubsection{Bare-metal}\label{sec:bare-metal}
+Also known as embedded system programming. Bare-metal programming is developing
+programs meant to be running without an underlying operating system. This allows
+for interlinking with the specific hardware, and allows for a more customisable
+program for the specific hardware specification. However, it comes with it's own
+set of drawbacks, most notably the lack of a standard library. Default memory
+allocation functions such as the \textbf{malloc} function in C are not
+implmented on bare-metal, as they require an operating system to function. Thus,
+it is left for the developer to tackle memory allocation and for more
+sophisticated programs the deallocation. Furthermore, standard printing for
+debugging is also left for the developer to implement on their own, and looking
+into hardware specifications on how to print with for example uart. \cite{uart}
+\footnote{The QEMU virt machine is compatible with UART, and anything sent to
+  stdout is per default redirected to the terminal instance running the QEMU
+  virt machine. Later in Section~\ref{sec:validate} it is instead redirected to
+  a file and used for debuggging the implementation.}
+
+The management of memory often leads to some odd errors when attempting to
+debug. Most notably, where one might generally be used to gdb to detect, when we
+have reached a stack overflow that is not possible when working on bare-metal.
+It is the operating system, which usually tells a user-level program, that it is
+outside of its allocated memory space, but as we have no operating system
+unless we ourselves implement some error checking, then there is none. Instead
+errors show up as variables getting updated without intentionally meaning too.
+
+However, with the benefits of customization bare-metal was chosen as the
+developement platform.
 
 
 \subsection{Single vs Multicore}\label{sec:singlevsmulti}
@@ -16,8 +74,6 @@ counterpart was what lead to the choice of a multicore development for the
 implementation in this thesis. \cite{comp_parallel} This choice gives way for
 challenges not present in serial computing and as the goal is to access the
 viability of high-performance sorting algorithms on bare-metal.
-
-
 
 
 \subsubsection*{Working on multiple cores}

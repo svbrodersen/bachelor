@@ -1,5 +1,4 @@
 \section{Evaluation}
-
 \subsection{Testing}
 Testing has been accomplished by providing a random\_numbers.py file. With three
 separate integer parameters, it creates a random list using Python's standard
@@ -22,7 +21,7 @@ This gives the following work flow for creating and running a test:
   \item run "make test" to generate the .elf file and host qemu. This step will
     create a test.txt file, as the stdout of qemu is redirected to said file.
   \item run "python3 validate.py". This reads the test.txt file, which sorts the
-    unsorted array with pythons built in sort function, and compares that sorted
+    unsorted array with Python's built in sort function, and compares that sorted
     array with the one produced by the .elf file running in qemu.
 \end{itemize}
 
@@ -54,7 +53,7 @@ the same methodology used when debugging multithreaded execution. The workflow s
   \item Change directory to src/bare\_metal.
   \item Initialize the alist.c file with an array and a given size.
   \item Run "make debug" to initialize the QEMU virtual machine.
-  \item In a seperate terminal instance run "riscv32-unknown-elf-gdb". This will
+  \item In a separate terminal instance run "riscv32-unknown-elf-gdb". This will
     automatically run the commands in the ".gdbinit" file and connect to the
     QEMU virtual machine.
   \item Break at mark\_done. This function is run whenever a given thread job is
@@ -74,19 +73,18 @@ to one fourth of the list, as the number of cores available is 4.
       \cline{2-7}
       Lower:Upper:Number & 2 & 4 & 8 & 16 & 32 & 64\\
       \hline
-      -100:0:100 & true & true & true & true & true & true \\
+      -100:0:100 & pass & pass & pass & pass & pass & pass \\
       \hline
-      0:100:100 & true & true & true & true & true & true\\
+      0:100:100 & pass & pass & pass & pass & pass & pass\\
       \hline
-      -50:50:100 & true & true & true & true & true & true \\
+      -50:50:100 & pass & pass & pass & pass & pass & pass \\
       \hline
-      -1000:1000:1000 & true* & true* & true* & true* & true* & **true
+      -1000:1000:1000 & pass* & pass* & pass* & pass* & pass* & *pass
     \end{tabular} \\
     \vspace{1em}
     \raggedright{\footnotesize *This run initially failed due to stack overflow. After
     increasing the size of STACK\_SIZE to 8192 bytes, THREAD\_STACK\_SIZE to
   8192 and GLOBAL\_STACK\_SIZE 10MB bytes it worked.} \\
-    \raggedright{\footnotesize **This run passed }
   \end{center}
 \end{table}
 
@@ -97,7 +95,7 @@ invoking python3 validate.py reads this file to ascertain if sorting was
 performed correctly. In Table 6, an overview of some tests I conducted can be
 seen. On the left, the formatting is specified as the lower bound of randomly
 selected numbers, the upper bound, and the number of random elements in the
-list. A value of true signifies that the validate.py file executed without
+list. A value of pass signifies that the validate.py file executed without
 throwing an assertion error. The tests were initially performed with a global
 stack of 0x800,\footnote{defined in ram.ld. Equates to 20,48 bytes.} a
 STACK\_SIZE of 2048 and a THREAD\_STACK\_SIZE of 1024. If a failure occurred,
@@ -107,12 +105,12 @@ modifications were made to these three values in an attempt to pass the test.
 The implementation proposed in this thesis is more a proof of concept, and as
 such comes with a few shortcomings. Firstly, with the current implementation
 there is a heavy reliance on the GLOBAL\_STACK\_SIZE. The array to be sorted is
-hardcoded and saved on the global stack, which with large arrays can take up a
-lot of space. Furthermore, the array of thread jobs is also saved on the global
-stack. with the current implementation each thread type has a size of 848 bytes.
-Thus, a solution which allows for less overall use of the global stack, or a
-better method of detecting the size of the global stack would allow for a more
-reliable solution.
+hardcoded and stored on the global stack, which can occupy substantial space
+when dealing with large arrays. Furthermore, the array of thread jobs is also
+saved on the global stack. with the current implementation each thread type has
+a size of 848 bytes. Thus, a solution that reduces overall overall usage of the
+global stack, or a better method of detecting the size of the global stack would
+allow for a more reliable solution.
 
 Whenever a mergesort splits the into to halves, there is created a new thread
 with an allocated stack size of THREAD\_STACK\_SIZE. The top level thread job,
@@ -129,12 +127,23 @@ so the thread stack size might instead be represented by:
 Where i is the depth level, and C is some constant used to store the variables
 needed during computation. This constant C would then be different depending on
 whether the given thread has to perform mergesort or just merge over the array.
-Expermiments determining the size of C could be carried out to optimize the
+Experiments determining the size of C could be carried out to optimize the
 memory better.
+
+As it stands the implementation also requires that the number of cores is a
+power of 2. This is due to how the initialization builds the threads up. This
+issue has a few ways it can be fixed. Firstly, instead of stopping at the same
+level for all the merge sorts, it could theoretically split only a few of the
+sublist given, such that instead of having to be a power of 2 it would instead
+only require that it is a multiple of 2. This would still allow for all cores to
+work on a sublist at the same time. Another approach would be to allow a subset
+of the number of cores to busy loop until the two child threads as described in
+Section~\ref{sec:init_threads}. The former approach seems more promising, but is
+left as something which can later be addressed.
 
 As it stands the only method of loading an array onto the processor is by hard
 coding the list into the .elf file. Although, this works to show the entire
-sorting algorithm, it would not be usefull in an actual datacenter unless some
+sorting algorithm, it would not be useful in an actual datacenter unless some
 sort of communication protocol is established between the host CPU and the
 computational storage device. This communication is left as a problem, that
 later has to be solved.
