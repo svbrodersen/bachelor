@@ -9,49 +9,50 @@ described in Section~\ref{sec:bare-metal}.
 
 \subsection{Development platform}
 \subsubsection{freeRTOS}
-RTOS stands for Real-time operating system. The goal of a RTOS is to provide a
+RTOS stands for Real-time operating system. The goal of an RTOS is to provide a
 small and simple design, which is easy to port to different architectures.
 Furthermore, freeRTOS provides fast execution speeds and methods for
-multi-threading, mutexes, semaphores, software timers and more. FreeRTOS
-specifically is a leading open-source RTOS, and thus fits with the open-source
-idea provided with RISC-V as well. Using a RTOS like freeRTOS would allow for
-creating a similar implementation of a parallelised merge sort as provided in
+multi-threading, mutexes, semaphores, software timers, and more. FreeRTOS
+specifically is a leading open-source RTOS, fitting well with the open-source
+idea provided with RISC-V as well. Using an RTOS like freeRTOS would allow for
+creating a similar implementation of a parallelized merge sort as provided in
 this thesis. It would also facilitate easier portability across various
 architectures. However, using freeRTOS would always provide a small overhead
-compared with a complete bare-metal implementation and as the aim of this thesis
-was to asses the viability of high performance processors in the data center, a
+compared to a complete bare-metal implementation and as the aim of this thesis
+was to assess the viability of high-performance processors in the data center, a
 more custom implementation was instead chosen.
 
 \subsubsection{Unikernel}
 A unikernel can be seen as a small footprint single-address space kernel. It
-allows a single application to run as if a fully fledge operating system is in
+allows a single application to run as if a fully-fledged operating system is in
 the background. Thus, it removes many of the obstacles by developing on
-bare-metal as described in Section~\ref{sec:bare-metal}. Generally these are
-used to create specialized images, which bridge the gap between having a fully
-fledged operating system and working directly on bare-metal. However, in the
-field of RISC-V the most prominent seems to be Nanos. Nanos aims to provide an
-alternative than the Linux operating system, when creating images meant for
+bare-metal, as described in Section~\ref{sec:bare-metal}. Generally, these are
+used to create specialized images, which bridge the gap between having a
+fully-fledged operating system and working directly on bare-metal. However, in
+the field of RISC-V, the most prominent seems to be Nanos. Nanos aims to provide
+an alternative than the Linux operating system when creating images meant for
 virtual machines. This could be cloud computing where something like Docker
 might be used together with Linux today. Although unikernels can be created for
-specific hardware applications for now it seems sparse in the RISC-V
-development environment.
+specific hardware applications, it seems sparse in the RISC-V development
+environment.
 
 \subsubsection{Bare-metal}\label{sec:bare-metal}
-Also known as embedded system programming. Bare-metal programming is developing
-programs meant to be running without an underlying operating system. This allows
-for interlinking with the specific hardware, and allows for a more customisable
-program for the specific hardware specification. However, it comes with it's own
-set of drawbacks, most notably the lack of a standard library. Default memory
-allocation functions such as the \textbf{malloc} function in C are not
-implemented on bare-metal, as they require an operating system to function. Thus,
-it is left for the developer to tackle memory allocation and for more
-sophisticated programs the deallocation. Furthermore, standard printing for
-debugging is also left for the developer to implement on their own, and looking
-into hardware specifications on how to print with for example UART. \cite{uart}
-\footnote{The QEMU virt machine is compatible with UART, and anything sent to
-  stdout is per default redirected to the terminal instance running the QEMU
-  virt machine. Later in Section~\ref{sec:validate} it is instead redirected to
-  a file and used for debugging the implementation.}
+Also known as embedded system programming, bare-metal programming involves
+developing applications meant to run without an underlying operating system. This
+allows for interlinking with specific hardware and enables a more customizable
+program tailored to the hardware's specifications. However, this approach comes
+with drawbacks, such as the lack of a standard library. Default memory
+allocation functions like malloc in C are not implemented on bare-metal systems
+because they require an operating system to function. Consequently, developers
+must handle memory allocation and deallocation themselves for more advanced
+programs. Additionally, standard printing for debugging purposes is left up to
+the developer to implement, requiring them to understand hardware
+specifications, such as UART printing. \cite{uart}
+\footnote{The QEMU virt machine is compatible with UART, redirecting any output
+  from stdout
+to the terminal instance running the QEMU virt machine by default. In
+Section~\ref{sec:validate}, this redirection is used for debugging the
+implementation, with output being redirected to a file instead.}
 
 The management of memory often leads to some odd errors when attempting to
 debug. Most notably, where one might generally be used to gdb\footnote{gdb is
@@ -63,26 +64,24 @@ have no operating system unless we ourselves implement some error checking, then
 there is none. Instead errors show up as variables getting updated without
 intentionally meaning too.
 
-However, with the benefits of customization bare-metal was chosen as the
+However, with the benefits of customization, bare-metal was chosen as the
 development platform.
 
-
 \subsection{Single vs Multicore}\label{sec:singlevsmulti}
-The merge sort algorithm can be completed both with serial and parallel
-computing. Merge sort in itself has a recursive pattern in dividing the list into
-subsections and sorting each subsection for itself. This together with
+The merge sort algorithm can be executed both with serial and parallel
+computing. Merge sort, in itself, has a recursive pattern of dividing the list
+into subsections and sorting each subsection for itself. This, combined with
 parallelized algorithms generally showing better performance than their serial
-counterpart was what lead to the choice of a multicore development for the
-implementation in this thesis. \cite{comp_parallel} This choice gives way for
-challenges not present in serial computing and as the goal is to access the
-viability of high-performance sorting algorithms on bare-metal.
-
+counterpart, led to the choice of a multicore development for the implementation
+in this thesis. \cite{comp_parallel} This decision provides new challenges not
+present in serial computing, as the goal is to access the viability of
+custom sorting algorithms on bare-metal.
 
 \subsubsection*{Working on multiple cores}
 The first method for implementing a multicore merge sort involved using
 threading and a scheduler. When we split a given list into two halves, we would
-create a thread assigned to sort each sub list. These two lists would be added to
-the queue of available threads, after which the job of merging the two lists
+create a thread assigned to sort each sub list. These two lists would be added
+to the queue of available threads, after which the job of merging the two lists
 could be added to the back of the queue. The merge job would have to check
 whether the two sub lists have finished being sorted, but otherwise, assuming a
 round-robin scheduler, it would automatically allow for the correct ordering for
@@ -103,9 +102,9 @@ following design due to these challenges.
 To simplify initialization, a single core would have the job of splitting the
 initial array into sub lists until every core has a single sub list to work on.
 While doing the splitting, it would also create threads which have the job of
-merging the sub lists once they are finished. This approach would remove the need
-for a queue and scheduler in the first place, as each core would, through its
-own core ID, know what thread it would have to complete. The issue of
+merging the sub lists once they are finished. This approach would remove the
+need for a queue and scheduler in the first place, as each core would, through
+its own core ID, know what thread it would have to complete. The issue of
 communication with the parent merge would still exist, but the same index used
 to find the thread initially could be used to find the parent as well. The
 implementation of this approach can be seen in the Implementation section.
@@ -116,15 +115,14 @@ Context switching is an integral part of multithreading. It is the act of
 storing the state of the process so that it can later be restored and resume
 execution at a later point. Not only can one save the state of the current
 process, one can also modify the context such that instead of continuing at the
-point of initialization it instead continues execution at a target function.
+point of initialization, it instead continues execution at a target function.
 Modifying specific registers would also allow for preset values to be loaded as
 function parameters. This is done by saving the values of the registers, such
 that they all can be restored at a later point to continue execution.
 
-When creating the thread structure mentioned previously, it
-would then be possible to create context for computing both the merge sort and
-merge for a given section of a sub list.
-
+When creating the thread structure, as mentioned previously, it would then be
+possible to create context for computing both the merge sort and merge for a
+given section of a sublist.
 
 
 \subsection{Memory}
@@ -144,21 +142,21 @@ qemu-system-riscv32 -machine virt \
 sudo apt install dtc
 dtc -I dtb -O dts -o riscv32.dts riscv32.dtb
 \end{lstlisting}
-Opening the file up in your favorite text editor you should see a lot of
-information regarding the qemu-system-riscv32 virtual machine. First we note,
-that the Devicetree specification states, that the memory node describes the
-physical memory layout for the system. As we want the programs stack to live
-within the memory section, this is section we should find information about
-starting address and length of the memory section. The memory node has two
-required sections, first the device\_type, which must simply be 'memory', and
-secondly the reg value. The reg value ''Consists of an arbitrary number of
-address and size pairs that specify the physical address and size of the memory
-ranges' \cite{DTS}. Furthermore, it is stated, that the property name reg has
-the value encoded as a number of (address, length) pairs. It also states, that
-the number of <u32> cells required to specify the address and length are
-bus-specific and are specified by the \#address-cells and \#size-cells
-properties in the parent of the device node. Looking through our riscv32.dts
-file, we find the relevant information to be:
+Opening the file up in your favorite text editor, you should see a lot of
+information regarding the qemu-system-riscv32 virtual machine. First, note that
+the Devicetree specification states that the memory node describes the physical
+memory layout for the system. As we want the programs stack to live within the
+memory section, this is the section we should find information about starting
+address and length of the memory section. The memory node has two required
+sections: first, the device\_type, which must simply be 'memory,' and secondly,
+the reg value. The reg value consists of an arbitrary number of address and size
+pairs that specify the physical address and size of the memory ranges
+\cite{DTS}. Furthermore, it is stated that the property name reg has the value
+encoded as a number of <u32> cells required to specify the address and length,
+which are bus- specific and are specified by the \#address-cells and
+\#size-cells properties in the parent of the device node. Looking through our
+riscv32.dts file, we find the relevant information to be:
+
 \begin{lstlisting}
 #address-cells = <0x02>;
 #size-cells = <0x02>;
@@ -198,24 +196,23 @@ saving static values such as .bss and .data sections
   \caption{Memory layout of the QEMU virt machine with a core stack size of 2048
   bytes and a thread stack size of 1024}\label{fig:mem_layout}
 \end{figure}
- As mentioned, all created threads need to have a separate stack for context
- switching to work. Thus, when creating a thread, we have to allocate some
- location in RAM to the task the thread has to perform. In
- Figure~\ref{fig:mem_layout}, this memory area is denoted with the "thread x
- STACK" area. As a design choice, I chose to separate the thread stacks in the
- opposite end of RAM from where the core stacks would be allocated. That way, if
- I ran into a thread stack overflow, I would know it was caused by the threads
- themselves and vice versa with the core stacks. Different sizes of thread
- stacks have not been tested, but a size of 1024 seemed to work without issues
- on relatively small lists.
+As mentioned, all created threads need to have a separate stack for context
+switching to work. Thus, when creating a thread, we have to allocate some
+location in RAM to the task the thread has to perform. In
+Figure~\ref{fig:mem_layout}, this memory area is denoted with the "thread x
+STACK" area. As a design choice, I chose to separate the thread stacks in the
+opposite end of RAM from where the core stacks would be allocated. That way, if
+I ran into a thread stack overflow, I would know it was caused by the threads
+themselves and vice versa with the core stacks. Different sizes of thread stacks
+have not been tested, but a size of 1024 seemed to work without issues on
+relatively small lists.
 
- At the end of the RAM section is where the individual core stacks would be
- allocated. Again, the specific size has not been tested, but with 8 cores and
- the chosen stack size of 2048 bytes, assuming a thread stack size of 1024
- bytes, we would be able to have approximately 130.032 individual thread stacks
- without the two different stack areas overlapping.\footnote{$0x88000000 -
- 8*0x800 = 0x87ffc000$ would be the end of core stacks. $0x87ffc000 - x*0x400 =
-0x80100000 \implies x = 130.032$. However, as the .data, .bss and .text sections
-might be saved in the RAM area by the linker script, we don't know the
+At the end of the RAM section is where the individual core stacks would be
+allocated. Again, the specific size has not been tested, but with 8 cores and
+the chosen stack size of 2048 bytes, assuming a thread stack size of 1024
+bytes, we would be able to have approximately 130.032 individual thread stacks
+without the two different stack areas overlapping.\footnote{$0x8800000 -
+8*0x800 = 0x87ffc000$ would be the end of core stacks. $0x87ffc000 - x*0x400 =
+0x80100000 \implies x = 130.032$. However, as the .data, .bss and .text
+sections might be saved in the RAM area by the linker script, we don't know the
 definitive value of \_stack\_size until the program is fully compiled.}
-
