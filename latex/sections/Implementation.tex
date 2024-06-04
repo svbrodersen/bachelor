@@ -32,41 +32,41 @@ sudo make -j$(nproc)
 cd ..
 popd
 \end{lstlisting}
-Following the instructions by RISC-V's getting started guide
-we can build the QEMU RISC-V system emulators by running the code
-provided in Listing~\ref{lst:qemu_install}\cite{RISC-V_GS}.
+Following the instructions from RISC-V's getting started guide, we can build the
+QEMU RISC-V system emulators by running the code provided in
+Listing~\ref{lst:qemu_install}\cite{RISC-V_GS}.
 
 \subsubsection*{LLVM and RISC-V-gnu-toolchain}
-Although the LLVM clang compiler comes with an available cross-compiler, I found
+Although the LLVM Clang compiler comes with an available cross-compiler, I found
 that it often caused issues with missing header files compatible with my
-implementation. Furthermore, the lldb debugger was unable to provide a working
-debugger for the multicore remote debugging on QEMU. These are issues, which
-might only be affecting me, as information revolving the issues were scarce. As
-such, the following steps of building llvm and the RISC-V 32-bit gdb might be
-obsolete, but are left here as a known working toolchain. Running the code in
-Listing~\ref{lst:llvm_install} installs a RISC-V compatible clang compiler and
-gdb debugger in the /opt/riscv/ directory. For the use outside this folder, make
+implementation. Furthermore, the LLDB debugger was unable to provide a working
+debugger for multicore remote debugging on QEMU. These are issues which might
+only be affecting me, as information revolving around the issues was scarce. As
+such, the following steps of building LLVM and the RISC-V 32-bit GDB may be
+obsolete but are left here as a known working toolchain. Running the code in
+Listing~\ref{lst:llvm_install} installs a RISC-V compatible Clang compiler and
+GDB debugger in the /opt/riscv/ directory. For use outside this folder, make
 sure to add it to PATH.
 
 \subsubsection*{libucontext}
-Libucontext is an open sourced library which provides the ucontext.h C api. Most
-notably for the project of this thesis, it is able to deploy on bare metal
-RISC-V 32 bit with newlib. Building the library from scratch lead to some issues
-on my end, and as such the necessary files were copied and linked together with
-my implementation upon building. With this, I am able to use getcontext,
-makecontext and setcontext, which allows me to do the necessary context
+Libucontext is an open-sourced library that provides the ucontext.h C API. Most
+notably for the project of this thesis, it can deploy on bare metal RISC-V
+32-bit with newlib. Building the library from scratch led to some issues on my
+end, and as such, the necessary files were copied and linked together with my
+implementation upon building. With this, I am able to use getcontext,
+makecontext, and setcontext, which allows me to do the necessary context
 switching described within Section~\ref{sec:Design}.
 
 
 \subsection{Creating a linker script}
-The linker script is used to tell the linker which parts of the file to include
-in the final output file, as well as where each section is stored in memory. As
-we are working on an embedded system, we have to stray from the default and
-create our own linker script. The clang uses the LLVM lld linker, which is
-compatible with the general linker scripts implementations of the GNU ld linker
-\cite{llvm-org-linker}. Thus, we can make use of the GNU ld manual for modifying
-the linker script in freeRTOS for our bare metal application instead of writing
-the entire thing from scratch \cite{GNU-linker}.
+The linker script is used to inform the linker which parts of the file to
+include in the final output file, as well as where each section is stored in
+memory. As we are working on an embedded system, we have to deviate from the
+default and create our own linker script. The clang uses the LLVM lld linker,
+which is compatible with general linker scripts implementations of the GNU ld
+linker \cite{llvm-org-linker}. Therefore, we can make use of the GNU ld manual
+for modifying the linker script in freeRTOS for our bare metal application
+instead of writing the entire thing from scratch \cite{GNU-linker}.
 
 \begin{lstlisting}[caption=Memory area defined in linker script]
 OUTPUT_ARCH('riscv')
@@ -126,12 +126,12 @@ SECTIONS {
 }
 \end{lstlisting}
 The text, rodata, data and bss sections follow the same general procedure. We
-align the section to the maximum size of a page, and match all the data which we
+align the section to the maximum size of a page and match all the data which we
 care about for the given sections. By specifying the > rom, we tell the linker
-to save the given section in the rom section and the same is true for the > ram.
-From the Figure~\ref{fig:mem_layout}, we can see the ram and rom correspond to
-the ROM and RAM section of the figure.\footnote{rom stands for read-only memory,
-and ram stands for random-access memory. Generally it is not necessarily needed
+to save the given section in the ROM section and the same is true for the > ram.
+From the Figure~\ref{fig:mem_layout}, we can see the RAM and ROM correspond to
+the RAM and ROM section of the figure.\footnote{ROM stands for Read-Only Memory,
+and RAM stands for Random-Access Memory. Generally it is not necessarily needed
 to split the two up as done here, but it is a good practice to separate what can
 change and what cannot change in memory.}
 
@@ -145,13 +145,13 @@ sizes.
 The last section is the .stack section. We align the starting of the
 \_stack\_start with 8 bytes. Generally not necessary in this instance, but still
 a good custom. This is the point from where each thread stack will be allocated.
-Next, we specify that the \_stack\_top will reside at the end of the ram
-section, such that we can allocate a stack for each core with an offset.
+Next, we specify that the \_stack\_top will reside at the end of the RAM section
+such that we can allocate a stack for each core with an offset.
 
 \subsection{Getting into the main function}\label{sec:get_main}
-In the linker script we specified the entry point of our program as \_start.
-Next up is implementing said entry point in assembly. Within a new assembly file
-we add the following.
+In the linker script, we specified the entry point of our program as `\_start`.
+Next up is implementing this entry point in assembly. In a new assembly file, we
+add the following:
 \begin{lstlisting}[numbers=left, escapechar=|, caption=Assembly code for getting
 to main function.]
 .extern main |\label{line:header_start}|
@@ -204,11 +204,11 @@ outside of the file, that \_start is a global label and that \_start is a
 function type. At last, we include the defines.h file, which includes
 definitions of the STACK\_SIZE.
 
-On lines \ref{line:_start}-\ref{line:pop} we give call frame information (cfi)
-for there being no return address and that the process starts here. Then when
-initializing the global pointer, we must specify options push, norelax, and pop
-as described in GNU binutils. \cite{GNU_bin} After linker relaxation, this would
-produce the expected code:
+On lines \ref{line:_start}-\ref{line:pop} we provide call frame information
+(CFI) for there being no return address and that the process begins here. Then
+when initializing the global pointer, we must specify options push, norelax, and
+pop as described in GNU binutils. \cite{GNU_bin} After linker relaxation, this
+would produce the anticipated code:
 \begin{lstlisting}
 auipc gp, %pcrel_hi(__global_pointer$)
 addi gp, gp, %pcrel_lo(__global_pointer$)
@@ -216,27 +216,27 @@ addi gp, gp, %pcrel_lo(__global_pointer$)
 
 On lines \ref{line:stack_top}-\ref{line:break_zero}, we load the value of
 \_stack\_top, which the linker provides through the linker script defined
-previously, and save it into the stack pointer(sp) register. We read the current
-machine hart identifier(mhartid), which contains a unique identifier for each
-core on the processor. This is what allows for differentiation between the
-different cores. Line \ref{line:break_zero} moves execution to line
+previously, and save it into the stack pointer (sp) register. We read the
+current machine hart identifier (mhartid), which contains a unique identifier
+for each core on the processor. This is what allows for differentiation between
+the different cores. Line \ref{line:break_zero} moves execution to line
 \ref{line:STACK_SIZE} if the machine hart identifier is not 0. As such, only
 mhartid 0 will be allowed to continue execution to line \ref{line:jump_main},
 where it jumps to the main function.
 
 All other cores continue execution at line \ref{line:STACK_SIZE}, where they
-load the value STACK\_SIZE defined in defines.h into the temporary register t1. We also load immediately(li) the value
-1 into the temporary register r1. Line \ref{line:align_stack} aligns the current
-value in the stack pointer to -16. Afterwards, we compare the value in
-register a0, which holds the value of the mhartid, to the value in t0. If they
-are equal, we jump to line \ref{line:jump_secondary}, which makes us jump to
-the externally defined secondary\_main function. Otherwise, we continue on
-line \ref{line:sub_stack}, where we subtract the register t1 (STACK\_SIZE)
-from the value stored in the sp register. We increment the value in t0 by one,
-and jump back to line \ref{line:align_stack}. With this loop, we are setting
-up a stack of size STACK\_SIZE for all the different cores defined, such that
-we get the desired memory layout shown at the top of
-Figure~\ref{fig:mem_layout}.
+load the value STACK\_SIZE defined in defines.h into the temporary register t1.
+We also load immediately(li) the value 1 into the temporary register r1. Line
+\ref{line:align_stack} aligns the current value in the stack pointer to 16.
+Afterwards, we compare the value in register a0, which holds the value of the
+mhartid, to the value in t0. If they are equal, we jump to line
+\ref{line:jump_secondary}, which makes us jump to the externally defined
+secondary\_main function. Otherwise, we continue on line \ref{line:sub_stack},
+where we subtract the register t1 (STACK\_SIZE) from the value stored in the sp
+register. We increment the value in t0 by one, and jump back to line
+\ref{line:align_stack}. With this loop, we are setting up a stack of size
+STACK\_SIZE for all the different cores defined, such that we get the desired
+memory layout shown at the top of Figure~\ref{fig:mem_layout}.
 
 \subsection{Initializing the thread jobs}\label{sec:init_threads}
 \begin{algorithm}
@@ -283,9 +283,9 @@ Figure~\ref{fig:mem_layout}.
   \end{algorithmic}
   \caption{Initialization of the threads}\label{algo:threads}
 \end{algorithm}
-A pseudocode implementation for initializing the parallel merge sort algorithm is
-provided in Algorithm~\ref{algo:threads}. Initially, it should be noted that it
-is assumed NUM\_CORES is a multiple of 2. Next, as described in
+A pseudocode implementation for initializing the parallel merge sort algorithm
+is provided in Algorithm~\ref{algo:threads}. Initially, it should be noted that
+it is assumed NUM\_CORES is a multiple of 2. Next, as described in
 Section~\ref{sec:singlevsmulti}, it is never in our interest to perform
 unnecessary context switching when working on a single core. Consequently, we
 can calculate the depth desired for our merge tree by employing the number of
@@ -293,8 +293,8 @@ cores. This may be achieved by taking $\log_2(NUM\_CORES)$ or, equivalently, by
 examining the most significant bit of NUM\_CORES since it is a multiple of 2. At
 line~\ref{alg:early_escape}, an early escape mechanism is implemented which
 takes care of the single thread that will have no parent thread. If we are not
-positioned at the very top level of the merge tree, we assign the variable 'k' as
-the number of threads for the given level and partition the list to create
+positioned at the very top level of the merge tree, we assign the variable 'k'
+as the number of threads for the given level and partition the list to create
 threads targeting a specific sub list. Lines \ref{alg:left_right} -
 \ref{alg:left_right_end} address the task of determining which subsection of the
 list each thread is responsible for. Finally, line~\ref{alg:depth_check} ensures
@@ -309,19 +309,20 @@ sequential merge sort on.
   \begin{center}
     \includegraphics[width=0.85\textwidth]{figures/mergesort.png}
   \end{center}
-  THREADS := [(A, 0, 8, MERGE), (A, 0, 4, MERGE), (A, 4, 8, MERGE), (A, 0, 2, MERGESORT),
-  (A, 2, 4, MERGESORT), (A, 4, 6, MERGESORT), (A, 6, 8, MERGESORT)]
-  \caption{Example of partitioning a random list using Algorithm~\ref{algo:threads}}\label{fig:mergesort}
+  THREADS := [(A, 0, 8, MERGE), (A, 0, 4, MERGE), (A, 4, 8, MERGE), (A, 0, 2,
+  MERGESORT), (A, 2, 4, MERGESORT), (A, 4, 6, MERGESORT), (A, 6, 8, MERGESORT)]
+  \caption{Example of partitioning a random list using
+  Algorithm~\ref{algo:threads}}\label{fig:mergesort}
 \end{figure}
 
-The idea behind initializing the threads array as described in
-Section~\ref{sec:init_threads}, is  that we can reduce the need for
-synchronization between threads, once the partitioning of the list is done. An
+The idea behind initializing the threads array, as described in
+Section~\ref{sec:init_threads}, is that we can reduce the need for
+synchronization between threads once the partitioning of the list is done. An
 example can be seen in Figure~\ref{fig:mergesort} with the corresponding
 finished THREADS array. This example would be on a system with 4 cores. As seen
-in Section~\ref{sec:get_main} each core has a unique \textbf{id}, mhartid, from 0 to 3.
-With this each core can index into the list with the number of jobs it has
-already completed and the length of the array list, such that:
+in Section~\ref{sec:get_main}, each core has a unique \textbf{id}, mhartid, from 0 to 3.
+With this, each core can index into the list with the number of jobs it has
+already completed and the length of the array list such that:
 \begin{align}
   index &= LENGTH(A) - \text{NUM\_COMPLETED\_JOBS}\cdot id
 \end{align}
@@ -330,6 +331,5 @@ consider the state of any other thread, as the job is preassigned during the
 initialization. There are two caveats to this. Each merge must still wait on the
 child thread (the direction of the arrow in Figure~\ref{fig:mergesort}) to
 finish before starting a merge.
-
 
 
