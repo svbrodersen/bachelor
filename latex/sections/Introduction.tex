@@ -28,7 +28,7 @@ sorting algorithm running on a stand-alone bare metal processor has been
 investigated.
 
 
-\subsection{Problem}
+\subsection{Problem}\label{sec:problem}
 For computational storage to be a viable solution for meeting the ever-growing
 demand for massive data computations, it is essential to investigate whether
 implementing a processor designed for such a purpose is feasible. Consequently,
@@ -44,10 +44,10 @@ on a bare-metal processor?
     plays an integral part in multiple programming scenarios. From being an
     integral part of many searching algorithms to its use in data science, fast
     sorting is a necessity for fast performance. With a running time of O(n log
-    n), mergesort was the algorithm chosen for further investigation. Moreover,
-    parallel versions of the mergesort algorithm should be feasible on
+    n), merge sort was the algorithm chosen for further investigation. Moreover,
+    parallel versions of the merge sort algorithm should be feasible on
     bare-metal\footnote{Bare metal is described further in
-    Section~\ref{sec:bare-metal}}.
+    Section~\ref{sec:bare-metal}.}.
   \item {\large \textbf{ Is it feasible to implement such a computation on a
     bare metal RISC-V processor?}} \\
     As the main goal is to offload the primary CPU, we must investigate whether
@@ -67,10 +67,10 @@ virtual machine where the code is loaded via a general loader.
 \subsection{Contribution}
 For this thesis, the following contributions have been made:
 \begin{enumerate}
-  \item Present available design patterns when developeing a computational
+  \item Present available design patterns when developing a computational
     storage device
-  \item Designed and implement a specific mergesort algortihm meant for running of a
-    bare-metal processor as desribed in Section~\ref{sec:bare-metal}.
+  \item Designed and implement a specific merge sort algorithm meant for running of a
+    bare-metal processor as described in Section~\ref{sec:bare-metal}.
   \item Evaluate the implementation on lists of varying sizes.
   \item Evaluate the viability of custom bare-metal applications for later use
     as a Computational Storage Device.
@@ -85,7 +85,7 @@ structure for a FIFO embedded system merging. This implementation assumes two
 input lists of two sorted arrays and they later propose a hybrid solution using
 Insertion and FIFO based merge sorting. With this they find that the FPGA hybrid
 insertion and FIFO-based merge sorting sees speed-ups between 1.6 and 15 time
-compared to a quicksort pure software solution.
+compared to a quick sort pure software solution.
 
 Jackson et al. \cite{flash_sorting} look for faster sorting algorithms used for
 flash memory embedded devices. They provide a merge sort for sorting with
@@ -96,7 +96,7 @@ and execution time by about 30\%.
 
 Lobo et al. \cite{merge_sort} compare the performance of different types of
 merge sort algorithms. Within their testing they find that the serial and
-parallel mergesort discussed within this paper have a similar amount of resource
-utilization, but find the delay of the parallel mergesort to be a lot smaller
+parallel merge sort discussed within this paper have a similar amount of resource
+utilization, but find the delay of the parallel merge sort to be a lot smaller
 than the serial counterpart. As such, they theorize that this implies the
 parallel execution to be much faster than the serial.

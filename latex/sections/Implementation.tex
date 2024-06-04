@@ -138,7 +138,7 @@ change and what cannot change in memory.}
 In the data section, we also provide a global pointer, which is used to access
 global variables within our later code implementation. The global pointer is
 used together with an offset to save global variables. As such we allow for
-0x800=20,48 bytes of global variables. With the implementation being quite
+0x800=2048 bytes of global variables. With the implementation being quite
 reliant on global variables, it might need to be increased for lists of large
 sizes.
 
@@ -225,8 +225,7 @@ mhartid 0 will be allowed to continue execution to line \ref{line:jump_main},
 where it jumps to the main function.
 
 All other cores continue execution at line \ref{line:STACK_SIZE}, where they
-load the value STACK\_SIZE defined in defines.h into the temporary register t1.
-We also load immediately(li) the value
+load the value STACK\_SIZE defined in defines.h into the temporary register t1. We also load immediately(li) the value
 1 into the temporary register r1. Line \ref{line:align_stack} aligns the current
 value in the stack pointer to -16. Afterwards, we compare the value in
 register a0, which holds the value of the mhartid, to the value in t0. If they

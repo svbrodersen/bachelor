@@ -1,5 +1,5 @@
 \section{Evaluation}
-\subsection{Testing}
+\subsection{Testing}\label{sec:testing}
 Testing has been accomplished by providing a random\_numbers.py file. With three
 separate integer parameters, it creates a random list using Python's standard
 random library. The inputs include a lower and upper bound for the list to
@@ -79,7 +79,7 @@ to one fourth of the list, as the number of cores available is 4.
       \hline
       -50:50:100 & pass & pass & pass & pass & pass & pass \\
       \hline
-      -1000:1000:1000 & pass* & pass* & pass* & pass* & pass* & *pass
+      -1000:1000:1000 & pass* & pass* & pass* & pass* & pass* & pass*
     \end{tabular} \\
     \vspace{1em}
     \raggedright{\footnotesize *This run initially failed due to stack overflow. After
@@ -88,7 +88,7 @@ to one fourth of the list, as the number of cores available is 4.
   \end{center}
 \end{table}
 
-When running a test, the ELF file first prints the unsorted array, and then once
+When running a test, the elf file first prints the unsorted array, and then once
 sorting is done, it prints it again. When executing "make test", the QEMU
 virtual machine outputs the stdout to a file called test.txt. Subsequently,
 invoking python3 validate.py reads this file to ascertain if sorting was
@@ -97,7 +97,7 @@ seen. On the left, the formatting is specified as the lower bound of randomly
 selected numbers, the upper bound, and the number of random elements in the
 list. A value of pass signifies that the validate.py file executed without
 throwing an assertion error. The tests were initially performed with a global
-stack of 0x800,\footnote{defined in ram.ld. Equates to 20,48 bytes.} a
+stack of 0x800,\footnote{defined in ram.ld. Equates to 2048 bytes.} a
 STACK\_SIZE of 2048 and a THREAD\_STACK\_SIZE of 1024. If a failure occurred,
 modifications were made to these three values in an attempt to pass the test.
 
