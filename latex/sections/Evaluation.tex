@@ -51,13 +51,13 @@ display them as threads. This allows one to debug the QEMU virtual machine with
 the same methodology used when debugging multithreaded execution. The workflow
 shown in Figure~\ref{fig:debug} is as follows:
 \begin{itemize}
-\item Change directory to src/bare_metal.
+\item Change directory to src/bare\_metal.
 \item Initialize the alist.c file with an array and a given size.
 \item Run "make debug" to initialize the QEMU virtual machine.
 \item In a separate terminal instance run "riscv32-unknown-elf-gdb". This will
   automatically run the commands in the ".gdbinit" file and connect to the QEMU
   virtual machine.
-\item Break at mark_done. This function is run whenever a given thread job is
+\item Break at mark\_done. This function is run whenever a given thread job is
   finished.
 \item Run "info threads" to get an overview of all threads.
 \end{itemize}
@@ -99,13 +99,13 @@ selected numbers, the upper bound, and the number of random elements in the
 list. A value of 'pass' signifies that the validate.py file executed without
 throwing an assertion error. The tests were initially performed with a global
 stack of 0x800,\footnote{defined in ram.ld. Equates to 2048 bytes.} a
-STACK_SIZE of 2048 and a THREAD_STACK_SIZE of 10,240. If a failure occurred,
+STACK\_SIZE of 2048 and a THREAD\_STACK\_SIZE of 10,240. If a failure occurred,
 modifications were made to these three values in an attempt to pass the test.
 
 \subsection{Future work}
 The implementation proposed in this thesis is more a proof of concept, and as
 such comes with a few shortcomings. Firstly, with the current implementation
-there is a heavy reliance on the GLOBAL_STACK_SIZE. The array to be sorted is
+there is a heavy reliance on the GLOBAL\_STACK\_SIZE. The array to be sorted is
 hard-coded and stored on the global stack, which can occupy substantial space
 when dealing with large arrays. Furthermore, the array of thread jobs is also
 saved on the global stack. With the current implementation each thread type has
@@ -114,7 +114,7 @@ stack, or a better method of detecting the size of the global stack would allow
 for a more reliable solution.
 
 Whenever a merge sort splits the array into two halves, there is created a new
-thread with an allocated stack size of THREAD_STACK_SIZE. The top-level thread
+thread with an allocated stack size of THREAD\_STACK\_SIZE. The top-level thread
 job, which has to sort the entire array, must first create a copy of the array
 before it can sort in place. The same goes for all other thread jobs, but the
 amount of the array they need to copy is halved for each level we move down in
