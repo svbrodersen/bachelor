@@ -10,22 +10,23 @@ Historically, solid-state drives (SSDs) served as drop-in replacements for
 magnetic disks, utilizing similar interfaces to ensure seamless integration. But
 the use of SSDs came with multiple improvements over the magnetic disks of the
 past, which were hindered by said interface. As such, there was a rapid movement
-towards Open-channel SSDs that do not have a firmware Flash Translation Layer
-and instead leave the management of the physical SSD to the computer's operating
-system. This solves the issue mentioned previously but introduces further data
-transferring between the Central Processing Unit(CPU) and the SSD. However, in
-recent years, the discrepancy between a storage device's READ and WRITE
-operations and a CPU's ability to perform READ and WRITE memory operations has
-been ever increasing. If this trend continues, the CPU will soon become a
-bottleneck for performance in the data centers.
+towards Open-channel SSDs that do not have a firmware Flash Translation
+Layer(FTL) and instead leave the management of the physical SSD to the
+computer's operating system. This solves the issue mentioned previously but
+introduces further data transferring between the Central Processing Unit(CPU)
+and the SSD. However, in recent years, the discrepancy between a storage
+device's READ and WRITE operations and a CPU's ability to perform READ and WRITE
+memory operations has been ever increasing. If this trend continues, the CPU
+will soon become a bottleneck for performance in the data centers.
 
 A solution to the problem would be to offload the CPU and provide computation at
 the SSD level. Such a solution has been described as a computational storage
 device (CSD). This would involve implementing the most commonly used data
 manipulations, such as indexing into an SSD or more complex manipulations like
 sorting. Within this thesis, the issue of implementing a high-performance
-sorting algorithm running on a stand-alone bare metal processor has been
-investigated.
+investigated. Sorting algorithm running on a stand-alone
+bare-metal\footnote{\label{note:1}See Section~\ref{sec:bare-metal}.} processor
+has been been investigated.
 
 
 \subsection{Problem}\label{sec:problem}
@@ -34,25 +35,24 @@ demand for massive data computations, it is essential to investigate whether
 implementing a processor designed for such a purpose is feasible. Consequently,
 several open questions remain unanswered. (1) What type of computation should be
 performed by a storage device? (2) Is it possible to implement such computation
-on a bare-metal processor?
+on a bare-metal\footnoteref{note:1} processor?
 
 \begin{enumerate}
   \item {\large \textbf{What computation should be handled by a storage
     device?}}\label{sec:computational} \\
-    Although there are multiple cases of large data transfers between a CPU and
-    an SSD, one of the more prominent is that of sorting a given array. Sorting
-    plays an integral part in multiple programming scenarios. From being an
-    integral part of many searching algorithms to its use in data science, fast
-    sorting is a necessity for fast performance. With a running time of O(n log
-    n), merge sort was the algorithm chosen for further investigation. Moreover,
-    parallel versions of the merge sort algorithm should be feasible on
-    bare-metal\footnote{Bare metal is described further in
-    Section~\ref{sec:bare-metal}.}.
+    Among the various instances of large data transfers between a CPU and an SSD,
+    sorting a given array stands out as particularly significant. Sorting is
+    fundamental in numerous programming scenarios, serving as a core component of
+    many search algorithms and playing a critical role in data science. Efficient
+    sorting is essential for optimal performance. Due to its time complexity of O(n
+    log n), merge sort was selected for further investigation. Furthermore, parallel
+    implementations of the merge sort algorithm should be feasible on
+    bare-metal\footnoteref{note:1}.
   \item {\large \textbf{ Is it feasible to implement such a computation on a
     bare metal RISC-V processor?}} \\
     As the main goal is to offload the primary CPU, we must investigate whether
-    it is at all possible to create a high-performance sorting algorithm on a
-    bare-metal processor.
+    it is at all possible to create a sorting algorithm on a
+    bare-metal\footnoteref{note:1} processor.
 \end{enumerate}
 
 
@@ -62,14 +62,18 @@ developed for implementing on a bare metal processor is introduced. Secondly, an
 implementation of said designed is presented. Third, the viability and validity
 of the implementation is evaluated. Lastly, shortcomings and proposed further
 research are presented. These implementations will be carried out on a QEMU
-virtual machine where the code is loaded via a general loader.
+virtual machine where the code is loaded via a general loader. The QEMU virtual
+machine is compatible with the standard RISC-V ISA. However, a few standard
+extensions are required for the implementation these including the Control and
+Status Register (Zicsr), Atomic Instructions(a), Integer Multiplication and
+Division (m) and Compressed Instructions(c).
 
 \subsection{Contribution}
 For this thesis, the following contributions have been made:
 \begin{enumerate}
   \item Present available design patterns when developing a computational
     storage device
-  \item Designed and implement a specific merge sort algorithm meant for running on a
+  \item Design and implement a specific merge sort algorithm meant for running on a
     bare-metal processor as described in Section~\ref{sec:bare-metal}.
   \item Evaluate the implementation on lists of varying sizes.
   \item Evaluate the viability of custom bare-metal applications for later use
@@ -96,7 +100,7 @@ and execution time by about 30\%.
 
 Lobo et al. \cite{merge_sort} compare the performance of different types of
 merge sort algorithms. Within their testing they find that the serial and
-parallel merge sort discussed within this paper have a similar amount of resource
+parallel merge sort discussed have a similar amount of resource
 utilization, but find the delay of the parallel merge sort to be a lot smaller
 than the serial counterpart. As such, they theorize that this implies the
 parallel execution to be much faster than the serial.

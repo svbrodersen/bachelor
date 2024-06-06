@@ -7,13 +7,13 @@ between entities, with an emphasis on performing tasks best suited to our
 skills, appears to be the foundation of efficient collaboration. Contrary,
 computer architecture relies heavily on the CPU for executing various
 operations. An accelerator serves as a separate substructure designed with
-distinct objectives compared to the CPU itself. By offloading the CPU,
-accelerators can optimize performance and reduce energy consumption\cite{AA}. A
-prime example of an accelerator is the Graphics Processing Unit (GPU), a crucial
-component in contemporary computers. This thesis aims to explore the feasibility
-of adopting a similar design approach for creating computational storage
-devices.
-
+distinct objectives compared to the CPU itself. Such an accelerator can thus be
+optimised for specific work instead of the general processor. By offloading the
+CPU, accelerators can optimize performance and reduce energy
+consumption\cite{AA}. A prime example of an accelerator is the Graphics
+Processing Unit (GPU), a crucial component in contemporary computers. This
+thesis aims to explore the feasibility of adopting a similar design approach for
+creating computational storage devices.
 
 
 \subsection{RISC-V}
@@ -33,13 +33,13 @@ user-level address spaces respectively. However, RISC-V is already in the works
 with a RV128I variant which would provide the foundation needed for a 128-bit
 user address space in the future. In general, RISC-V provides standard and
 non-standard extensions, where standard extensions should not conflict with
-other standard extensions, and the non-standard extensions are highly
-specialized.
+other standard extensions, and the non-standard extensions are more specialized.
 
-With the rise of ARM\footnote{short for Advanced RISC Machine.} based machines
-with comparable and in some cases better performance than that of a Complex
-Instruction Set Computing(CISC) alternative.\cite{Power_Struggle} RISC-V aims to
-provide the same benefits in an open sourced environment. With this RISC-V, more
+With the rise of ARM\footnote{short for Advanced RISC Machine. ARM is another
+RISC based ISA. Difference is it is proprietary.} based machines with comparable
+and in some cases better performance than that of a Complex Instruction Set
+Computing(CISC) alternative.\cite{Power_Struggle} RISC-V aims to provide the
+same benefits in an open sourced environment. With this RISC-V, more
 specifically the 32-bit version, was chosen as the ISA for development in this
 thesis.
 
@@ -52,17 +52,20 @@ storage device and the host processor. This would allow the read and writes to
 be distributed among multiple RAM sections rather than a single processor. This
 could be an integral part of the issues presented in Section~\ref{sec:context},
 as a computational storage device would be scalable with the ever-growing need
-for large volumes of data processing.
+for larger volumes of data processing.
 
 
 \subsection{Toolchain}
 \subsubsection*{QEMU}
 QEMU is a system emulator, which has the capabilities of emulating both a 32-bit
 and 64-bit RISC-V processor \cite{QEMU}. With QEMU I am able to create code
-intended
-for a processor running the RISC-V instruction set even if my development
-environment is running a different ISA. For the purposes of this thesis it is the
-RISC-V 32-bit version of the QEMU virtual machine that will be used.
+intended for a processor running the RISC-V instruction set even if my
+development environment is running a different ISA. For the purposes of this
+thesis it is the RISC-V 32-bit version of the QEMU virtual machine that will be
+used. The RISC-V 32-bit virtual machine is compatible with the standard
+extensions, and throughout this thesis the following standard extensions will be
+used. The Control and Status Register (Zicsr), Atomic Instructions(a), Integer
+Multiplication and Division (m) and Compressed Instructions(c).
 
 \subsubsection*{LLVM and RISC-V GNU Toolchain}
 The LLVM project is a collection of reusable compiler and toolchain
@@ -70,15 +73,14 @@ technologies. Most notably for the context of this thesis clang. Clang is a gcc
 compatible frontend compiler, which aims to provide fast compile times and low
 memory use. In tandem with the LLVM compiler back end, clang provides a
 library-based architecture such that the compiler can work together with other
-tool. This allows for the use of more sophisticated development environments
-such as an Language Server Protocol(LSP). Generally clang also provides more
-sophisticated error reports making the overall debugging easier. Moreover, clang
-provides a cross-compiler capable of targeting the RISC-V 32-bit architecture.
+tools. This allows for the use of more sophisticated development environments
+such as a Language Server Protocol(LSP). Generally clang also provides more
+sophisticated error reports making the overall debugging easier.
 
-At the time of writing, the lldb debugger connection to the RISC-V QEMU machine
-was inadequate for the needs of this thesis. As such the GNU gdb debugger for
-the RISC-V target was compiled for use as a debugger for the implementation
-section. Furthermore, the RISC-V GNU toolchain provides necessary header files
-for the stdlib, which allows for some rudimentary implementations of algorithms
-for the compiler to use, one such instance is that of memcpy.
+At the time of writing, LLVMs lldb debugger's connection to the RISC-V QEMU
+machine was unable to connect probably. Consequently, the GNU gdb debugger for
+the RISC-V target was compiled for use in the implementation section. For less
+headache with changing platforms, the same was done for the LLVM clang compiler.
+Additionally, the RISC-V GNU toolchain supplies essential stdlib header files,
+enabling basic algorithm implementations, such as memcpy, for the compiler.
 
