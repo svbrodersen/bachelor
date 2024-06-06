@@ -58,7 +58,7 @@ on a bare-metal\footnoteref{note:1} processor?
 
 \subsection{Approach}\label{sec:approach}
 For this thesis, an experimental approach was taken. First, a feasible design
-developed for implementing on a bare metal processor is introduced. Secondly, an
+for implementing on a bare metal processor is introduced. Secondly, an
 implementation of said designed is presented. Third, the viability and validity
 of the implementation is evaluated. Lastly, shortcomings and proposed further
 research are presented. These implementations will be carried out on a QEMU
@@ -84,17 +84,18 @@ For this thesis, the following contributions have been made:
 \subsection{Related work}
 Marcelino et al. \cite{sorting_units} evaluate three hardware sorting units
 implemented with specific Field Programmable Gate Arrays (FPGAs). One of these
-being the FIFO-based merge sorting machine, where they present a merge sorting
-structure for a FIFO embedded system merging. This implementation assumes two
-input lists of two sorted arrays and they later propose a hybrid solution using
-Insertion and FIFO based merge sorting. With this they find that the FPGA hybrid
-insertion and FIFO-based merge sorting sees speed-ups between 1.6 and 15 time
-compared to a quick sort pure software solution.
+being the FIFO\footnote{Short for First In First Out}-based merge sorting
+machine, where they present a merge sorting structure for a FIFO embedded system
+merging. This implementation assumes two sorted input lists and they later
+propose a hybrid solution using Insertion and FIFO based merge sorting. With
+this they find that the FPGA hybrid insertion and FIFO-based merge sorting sees
+speed-ups between 1.6 and 15 time compared to a quick sort pure software
+solution.
 
 Jackson et al. \cite{flash_sorting} look for faster sorting algorithms used for
 flash memory embedded devices. They provide a merge sort for sorting with
 minimal memory usage which aims to reduce the number of WRITES to flash memory.
-This implementation would only need to memory buffers. They find that when
+This implementation would only need two memory buffers. They find that when
 sorting large data sets with small memory the proposed algorithms reduces I/Os
 and execution time by about 30\%.
 

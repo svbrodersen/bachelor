@@ -7,13 +7,13 @@ between entities, with an emphasis on performing tasks best suited to our
 skills, appears to be the foundation of efficient collaboration. Contrary,
 computer architecture relies heavily on the CPU for executing various
 operations. An accelerator serves as a separate substructure designed with
-distinct objectives compared to the CPU itself. Such an accelerator can thus be
-optimised for specific work instead of the general processor. By offloading the
-CPU, accelerators can optimize performance and reduce energy
-consumption\cite{AA}. A prime example of an accelerator is the Graphics
-Processing Unit (GPU), a crucial component in contemporary computers. This
-thesis aims to explore the feasibility of adopting a similar design approach for
-creating computational storage devices.
+distinct objectives compared to the CPU itself. By offloading the CPU,
+accelerators can optimize performance and reduce energy consumption\cite{AA}. A
+prime example of an accelerator is the Graphics Processing Unit (GPU), a crucial
+component in contemporary computers. This thesis aims to explore the feasibility
+of adopting a similar design approach for creating computational storage
+devices.
+
 
 
 \subsection{RISC-V}
@@ -33,7 +33,8 @@ user-level address spaces respectively. However, RISC-V is already in the works
 with a RV128I variant which would provide the foundation needed for a 128-bit
 user address space in the future. In general, RISC-V provides standard and
 non-standard extensions, where standard extensions should not conflict with
-other standard extensions, and the non-standard extensions are more specialized.
+other standard extensions, and the non-standard extensions are highly
+specialized.
 
 With the rise of ARM\footnote{short for Advanced RISC Machine. ARM is another
 RISC based ISA. Difference is it is proprietary.} based machines with comparable
@@ -74,7 +75,7 @@ compatible frontend compiler, which aims to provide fast compile times and low
 memory use. In tandem with the LLVM compiler back end, clang provides a
 library-based architecture such that the compiler can work together with other
 tools. This allows for the use of more sophisticated development environments
-such as a Language Server Protocol(LSP). Generally clang also provides more
+such as an Language Server Protocol(LSP). Generally clang also provides more
 sophisticated error reports making the overall debugging easier.
 
 At the time of writing, LLVMs lldb debugger's connection to the RISC-V QEMU
