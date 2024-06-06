@@ -1,9 +1,10 @@
 \section{Implementation}
-The implementations created as part of this bachelor thesis aimed to make use of
-the LLVM compiler infrastructure. LLVM is a collection of modular and reusable
-compiler and tool chain technologies, most notably for this project is the clang
-compiler. Furthermore, QEMU will be used extensively while testing the
-implementations.
+The implementation aims to carry out the design presented in
+Section~\ref{sec:Design}. First I will go through the Dependencies needed for
+development. Next, I highlight a few components of the implementations, such
+that the reader can get a better understanding of the implementation. Note, the
+elements presented within this thesis is just a part of the implementation and
+more parts make up the entire program.
 
 \subsection{Dependencies}
 \subsubsection*{QEMU}
@@ -51,10 +52,11 @@ sure to add it to PATH.
 \subsubsection*{libucontext}
 Libucontext is an open-sourced library that provides the ucontext.h C API. Most
 notably for the project of this thesis, it can deploy on bare metal RISC-V
-32-bit with newlib. Building the library from scratch led to some issues on my
-end, and as such, the necessary files were copied and linked together with my
+32-bit with newlib\footnote{Newlib is a C library intended for use on embedded
+systems.}. Building the library from scratch led to some issues on my end, and
+as such, the necessary files were copied and linked together with my
 implementation upon building. With this, I am able to use getcontext,
-makecontext, and setcontext, which allows me to do the necessary context
+makecontext and setcontext, which allows me to do the necessary context
 switching described within Section~\ref{sec:Design}.
 
 
@@ -62,11 +64,9 @@ switching described within Section~\ref{sec:Design}.
 The linker script is used to inform the linker which parts of the file to
 include in the final output file, as well as where each section is stored in
 memory. As we are working on an embedded system, we have to deviate from the
-default and create our own linker script. The clang uses the LLVM lld linker,
+default and create our own linker script. Clang uses the LLVM lld linker,
 which is compatible with general linker scripts implementations of the GNU ld
-linker \cite{llvm-org-linker}. Therefore, we can make use of the GNU ld manual
-for modifying the linker script in freeRTOS for our bare metal application
-instead of writing the entire thing from scratch \cite{GNU-linker}.
+linker \cite{llvm-org-linker}.
 
 \begin{lstlisting}[caption=Memory area defined in linker script]
 OUTPUT_ARCH('riscv')
@@ -88,65 +88,62 @@ script.
 
 \begin{lstlisting}[caption=Linker scripts SECTIONS.]
 SECTIONS {
-  .text : ALIGN(CONSTANT(MAXPAGESIZE))
+  .text :
   {
     *(.text .text.*)
   } > rom
 
-  .rodata : ALIGN(CONSTANT(MAXPAGESIZE))
+  .rodata :
   {
     *(.rdata)
     *(.rodata .rodata.*)
   } > rom
 
-  .data : ALIGN(CONSTANT(MAXPAGESIZE))
+  .data :
   {
     *(.data .data.*)
-    /*RISCV convention to have __global_pointer aligned to 8 bytes*/
-    . = ALIGN(8);
-    PROVIDE( __global_pointer$ = . + 0x800 );
+    . = ALIGN(4);
+    PROVIDE( __global_pointer$ = . + GLOBAL_STACK_SIZE );
   } > ram
 
-  .bss : ALIGN(CONSTANT(MAXPAGESIZE))
+  .bss :
   {
     *(.bss .bss.*)
   } > ram
 
   /* It is standard to have
   the stack aligned to 16 bytes*/
-  . = ALIGN(16);
+  . =
   _end = .;
 
-  .stack : ALIGN(CONSTANT(MAXPAGESIZE))
+  .stack :
   {
-    . = ALIGN(8);
+    . = ALIGN(4);
     PROVIDE(_stack_start = .);
     PROVIDE(_stack_top = ORIGIN(ram) + LENGTH(ram));
   } > ram
 }
 \end{lstlisting}
 The text, rodata, data and bss sections follow the same general procedure. We
-align the section to the maximum size of a page and match all the data which we
-care about for the given sections. By specifying the > rom, we tell the linker
-to save the given section in the ROM section and the same is true for the > ram.
-From the Figure~\ref{fig:mem_layout}, we can see the RAM and ROM correspond to
-the RAM and ROM section of the figure.\footnote{ROM stands for Read-Only Memory,
-and RAM stands for Random-Access Memory. Generally it is not necessarily needed
-to split the two up as done here, but it is a good practice to separate what can
+match any data for the given section, and then save it either in rom or ram. By
+specifying the > rom, we tell the linker to save the given section in the ROM
+section and the same is true for the > ram. From the
+Figure~\ref{fig:mem_layout}, we can see the RAM and ROM correspond to the RAM
+and ROM section of the figure.\footnote{ROM stands for Read-Only Memory, and RAM
+  stands for Random-Access Memory. Generally it is not necessarily needed to
+split the two up as done here, but it is a good practice to separate what can
 change and what cannot change in memory.}
 
 In the data section, we also provide a global pointer, which is used to access
 global variables within our later code implementation. The global pointer is
-used together with an offset to save global variables. As such we allow for
-0x800=2048 bytes of global variables. With the implementation being quite
-reliant on global variables, it might need to be increased for lists of large
-sizes.
+used together with an offset to save global variables. For more customisability
+this value can be passed in the Makefile.
 
 The last section is the .stack section. We align the starting of the
 \_stack\_start with 8 bytes. Generally not necessary in this instance, but still
 a good custom. This is the point from where each thread stack will be allocated.
 Next, we specify that the \_stack\_top will reside at the end of the RAM section
-such that we can allocate a stack for each core with an offset.
+such that we can allocate a stack for each core.
 
 \subsection{Getting into the main function}\label{sec:get_main}
 In the linker script, we specified the entry point of our program as `\_start`.
@@ -225,18 +222,18 @@ mhartid 0 will be allowed to continue execution to line \ref{line:jump_main},
 where it jumps to the main function.
 
 All other cores continue execution at line \ref{line:STACK_SIZE}, where they
-load the value STACK\_SIZE defined in defines.h into the temporary register t1.
-We also load immediately(li) the value 1 into the temporary register r1. Line
-\ref{line:align_stack} aligns the current value in the stack pointer to 16.
-Afterwards, we compare the value in register a0, which holds the value of the
-mhartid, to the value in t0. If they are equal, we jump to line
-\ref{line:jump_secondary}, which makes us jump to the externally defined
-secondary\_main function. Otherwise, we continue on line \ref{line:sub_stack},
-where we subtract the register t1 (STACK\_SIZE) from the value stored in the sp
-register. We increment the value in t0 by one, and jump back to line
-\ref{line:align_stack}. With this loop, we are setting up a stack of size
-STACK\_SIZE for all the different cores defined, such that we get the desired
-memory layout shown at the top of Figure~\ref{fig:mem_layout}.
+load the value STACK\_SIZE\footnote{Defined either via. the Makefile or defined
+in defines.h} into the temporary register t1. We also load immediately(li) the
+value 1 into the temporary register r1. Line \ref{line:align_stack} aligns the
+current value in the stack pointer to 16. Afterwards, we compare the value in
+register a0, which holds the value of the mhartid, to the value in t0. If they
+are equal, we jump to line \ref{line:jump_secondary}, which makes us jump to the
+externally defined secondary\_main function. Otherwise, we continue on line
+\ref{line:sub_stack}, where we subtract the register t1 (STACK\_SIZE) from the
+value stored in the sp register. We increment the value in t0 by one, and jump
+back to line \ref{line:align_stack}. With this loop, we are setting up a stack
+of size STACK\_SIZE for all the different cores defined, such that we get the
+desired memory layout shown at the top of Figure~\ref{fig:mem_layout}.
 
 \subsection{Initializing the thread jobs}\label{sec:init_threads}
 \begin{algorithm}
@@ -284,13 +281,11 @@ memory layout shown at the top of Figure~\ref{fig:mem_layout}.
   \caption{Initialization of the threads}\label{algo:threads}
 \end{algorithm}
 A pseudocode implementation for initializing the parallel merge sort algorithm
-is provided in Algorithm~\ref{algo:threads}. Initially, it should be noted that
-it is assumed NUM\_CORES is a multiple of 2. Next, as described in
-Section~\ref{sec:singlevsmulti}, it is never in our interest to perform
-unnecessary context switching when working on a single core. Consequently, we
-can calculate the depth desired for our merge tree by employing the number of
-cores. This may be achieved by taking $\log_2(NUM\_CORES)$ or, equivalently, by
-examining the most significant bit of NUM\_CORES since it is a multiple of 2. At
+is provided in Algorithm~\ref{algo:threads}. It should be noted that it is
+assumed NUM\_CORES is a multiple of 2. Consequently, we can calculate the depth
+desired for our merge tree by employing the number of cores. This may be
+achieved by taking $\log_2(NUM\_CORES)$ or, equivalently, by examining the most
+significant bit of NUM\_CORES since it is a multiple of 2. At
 line~\ref{alg:early_escape}, an early escape mechanism is implemented which
 takes care of the single thread that will have no parent thread. If we are not
 positioned at the very top level of the merge tree, we assign the variable 'k'
@@ -302,7 +297,7 @@ that we do not generate more active threads than what the available number of
 cores can effectively handle. Upon completion of the algorithm, a threads array
 will be produced containing $2 \cdot NUM\_CORES - 1$ different threads, each
 assigned with a specific subsection of the list to either merge or perform
-sequential merge sort on.
+merge sort on.
 
 \subsection{Reducing synchronization}
 \begin{figure}
@@ -328,8 +323,9 @@ already completed and the length of the array list such that:
 \end{align}
 With this, each thread is capable of retrieving a thread job without having to
 consider the state of any other thread, as the job is preassigned during the
-initialization. There are two caveats to this. Each merge must still wait on the
-child thread (the direction of the arrow in Figure~\ref{fig:mergesort}) to
-finish before starting a merge.
+initialization. Each merge must still wait on the child thread (the direction of
+the arrow in Figure~\ref{fig:mergesort}) to finish before starting a merge.
+However, as there is no queue, there is no need for synchronization beyond that
+between the threads.
 
 

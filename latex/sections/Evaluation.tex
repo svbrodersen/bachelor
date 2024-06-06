@@ -2,14 +2,13 @@
 \subsection{Testing}\label{sec:testing}
 Testing has been accomplished by providing a random\_numbers.py file. With three
 separate integer parameters, it creates a random list using Python's standard
-random library. The inputs include a lower and upper bound for the list to
-generate, together with the length of the list. Once the list is created,
-running make will create a .elf file, which contains the parallel merge sort
-algorithm with the unsorted list hard-coded within. Once the .elf file is loaded
-on a RISC-V processor, it will immediately begin sorting the hard-coded list.
-The implementation also needs the value NUM\_CORES defined within the Makefile,
-where it both defines a constant NUM\_CORES for the .elf file to use, and the
-same value is used for running the QEMU virtual machine.
+random library. The inputs include a lower and upper bound as well as a length.
+Once the list is created, running make will create a .elf file, which contains
+the parallel merge sort algorithm with the unsorted list hard-coded within. Once
+the .elf file is loaded on a RISC-V processor, it will immediately begin sorting
+the hard-coded list. The implementation also needs the value NUM\_CORES defined
+within the Makefile, where it both defines a constant NUM\_CORES for the .elf
+file to use, and the same value is used for running the QEMU virtual machine.
 
 This gives the following work flow for creating and running a test:
 \begin{itemize}
@@ -20,9 +19,10 @@ This gives the following work flow for creating and running a test:
 \item Run "make clean" to remove all files built with previous settings.
 \item Run "make test" to generate the .elf file and host QEMU. This step will
   create a test.txt file, as the stdout of QEMU is redirected to said file.
-\item Run "python3 validate.py". This reads the test.txt file, which sorts the
-  unsorted array with Python's built-in sort function, and compares that sorted
-  array with the one produced by the .elf file running in QEMU.
+\item Run "python3 validate.py". This reads the test.txt file, first reading the
+  unsorted array and sorting that with pythons standard sorting algorithm. Then
+  it reads the sorted array from the test.txt file and compares it with pythons
+  sorted array.
 \end{itemize}
 
 \subsubsection*{Debugging}
@@ -31,7 +31,7 @@ This gives the following work flow for creating and running a test:
   \begin{subfigure}[b]{0.45\textwidth}
     \centering
     \includegraphics[width=\textwidth]{./figures/debug1.png}
-    \caption{Connecting gdb by running "riscv32-unknown-elf-gdb and breaking at
+    \caption{Connecting gdb by running "riscv32-unknown-elf-gdb" and breaking at
     mark\_done"}
   \end{subfigure}
   \hfill
@@ -53,6 +53,7 @@ shown in Figure~\ref{fig:debug} is as follows:
 \begin{itemize}
 \item Change directory to src/bare\_metal.
 \item Initialize the alist.c file with an array and a given size.
+\item "make clean" to remove any previous build.
 \item Run "make debug" to initialize the QEMU virtual machine.
 \item In a separate terminal instance run "riscv32-unknown-elf-gdb". This will
   automatically run the commands in the ".gdbinit" file and connect to the QEMU
@@ -66,6 +67,7 @@ sorted the subsection of the list from index 7 to 10. This section corresponds
 to one fourth of the list, as the number of cores available is 4.
 
 \subsection{Validation}\label{sec:validate}
+%TODO: More tests with smaller size and larger size pls
 \begin{table}
   \caption{Table of tests run}\label{tab:tests}
   \begin{center}
@@ -89,17 +91,17 @@ to one fourth of the list, as the number of cores available is 4.
   \end{center}
 \end{table}
 
-When running a test, the ELF file first prints the unsorted array, and then once
-sorting is done, it prints it again. When executing "make test", the QEMU
+When running a test, the .elf file first prints the unsorted array, and then once
+sorting is done, prints it again. When executing "make test", the QEMU
 virtual machine outputs the stdout to a file called test.txt. Subsequently,
-invoking python3 validate.py reads this file to ascertain if sorting was
+invoking "python3 validate.py" reads this file to ascertain if sorting was
 performed correctly. In Table 6, an overview of some tests I conducted can be
 seen. On the left, the formatting is specified as the lower bound of randomly
 selected numbers, the upper bound, and the number of random elements in the
 list. A value of 'pass' signifies that the validate.py file executed without
 throwing an assertion error. The tests were initially performed with a global
 stack of 0x800,\footnote{defined in ram.ld. Equates to 2048 bytes.} a
-STACK\_SIZE of 2048 and a THREAD\_STACK\_SIZE of 10,240. If a failure occurred,
+STACK\_SIZE of 2048 bytes and a THREAD\_STACK\_SIZE of 1024 bytes. If a failure occurred,
 modifications were made to these three values in an attempt to pass the test.
 
 \subsection{Future work}
@@ -128,28 +130,30 @@ variables, so the thread stack size might instead be represented by:
 Where i is the depth level, and C is some constant used to store the variables
 needed during computation, this constant C would then be different depending on
 whether the given thread has to perform merge sort or just merge over the array.
-Experiments determining the size of C could be carried out to optimize the
+Experiments determining the size of C could be carried out to optimize
 memory better.
 
-Furthermore, in regards to memory, the application does not check whether memory
-is out of bounds. Rather, it assumes that the sorting can be done with the
-allocated memory, and simply lets the application run if there is a stack
-overflow on any of the cores or thread stacks. The bounds checking would be
-extra overhead, but might still be something worth looking into.
+Furthermore, with the current implementation core 0 is the only thread writing
+to the global threads array. This core is tasked with initializing all the
+threads jobs, which means that all other cores must wait until this single
+thread has finished its initialization. As the number of cores grows, so does
+the time it takes to initialize the threads. This is inherently inefficient. As
+such future work could propose a solution where the work of initializing the
+threads array could be spread among multiple cores instead.
 
 It is not possible for performance testing as the application is running on a
 QEMU version. Implementing a timing library might be needed to access whether
 the performance of multiple cores is significant.
 %TODO: this section might need more info.
 
-As it stands, the implementation also requires that the number of cores is a
-power of 2. This is due to how the initialization builds the threads up. This
-issue has a few ways it can be fixed. Firstly, instead of stopping at the same
-level for all the merge sorts, it could theoretically split only a few of the
-sub lists given, such that instead of having to be a power of 2, it would instead
-only require that it is a multiple of 2. This would still allow for all cores to
-work on a sublist at the same time. Another approach would be to allow a subset
-of the number of cores to busy loop until the two child threads as described in
+The implementation also requires that the number of cores is a power of 2. This
+is due to how the initialization builds the threads up. This issue has a few
+ways it can be fixed. Firstly, instead of stopping at the same level for all the
+merge sorts, it could theoretically split only a few of the sub lists given,
+such that instead of having to be a power of 2, it would instead only require
+that it is a multiple of 2. This would still allow for all cores to work on a
+sublist at the same time. Another approach would be to allow a subset of the
+number of cores to busy loop until the two child threads finish as described in
 Section~\ref{sec:init_threads}. The former approach seems more promising, but is
 left as something which can later be addressed.
 
@@ -159,7 +163,4 @@ sorting algorithm, it would not be useful in an actual data center unless some
 sort of communication protocol is established between the host CPU and the
 computational storage device. This communication is left as a problem that later
 has to be solved.
-
-
-
 
