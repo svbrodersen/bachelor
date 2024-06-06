@@ -1,1 +1,46 @@
 \section{Conclusion}
+\subsection{Summary of results}
+This thesis discusses the viability of implementing custom-made solutions for
+computational storage devices. In the first part of the thesis, the problem is
+presented along with the background. Next, the approach of implementing a
+bare-metal merge sort application on the QEMU virtual machine is proposed. A
+design for a merge sort algorithm that does not make use of any queue is
+suggested to reduce the need for synchronization. With this, a method of memory
+allocation is discussed and the design is carried out making use of context
+switching. The implementation of the merge sort algorithm is tested with varying
+list sizes as well as a varying number of cores utilized. Finally, possible
+improvements are presented in future work and left as open research questions.
+
+\subsection{Takeaways}
+In Section~\ref{sec:problem} two questions were proposed and aimed to be
+answered throughout this thesis. As such, these will build the foundation of the
+following conclusion.
+
+\subsubsection*{What computation should be handled by a storage device?}
+Within the context of an academic thesis, it is demonstrated that intricate
+computations, such as sorting, are indeed feasible to implement on a bare-metal
+storage device. However, this endeavor does not come without its share of
+complications. These include crafting a custom linker script and devising custom
+assembly scripts, in addition to other obstacles left unmentioned within the
+scope of this thesis. These challenges may deter the average consumer;
+nonetheless, when viewed from the perspective of large-scale data centers, the
+potential for computational storage remains bright. As the CPU increasingly
+becomes a bottleneck in data transfer between a storage device and its host,
+computational storage has the potential to go beyond just sorting capabilities.
+Consequently, this thesis proposes that it is not the complexity of the
+computation at hand but rather the magnitude of demand from large data centers
+that will ultimately determine the success of optimized solutions within this
+realm.
+
+
+\subsubsection*{Is it feasible to implement such a computation on a bare-metal
+RISC-V processor?}
+The bare-metal approach presents numerous challenges that are not encountered
+when utilizing an underlying operating system. Despite these limitations, with
+perseverance, it is possible to overcome them and optimize a system specifically
+tailored to meet certain demands. In the context of large data centers,
+developing a custom computational storage device is both viable and
+advantageous. Nevertheless, it remains uncertain whether the performance
+enhancements justify the investment in implementing such systems.
+
+

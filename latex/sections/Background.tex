@@ -4,15 +4,15 @@ The notion of offloading has long been established in specialized teams, where
 each member focuses on their area of expertise. This concept seems inherently
 logical when discussing day-to-day work environments. Effective communication
 between entities, with an emphasis on performing tasks best suited to our
-skills, appears to be the foundation of efficient collaboration.
-Contrary, computer architecture relies heavily on the Central Processing Unit
-(CPU) for executing various operations. An accelerator serves as a separate
-substructure designed with distinct objectives compared to the CPU itself. By
-offloading the CPU, accelerators can optimize performance and reduce energy
-consumption\cite{AA}. A prime example of an accelerator is the Graphics
-Processing Unit (GPU), a crucial component in contemporary computers.
-This thesis aims to explore the feasibility of adopting a similar design
-approach for creating computational storage devices.
+skills, appears to be the foundation of efficient collaboration. Contrary,
+computer architecture relies heavily on the CPU for executing various
+operations. An accelerator serves as a separate substructure designed with
+distinct objectives compared to the CPU itself. By offloading the CPU,
+accelerators can optimize performance and reduce energy consumption\cite{AA}. A
+prime example of an accelerator is the Graphics Processing Unit (GPU), a crucial
+component in contemporary computers. This thesis aims to explore the feasibility
+of adopting a similar design approach for creating computational storage
+devices.
 
 
 
@@ -36,11 +36,11 @@ non-standard extensions, where standard extensions should not conflict with
 other standard extensions, and the non-standard extensions are highly
 specialized.
 
-With the rise of ARM\footnote{short for Advanced RISC Machine} based machines
-with comparble and in some cases better performance than that of a Complex
+With the rise of ARM\footnote{short for Advanced RISC Machine.} based machines
+with comparable and in some cases better performance than that of a Complex
 Instruction Set Computing(CISC) alternative.\cite{Power_Struggle} RISC-V aims to
 provide the same benefits in an open sourced environment. With this RISC-V, more
-specifically the 32-bit version, was chosen as the ISA for developement in this
+specifically the 32-bit version, was chosen as the ISA for development in this
 thesis.
 
 \subsection{Computational Storage}
@@ -58,24 +58,25 @@ for large volumes of data processing.
 \subsection{Toolchain}
 \subsubsection*{QEMU}
 QEMU is a system emulator, which has the capabilities of emulating both a 32-bit
-and 64-bit RISC-V processor \cite{QEMU}. With QEMU I am able to create code intented
+and 64-bit RISC-V processor \cite{QEMU}. With QEMU I am able to create code
+intended
 for a processor running the RISC-V instruction set even if my development
-environment is running a different ISA. For the puposes of this thesis it is the
-RISC-V 32-bit version of the qemu virtual machine that will be used.
+environment is running a different ISA. For the purposes of this thesis it is the
+RISC-V 32-bit version of the QEMU virtual machine that will be used.
 
 \subsubsection*{LLVM and RISC-V GNU Toolchain}
 The LLVM project is a collection of reusable compiler and toolchain
-technologies. Most noteably for the context of this thesis clang. Clang is a gcc
-compatibile frontend compiler, which aims to provide fast compile times and low
+technologies. Most notably for the context of this thesis clang. Clang is a gcc
+compatible frontend compiler, which aims to provide fast compile times and low
 memory use. In tandem with the LLVM compiler back end, clang provides a
 library-based architecture such that the compiler can work together with other
 tool. This allows for the use of more sophisticated development environments
 such as an Language Server Protocol(LSP). Generally clang also provides more
 sophisticated error reports making the overall debugging easier. Moreover, clang
-provides a crosscompiler capable of targeting the RISC-V 32-bit architecture.
+provides a cross-compiler capable of targeting the RISC-V 32-bit architecture.
 
 At the time of writing, the lldb debugger connection to the RISC-V QEMU machine
-was inadequete for the needs of this thesis. As such the GNU gdb debugger for
+was inadequate for the needs of this thesis. As such the GNU gdb debugger for
 the RISC-V target was compiled for use as a debugger for the implementation
 section. Furthermore, the RISC-V GNU toolchain provides necessary header files
 for the stdlib, which allows for some rudimentary implementations of algorithms
