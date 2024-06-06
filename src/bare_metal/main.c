@@ -105,10 +105,8 @@ int min(int x, int y) { return (x < y) ? x : y; }
 
 /* Iterative mergesort function to sort arr[l...r] */
 void mergeSort(int arr[], int l, int r) {
-  int curr_size;  // For current size of subarrays to be merged
-                  // curr_size varies from 1 to n/2
-  int left_start; // For picking starting index of left subarray
-                  // to be merged
+  int curr_size;
+  int left_start;
 
   int n = r - l;
   // Merge subarrays in bottom up manner.  First merge subarrays of
