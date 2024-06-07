@@ -1,53 +1,60 @@
-@article{CSDWhereAreWe,
-    author = {Antonio Barbalce \& Jaeyoung Do},
-    title = {Computational Storage: Where Are We Today?},
-    journal = {Edinburgh Research Explorer},
-    pages = {7},
-    year = {2021},
-    month = {January}
+@inproceedings{CSDWhereAreWe,
+  title={Computational Storage: Where Are We Today?},
+  author={Antonio Barbalace and Jaeyoung Do},
+  booktitle={Conference on Innovative Data Systems Research},
+  year={2021},
+  url={https://api.semanticscholar.org/CorpusID:232328691},
 }
 
 @article{AA,
-    author = {Sanjay Patel \& Wen-mei W. Hwu},
+    author = {Sanjay Patel and Wen-mei W. Hwu},
     title = {Accelerator Architectures},
     journal = {IEEE Computer Society},
-    year = {2008}
+    year = {2008},
+    url = {https://users.cs.duke.edu/~lkw34/papers/accelerators-ieee2008.pdf},
 }
 
-@article{ISAfree,
-    author = {Krste Asanović \& David A. Patterson},
-    title = {Intruction Sets Should Be Free: The Case For RISC-V},
-    journal = {Electrical Engineering and Computer Sciences
-University of California at Berkeley},
-    year = {2014},
+@techreport{ISAfree,
+    Author= {Asanović, Krste and Patterson, David A.},
+    Title= {Instruction Sets Should Be Free: The Case For RISC-V},
+    Year= {2014},
+    Month= {Aug},
+    url= {http://www2.eecs.berkeley.edu/Pubs/TechRpts/2014/EECS-2014-146.html},
+    Number= {UCB/EECS-2014-146},
 }
 
 @manual{RISCISA,
     title = {The RISC-V Instruction Set Manual - Volumne I: Unprivileged ISA},
-    author = {Andrew Waterman, Krste Asanovic, SiFive Inc.},
+    author = {Andrew Waterman and Krste Asanovic and SiFive Inc.},
     year = {2019},
+    url =
+    {https://drive.google.com/file/d/1uviu1nH-tScFfgrovvFCrj7Omv8tFtkp/view?usp=drive_link},
 }
 
-@manual{QEMU,
+@online{QEMU,
     title = {QEMU RISC-V System emulator},
     author = {QEMU Project Developers},
     year = {2023},
+    url = {https://www.qemu.org/docs/master/system/target-riscv.html},
 }
 
-@misc{llvm-org-linker,
+@online{llvm-org-linker,
     author = {llvm},
     title = {Linker Script implementation notes and policy},
+    url = {https://lld.llvm.org/ELF/linker_script.html},
 }
 
-@manual{GNU-linker,
+@online{GNU-linker,
     title = {LD Linker Scripts},
     edition = {2.42},
+    url = {https://ftp.gnu.org/old-gnu/Manuals/ld-2.9.1/html_chapter/ld_3.html},
 }
 
-@manual{RISC-V_GS,
+@online{RISC-V_GS,
     author = {RISC-V Foundation},
     title = {RISC-V Getting Started Guide},
     year = {2018-2020},
+    url = {https://risc-v-getting-started-guide.readthedocs.io/en/latest/}
 }
 
 @manual{DTS,
@@ -55,23 +62,20 @@ University of California at Berkeley},
     author = {devicetree.org},
     edition = {v0.4},
     year = {2023},
+    url = {https://github.com/devicetree-org/devicetree-specification/releases/tag/v0.4},
 }
 
-@manual{GNU_BIN,
-    title = {GNU Binutils},
-    edition = {2.31},
-}
-
-@misc{printf,
-    author = {Georges Menie},
-    title = {stdarg},
-    year = {2002},
+@online{GNU_BIN,
+    title = {GNU Binutils RISC-V Directives},
+    edition = {2.34},
+    url = {https://sourceware.org/binutils/docs-2.34/as/RISC_002dV_002dDirectives.html},
 }
 
 @manual{uart,
     title = {UART 16550 IP},
     author = {SIDSA},
     year = {2000},
+    url = {https://caro.su/msx/ocm_de1/16550.pdf},
 }
 
 @article{Power_Struggle,
@@ -80,6 +84,7 @@ University of California at Berkeley},
   ARM and x86 architectures},
     journal = {University of Wisconsin - Madison},
     year = {2013},
+    url = {https://research.cs.wisc.edu/vertical/papers/2013/hpca13-isa-power-struggles.pdf},
 }
 
 @techreport{comp_parallel,
@@ -87,14 +92,24 @@ University of California at Berkeley},
     title = {Comparison of parallel sorting algorithms},
     institution = {University of Ljubljana},
     year = {2015},
+    doi = {10.48550/arXiv.1511.03404},
 }
 
-@article{sorting_units,
-    author = {Marcelino, R., Neto, H. and Cardoso, J.M.P},
-    title = {Sorting Units for FPGA-Based Embedded Systems},
-    journal = {IFIP International Federation for Information Processing},
-    volume = {271},
-    year = {2008},
+@InProceedings{sorting_units,
+  author="Marcelino, Rui
+  and Neto, Hor{\'a}cio
+  and Cardoso, Jo{\~a}o M.P.",
+  editor="Kleinjohann, Bernd
+  and Wolf, Wayne
+  and Kleinjohann, Lisa",
+  title="Sorting Units for FPGA-Based Embedded Systems",
+  booktitle="Distributed Embedded Systems: Design, Middleware and Resources",
+  year="2008",
+  publisher="Springer US",
+  address="Boston, MA",
+  pages="11--22",
+  isbn="978-0-387-09661-2",
+  url = {https://link.springer.com/chapter/10.1007/978-0-387-09661-2_2},
 }
 
 @INPROCEEDINGS{flash_sorting,
@@ -115,3 +130,10 @@ University of California at Berkeley},
   pages={110-115},
   keywords={Sorting;Field programmable gate arrays;Delays;Resource management;Prediction algorithms;Conferences;Communication systems;sorting network;FPGA;merge sort algorithm's},
   doi={10.1109/ICESC48915.2020.9155623}}
+
+
+@online{LLVM,
+    author = {LLVM Project},
+    title = {The LLVM Compiler Infrastructure},
+    url = {https://llvm.org/}
+}
