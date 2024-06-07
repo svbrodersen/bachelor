@@ -119,11 +119,11 @@ Whenever a merge sort splits the array into two halves, there is created a new
 thread with an allocated stack size of THREAD\_STACK\_SIZE. The top-level thread
 job, which has to sort the entire array, must first create a copy of the array
 before it can sort in place. The same goes for all other thread jobs, but the
-amount of the array they need to copy is halved for each level we move down in
-the merge sort tree shown in Figure~\ref{fig:mergesort}. In theory, this allows
-for halving the size of the allocated thread stack for each level we move down.
-This does not take into account the constant space needed for the declared
-variables, so the thread stack size might instead be represented by:
+amount of the array they need to copy is halved for each level moved down in the
+merge sort tree shown in Figure~\ref{fig:mergesort}. In theory, this allows for
+halving the size of the allocated thread stack for each level change. This does
+not take into account the constant space needed for the declared variables, so
+the thread stack size might instead be represented by:
 \begin{align}
   \text{THREAD\_STACK\_SIZE} = \text{INITIAL\_STACK\_SIZE} / 2^i + C
 \end{align}

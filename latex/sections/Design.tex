@@ -41,33 +41,31 @@ work within this thesis.
 
 \subsubsection*{Bare-metal}
 Also known as embedded system programming, bare-metal programming involves
-developing applications meant to run without an underlying operating system. This
-allows for interlinking with specific hardware and enables a more customizable
-program tailored to the hardware's specifications. However, this approach comes
-with drawbacks, such as the lack of a standard library. Default memory
-allocation functions like malloc in C are not implemented on bare-metal systems
-because they require an operating system to function. Consequently, developers
-must handle memory allocation and deallocation themselves for more advanced
-programs. Additionally, standard printing for debugging purposes is left up to
-the developer to implement, requiring them to understand hardware
-specifications, such as UART printing. \cite{uart}
-\footnote{The QEMU virt machine is compatible with UART, redirecting any output
-  from stdout
-to the terminal instance running the QEMU virt machine by default. In
+developing applications meant to run without an underlying operating system.
+This allows for interlinking with specific hardware and enables a more
+customizable program tailored to the hardware's specifications. However, this
+approach comes with drawbacks, such as the lack of a standard library. Default
+memory allocation functions like malloc in C are not implemented on bare-metal
+systems because they require an operating system to function. Consequently,
+developers must handle memory allocation and deallocation themselves for more
+advanced programs. Additionally, standard printing for debugging purposes is
+left up to the developer to implement, requiring them to understand hardware
+specifications, such as UART printing.\footnote{The QEMU virt machine is
+  compatible with UART, redirecting any output from stdout to the terminal
+instance running the QEMU virt machine by default. In
 Section~\ref{sec:validate}, this redirection is used for debugging the
 implementation, with output being redirected to a file instead.}
-
+\cite{uart}
 
 Memory management often leads to unusual errors during debugging. Notably, while
 gdb\footnote{gdb is the GNU Project Debugger later used for debugging in
-Section~\ref{sec }.} typically detects stack overflows, this is not possible on
-bare-metal. In a typical environment, the operating system alerts a user-level
-program when it exceeds its allocated memory. Without an operating system,
-unless we implement error checking ourselves, no such alerts occur. Instead,
-a stack overflow will change the values in different sections without further
-notice.
-However, with the benefits of customization, bare-metal was chosen as the
-development platform in this thesis.
+Section~\ref{sec:testing}.} typically detects stack overflows as segmentation
+faults, this is not possible on bare-metal. In a typical environment, the
+operating system alerts a user-level program when it exceeds its allocated
+memory. Without an operating system, unless I implement error checking myself,
+no such alerts occur. Instead, a stack overflow will change the values in
+different sections without further notice. However, with the benefits of
+customization, bare-metal was chosen as the development platform in this thesis.
 
 \subsection{Single vs Multicore}\label{sec:singlevsmulti}
 The merge sort algorithm can be executed both with serial and parallel
@@ -147,12 +145,12 @@ Opening the file in a text editor, you will see a lot of information regarding
 the qemu-system-riscv32 virtual machine. First, note that the Devicetree
 specification\cite{DTS} states that the memory node describes the physical
 memory layout for the system. The memory node has two required sections: first,
-the device_type, which must simply be 'memory,' and secondly, the reg value. The
+the device\_type, which must simply be 'memory,' and secondly, the reg value. The
 reg value consists of an arbitrary number of address and size pairs that specify
 the physical address and size of the memory ranges \cite{DTS}. Furthermore, it
 is stated that the property name reg has the value encoded as a number of <u32>
 cells required to specify the address and length, which are bus-specific and are
-specified by the #address-cells and #size-cells properties in the parent of the
+specified by the \#address-cells and \#size-cells properties in the parent of the
 device node. Looking through our riscv32.dts file, I find the relevant
 information to be:
 
@@ -165,7 +163,7 @@ memory@80000000 {
   reg = <0x00 0x80000000 0x00 0x8000000>
 };
 \end{lstlisting}
-With the information previously provided, we know that the starting address of
+With the information previously provided, I know that the starting address of
 the memory section is at address $0x00 + 0x80000000 = 0x80000000$ and has a size
 of $0x00 + 0x8000000$ bytes, which is equivalent to 128MB.
 
@@ -195,7 +193,7 @@ of $0x00 + 0x8000000$ bytes, which is equivalent to 128MB.
   bytes and a thread stack size of 1024}\label{fig:mem_layout}
 \end{figure}
 As mentioned, all created threads need to have a separate stack for context
-switching to work. Thus, when creating a thread, we have to allocate some
+switching to work. Thus, when creating a thread, I have to allocate some
 location in RAM to the task the thread has to perform. In
 Figure~\ref{fig:mem_layout}, this memory area is denoted with the "thread x
 STACK" area. As a design choice, I chose to separate the thread stacks in the

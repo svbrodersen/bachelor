@@ -33,7 +33,7 @@ sudo make -j$(nproc)
 cd ..
 popd
 \end{lstlisting}
-Following the instructions from RISC-V's getting started guide, we can build the
+Following the instructions from RISC-V's getting started guide, I can build the
 QEMU RISC-V system emulators by running the code provided in
 Listing~\ref{lst:qemu_install}\cite{RISC-V_GS}.
 
@@ -63,10 +63,10 @@ switching described within Section~\ref{sec:Design}.
 \subsection{Creating a linker script}
 The linker script is used to inform the linker which parts of the file to
 include in the final output file, as well as where each section is stored in
-memory. As we are working on an embedded system, we have to deviate from the
-default and create our own linker script. Clang uses the LLVM lld linker,
-which is compatible with general linker scripts implementations of the GNU ld
-linker \cite{llvm-org-linker}.
+memory. As I am working on an embedded system, I have to deviate from the
+default and create my own linker script. Clang uses the LLVM lld linker, which
+is compatible with general linker scripts implementations of the GNU ld
+linker.\cite{llvm-org-linker}
 
 \begin{lstlisting}[caption=Memory area defined in linker script]
 OUTPUT_ARCH('riscv')
@@ -79,11 +79,11 @@ rom (rxa) : ORIGIN = 0x80000000, LENGTH = 1M
 ram (wxa) : ORIGIN = 0x80100000, LENGTH = 127M
 }
 \end{lstlisting}
-First, we must specify that we want the RISC-V architecture and designate the
-entry point of the program at a function named '\_start,' which we will define
-later. Second, we define the MEMORY area to consist of both a writable memory
-region and a read-only memory region. We name these regions 'ram' and 'rom,'
-respectively. With that, we move on to define the SECTIONS element of the linker
+First, I must specify that I want the RISC-V architecture and designate the
+entry point of the program at a function named '\_start', which I will define
+later. Second, I define the MEMORY area to consist of both a writable memory
+region and a read-only memory region. I name these regions 'ram' and 'rom,'
+respectively. With that, I move on to define the SECTIONS element of the linker
 script.
 
 \begin{lstlisting}[caption=Linker scripts SECTIONS.]
@@ -124,30 +124,31 @@ SECTIONS {
   } > ram
 }
 \end{lstlisting}
-The text, rodata, data and bss sections follow the same general procedure. We
+The text, rodata, data and bss sections follow the same general procedure. I
 match any data for the given section, and then save it either in rom or ram. By
-specifying the > rom, we tell the linker to save the given section in the ROM
-section and the same is true for the > ram. From the
-Figure~\ref{fig:mem_layout}, we can see the RAM and ROM correspond to the RAM
-and ROM section of the figure.\footnote{ROM stands for Read-Only Memory, and RAM
-  stands for Random-Access Memory. Generally it is not necessarily needed to
-split the two up as done here, but it is a good practice to separate what can
-change and what cannot change in memory.}
+specifying the > rom, I tell the linker to save the given section in the ROM
+section and the same is true for the > ram. From the Figure~\ref{fig:mem_layout}
+a memory diagram shows how the linker places elements into memory.\footnote{ROM
+  stands for Read-Only Memory, and RAM stands for Random-Access Memory.
+  Generally it is not necessarily needed to split the two up as done here, but
+it is a good practice to separate what can change and what cannot change in
+memory.}
 
-In the data section, we also provide a global pointer, which is used to access
+In the data section, I also provide a global pointer, which is used to access
 global variables within our later code implementation. The global pointer is
 used together with an offset to save global variables. For more customisability
 this value can be passed in the Makefile.
 
-The last section is the .stack section. We align the starting of the
-\_stack\_start with 8 bytes. Generally not necessary in this instance, but still
-a good custom. This is the point from where each thread stack will be allocated.
-Next, we specify that the \_stack\_top will reside at the end of the RAM section
-such that we can allocate a stack for each core.
+The last section is the .stack section. I align the starting of the
+\_stack\_start with 4 bytes. Generally a good rule of thumb is to guarantee
+alignment to the word size, which in RISC-V is 32-bit. This is the point from
+where each thread stack will be allocated. Next, I specify that the
+\_stack\_top will reside at the end of the RAM section such that I can allocate
+a stack for each core.
 
 \subsection{Getting into the main function}\label{sec:get_main}
-In the linker script, we specified the entry point of our program as `\_start`.
-Next up is implementing this entry point in assembly. In a new assembly file, we
+In the linker script, I specified the entry point of our program as `\_start`.
+Next up is implementing this entry point in assembly. In a new assembly file, I
 add the following:
 \begin{lstlisting}[numbers=left, escapechar=|, caption=Assembly code for getting
 to main function.]
@@ -193,17 +194,17 @@ _start: |\label{line:_start}|
   1:
     // loop
     j 1b
-    .cfi_endproc  // We should never really reach this
+    .cfi_endproc  // This point should never be reached
 \end{lstlisting}
 Lines \ref{line:header_start}-\ref{line:header_end} provide the setup for the
-assembly file. We specify that a main and secondary\_main label will be defined
+assembly file. I specify that a main and secondary\_main label will be defined
 outside of the file, that \_start is a global label and that \_start is a
-function type. At last, we include the defines.h file, which includes
+function type. At last, I include the defines.h file, which includes
 definitions of the STACK\_SIZE.
 
-On lines \ref{line:_start}-\ref{line:pop} we provide call frame information
+On lines \ref{line:_start}-\ref{line:pop} I provide call frame information
 (CFI) for there being no return address and that the process begins here. Then
-when initializing the global pointer, we must specify options push, norelax, and
+when initializing the global pointer, I must specify options push, norelax, and
 pop as described in GNU binutils. \cite{GNU_bin} After linker relaxation, this
 would produce the anticipated code:
 \begin{lstlisting}
@@ -211,9 +212,9 @@ auipc gp, %pcrel_hi(__global_pointer$)
 addi gp, gp, %pcrel_lo(__global_pointer$)
 \end{lstlisting}
 
-On lines \ref{line:stack_top}-\ref{line:break_zero}, we load the value of
+On lines \ref{line:stack_top}-\ref{line:break_zero}, I load the value of
 \_stack\_top, which the linker provides through the linker script defined
-previously, and save it into the stack pointer (sp) register. We read the
+previously, and save it into the stack pointer (sp) register. I read the
 current machine hart identifier (mhartid), which contains a unique identifier
 for each core on the processor. This is what allows for differentiation between
 the different cores. Line \ref{line:break_zero} moves execution to line
@@ -223,16 +224,16 @@ where it jumps to the main function.
 
 All other cores continue execution at line \ref{line:STACK_SIZE}, where they
 load the value STACK\_SIZE\footnote{Defined either via. the Makefile or defined
-in defines.h} into the temporary register t1. We also load immediately(li) the
+in defines.h} into the temporary register t1. I also load immediately(li) the
 value 1 into the temporary register r1. Line \ref{line:align_stack} aligns the
-current value in the stack pointer to 16. Afterwards, we compare the value in
+current value in the stack pointer to 16. Afterwards, I compare the value in
 register a0, which holds the value of the mhartid, to the value in t0. If they
-are equal, we jump to line \ref{line:jump_secondary}, which makes us jump to the
-externally defined secondary\_main function. Otherwise, we continue on line
-\ref{line:sub_stack}, where we subtract the register t1 (STACK\_SIZE) from the
-value stored in the sp register. We increment the value in t0 by one, and jump
-back to line \ref{line:align_stack}. With this loop, we are setting up a stack
-of size STACK\_SIZE for all the different cores defined, such that we get the
+are equal, I jump to line \ref{line:jump_secondary}, which makes us jump to the
+externally defined secondary\_main function. Otherwise, I continue on line
+\ref{line:sub_stack}, where I subtract the register t1 (STACK\_SIZE) from the
+value stored in the sp register. I increment the value in t0 by one, and jump
+back to line \ref{line:align_stack}. With this loop, I am setting up a stack
+of size STACK\_SIZE for all the different cores defined, such that I get the
 desired memory layout shown at the top of Figure~\ref{fig:mem_layout}.
 
 \subsection{Initializing the thread jobs}\label{sec:init_threads}
@@ -282,18 +283,18 @@ desired memory layout shown at the top of Figure~\ref{fig:mem_layout}.
 \end{algorithm}
 A pseudocode implementation for initializing the parallel merge sort algorithm
 is provided in Algorithm~\ref{algo:threads}. It should be noted that it is
-assumed NUM\_CORES is a multiple of 2. Consequently, we can calculate the depth
+assumed NUM\_CORES is a multiple of 2. Consequently, I can calculate the depth
 desired for our merge tree by employing the number of cores. This may be
 achieved by taking $\log_2(NUM\_CORES)$ or, equivalently, by examining the most
 significant bit of NUM\_CORES since it is a multiple of 2. At
 line~\ref{alg:early_escape}, an early escape mechanism is implemented which
-takes care of the single thread that will have no parent thread. If we are not
-positioned at the very top level of the merge tree, we assign the variable 'k'
+takes care of the single thread that will have no parent thread. If I am not
+positioned at the very top level of the merge tree, I assign the variable 'k'
 as the number of threads for the given level and partition the list to create
 threads targeting a specific sublist. Lines \ref{alg:left_right} -
 \ref{alg:left_right_end} address the task of determining which subsection of the
 list each thread is responsible for. Finally, line~\ref{alg:depth_check} ensures
-that we do not generate more active threads than what the available number of
+that I do not generate more active threads than what the available number of
 cores can effectively handle. Upon completion of the algorithm, a threads array
 will be produced containing $2 \cdot NUM\_CORES - 1$ different threads, each
 assigned with a specific subsection of the list to either merge or perform
@@ -311,7 +312,7 @@ merge sort on.
 \end{figure}
 
 The idea behind initializing the threads array, as described in
-Section~\ref{sec:init_threads}, is that we can reduce the need for
+Section~\ref{sec:init_threads}, is that I can reduce the need for
 synchronization between threads once the partitioning of the list is done. An
 example can be seen in Figure~\ref{fig:mergesort} with the corresponding
 finished THREADS array. This example would be on a system with 4 cores. As seen

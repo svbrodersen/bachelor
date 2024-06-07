@@ -35,7 +35,7 @@ demand for massive data computations, it is essential to investigate whether
 implementing a processor designed for such a purpose is feasible. Consequently,
 several open questions remain unanswered. (1) What type of computation should be
 performed by a storage device? (2) Is it possible to implement such computation
-on a bare-metal\footnoteref{note:1} processor?
+on a bare-metal processor?
 
 \begin{enumerate}
   \item {\large \textbf{What computation should be handled by a storage
@@ -47,12 +47,12 @@ on a bare-metal\footnoteref{note:1} processor?
     sorting is essential for optimal performance. Due to its time complexity of O(n
     log n), merge sort was selected for further investigation. Furthermore, parallel
     implementations of the merge sort algorithm should be feasible on
-    bare-metal\footnoteref{note:1}.
+    bare-metal.
   \item {\large \textbf{ Is it feasible to implement such a computation on a
     bare metal RISC-V processor?}} \\
-    As the main goal is to offload the primary CPU, we must investigate whether
-    it is at all possible to create a sorting algorithm on a
-    bare-metal\footnoteref{note:1} processor.
+    As the main goal is to offload the primary CPU, it must be investigated
+    whether it is at all possible to create a sorting algorithm on a bare-metal
+    processor.
 \end{enumerate}
 
 
