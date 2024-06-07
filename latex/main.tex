@@ -1,5 +1,5 @@
 % ! TeX Program = lualatex
-\documentclass[bibliography=totocnumbered, a4paper, 12pt]{article}
+\documentclass[a4paper, 12pt]{article}
 \usepackage{newclude}
 \usepackage{KUstyle}
 \usepackage{bytefield}
@@ -16,6 +16,11 @@
 \usepackage{multirow}
 \usepackage{caption}
 \usepackage{subcaption}
+
+\usepackage[backend=biber, style=numeric]{biblatex}
+\usepackage{csquotes}
+\addbibresource{refs.bib}
+
 \usepackage[automake]{glossaries-extra}
 \makeglossaries
 \loadglsentries{glossaries}
@@ -67,10 +72,8 @@
 \subfile{./sections/Evaluation.tex}
 \subfile{./sections/Conclusion.tex}
 
-\appendix
-\subfile{./appendix.tex}
-\bibliographystyle{plain}
-\bibliography{refs}
+\newpage
+\printbibliography[heading=bibintoc, title={References}]
 
 \newpage
 \printglossary[type=main,style=long,nonumberlist]
