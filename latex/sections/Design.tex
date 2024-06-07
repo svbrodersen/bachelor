@@ -106,18 +106,13 @@ sense that some core will always make progress. However, there must still be
 some sort of synchronization between the cores, and thus was not the chosen
 method for this thesis.
 
-%TODO: Improve wording
-Instead the entire thread structure would be initialized before any core starts
+Instead, the entire thread structure would be initialized before any core begins
 running computations on a thread job. To simplify initialization, a single core
-would have the job of splitting the initial array into sub lists until every
-core has a single sub list to work on. While doing the splitting, it would also
-create threads which have the job of merging the sub lists once they are
-finished. This approach would remove the need for a queue and scheduler in the
-first place, as each core would, through its own core ID, know what thread it
-would have to complete. The issue of communication with the parent merge would
-still exist, but the same index used to find the thread initially could be used
-to find the parent as well. The implementation of this approach can be seen in
-the Implementation section.
+would have the task of splitting the initial array into sublists until every
+core has a single sublist to work on. While doing the splitting, it would also
+create threads responsible for merging the sublists once they are finished. This
+approach eliminates the need for a queue and scheduler since each core, through
+its own core ID, knows what thread it must complete.
 
 
 \subsection{Context switching}\label{sec:context_switch}
@@ -148,19 +143,18 @@ sudo apt install dtc
 dtc -I dtb -O dts -o riscv32.dts riscv32.dtb
 \end{lstlisting}
 
-%TODO: Wording
-Opening the file up in a text editor, you should see a lot of information
-regarding the qemu-system-riscv32 virtual machine. First, note that the
-Devicetree specification\cite{DTS} states that the memory node describes the
-physical memory layout for the system. The memory node has two required
-sections: first, the device\_type, which must simply be 'memory,' and secondly,
-the reg value. The reg value consists of an arbitrary number of address and size
-pairs that specify the physical address and size of the memory ranges
-\cite{DTS}. Furthermore, it is stated that the property name reg has the value
-encoded as a number of <u32> cells required to specify the address and length,
-which are bus- specific and are specified by the \#address-cells and
-\#size-cells properties in the parent of the device node. Looking through our
-riscv32.dts file, I find the relevant information to be:
+Opening the file in a text editor, you will see a lot of information regarding
+the qemu-system-riscv32 virtual machine. First, note that the Devicetree
+specification\cite{DTS} states that the memory node describes the physical
+memory layout for the system. The memory node has two required sections: first,
+the device_type, which must simply be 'memory,' and secondly, the reg value. The
+reg value consists of an arbitrary number of address and size pairs that specify
+the physical address and size of the memory ranges \cite{DTS}. Furthermore, it
+is stated that the property name reg has the value encoded as a number of <u32>
+cells required to specify the address and length, which are bus-specific and are
+specified by the #address-cells and #size-cells properties in the parent of the
+device node. Looking through our riscv32.dts file, I find the relevant
+information to be:
 
 \begin{lstlisting}
 #address-cells = <0x02>;

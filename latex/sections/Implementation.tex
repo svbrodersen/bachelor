@@ -290,7 +290,7 @@ line~\ref{alg:early_escape}, an early escape mechanism is implemented which
 takes care of the single thread that will have no parent thread. If we are not
 positioned at the very top level of the merge tree, we assign the variable 'k'
 as the number of threads for the given level and partition the list to create
-threads targeting a specific sub list. Lines \ref{alg:left_right} -
+threads targeting a specific sublist. Lines \ref{alg:left_right} -
 \ref{alg:left_right_end} address the task of determining which subsection of the
 list each thread is responsible for. Finally, line~\ref{alg:depth_check} ensures
 that we do not generate more active threads than what the available number of

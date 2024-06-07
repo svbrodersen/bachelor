@@ -149,7 +149,7 @@ the performance of multiple cores is significant.
 The implementation also requires that the number of cores is a power of 2. This
 is due to how the initialization builds the threads up. This issue has a few
 ways it can be fixed. Firstly, instead of stopping at the same level for all the
-merge sorts, it could theoretically split only a few of the sub lists given,
+merge sorts, it could theoretically split only a few of the sublists given,
 such that instead of having to be a power of 2, it would instead only require
 that it is a multiple of 2. This would still allow for all cores to work on a
 sublist at the same time. Another approach would be to allow a subset of the
