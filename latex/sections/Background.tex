@@ -58,12 +58,12 @@ for larger volumes of data processing.
 
 \subsection{Toolchain}
 \subsubsection*{QEMU}
-QEMU is a system emulator, which has the capabilities of emulating both a 32-bit
-and 64-bit RISC-V processor \cite{QEMU}. With QEMU I am able to create code
-intended for a processor running the RISC-V instruction set even if my
-development environment is running a different ISA. For the purposes of this
-thesis it is the RISC-V 32-bit version of the QEMU virtual machine that will be
-used. The RISC-V 32-bit virtual machine is compatible with the standard
+QEMU short for quick emulator system emulator, which has the capabilities of
+emulating both a 32-bit and 64-bit RISC-V processor \cite{QEMU}. With QEMU I am
+able to create code intended for a processor running the RISC-V instruction set
+even if my development environment is running a different ISA. For the purposes
+of this thesis it is the RISC-V 32-bit version of the QEMU virtual machine that
+will be used. The RISC-V 32-bit virtual machine is compatible with the standard
 extensions, and throughout this thesis the following standard extensions will be
 used. The Control and Status Register (Zicsr), Atomic Instructions(a), Integer
 Multiplication and Division (m) and Compressed Instructions(c).
@@ -78,10 +78,12 @@ tools. This allows for the use of more sophisticated development environments
 such as an Language Server Protocol(LSP). Generally clang also provides more
 sophisticated error reports making the overall debugging easier.
 
-At the time of writing, LLVMs lldb debugger's connection to the RISC-V QEMU
+At the time of writing, LLVMs LLDB debugger's connection to the RISC-V QEMU
 machine was unable to connect probably. Consequently, the GNU gdb debugger for
 the RISC-V target was compiled for use in the implementation section. For less
 headache with changing platforms, the same was done for the LLVM clang compiler.
-Additionally, the RISC-V GNU toolchain supplies essential stdlib header files,
-enabling basic algorithm implementations, such as memcpy, for the compiler.
+Additionally, the RISC-V GNU toolchain supplies essential standard library
+header files, enabling basic algorithm implementations, such as
+memcpy\footnote{Used by default when copying one memory buffer to another.}, for the
+compiler.
 

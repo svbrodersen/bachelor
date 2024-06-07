@@ -12,12 +12,12 @@ the use of SSDs came with multiple improvements over the magnetic disks of the
 past, which were hindered by said interface. As such, there was a rapid movement
 towards Open-channel SSDs that do not have a firmware Flash Translation
 Layer(FTL) and instead leave the management of the physical SSD to the
-computer's operating system. This solves the issue mentioned previously but
-introduces further data transferring between the Central Processing Unit(CPU)
-and the SSD. However, in recent years, the discrepancy between a storage
-device's READ and WRITE operations and a CPU's ability to perform READ and WRITE
-memory operations has been ever increasing. If this trend continues, the CPU
-will soon become a bottleneck for performance in the data centers.
+computer's operating system. This allowed for greater utilization of the SSD,
+but introduces further data transferring between the Central Processing
+Unit(CPU) and the SSD. However, in recent years, the discrepancy between a
+storage device's READ and WRITE operations and a CPU's ability to perform READ
+and WRITE memory operations has been ever increasing. If this trend continues,
+the CPU will soon become a bottleneck for performance in the data centers.
 
 A solution to the problem would be to offload the CPU and provide computation at
 the SSD level. Such a solution has been described as a computational storage
@@ -33,7 +33,7 @@ has been been investigated.
 For computational storage to be a viable solution for meeting the ever-growing
 demand for massive data computations, it is essential to investigate whether
 implementing a processor designed for such a purpose is feasible. Consequently,
-several open questions remain unanswered. (1) What type of computation should be
+at least two open questions remain unanswered. (1) What type of computation should be
 performed by a storage device? (2) Is it possible to implement such computation
 on a bare-metal processor?
 
@@ -59,7 +59,7 @@ on a bare-metal processor?
 \subsection{Approach}\label{sec:approach}
 For this thesis, an experimental approach was taken. First, a feasible design
 for implementing on a bare metal processor is introduced. Secondly, an
-implementation of said designed is presented. Third, the viability and validity
+implementation of said design is presented. Third, the viability and validity
 of the implementation is evaluated. Lastly, shortcomings and proposed further
 research are presented. These implementations will be carried out on a QEMU
 virtual machine where the code is loaded via a general loader. The QEMU virtual

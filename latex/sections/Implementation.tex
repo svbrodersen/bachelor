@@ -8,15 +8,20 @@ more parts make up the entire program.
 
 \subsection{Dependencies}
 \subsubsection*{QEMU}
-\begin{lstlisting}[caption=Installing QEMU, label=lst:qemu_install, float]
+\begin{lstlisting}[caption=Installing QEMU, label=lst:qemu_install, float=h]
 git clone git clone https://github.com/qemu/qemu  # Clone the QEMU repo
 cd qemu
 ./configure --target-list=riscv32-softmmu  # Configure the 32-bit RISC-V target
 make -j $(nproc)  # build the project with all num cores jobs
 sudo make install
 \end{lstlisting}
+Following the instructions from RISC-V's getting started guide, I can build the
+QEMU RISC-V system emulators by running the code provided in
+Listing~\ref{lst:qemu_install}\cite{RISC-V_GS}.
+
+\subsubsection*{LLVM and RISC-V-gnu-toolchain}
 \begin{lstlisting}[caption=Installing LLVM compiler infastructure with RISC-V
-32-bit as native target., label=lst:llvm_install, float]
+32-bit as native target., label=lst:llvm_install, float=h]
 # Dependencies
 sudo apt-get -y install \
   binutils build-essential libtool texinfo \
@@ -33,11 +38,6 @@ sudo make -j$(nproc)
 cd ..
 popd
 \end{lstlisting}
-Following the instructions from RISC-V's getting started guide, I can build the
-QEMU RISC-V system emulators by running the code provided in
-Listing~\ref{lst:qemu_install}\cite{RISC-V_GS}.
-
-\subsubsection*{LLVM and RISC-V-gnu-toolchain}
 Although the LLVM Clang compiler comes with an available cross-compiler, I found
 that it often caused issues with missing header files compatible with my
 implementation. Furthermore, the LLDB debugger was unable to provide a working
@@ -205,7 +205,7 @@ definitions of the STACK\_SIZE.
 On lines \ref{line:_start}-\ref{line:pop} I provide call frame information
 (CFI) for there being no return address and that the process begins here. Then
 when initializing the global pointer, I must specify options push, norelax, and
-pop as described in GNU binutils. \cite{GNU_bin} After linker relaxation, this
+pop as described in GNU binutils documentation. \cite{GNU_BIN} After linker relaxation, this
 would produce the anticipated code:
 \begin{lstlisting}
 auipc gp, %pcrel_hi(__global_pointer$)
@@ -228,12 +228,12 @@ in defines.h} into the temporary register t1. I also load immediately(li) the
 value 1 into the temporary register r1. Line \ref{line:align_stack} aligns the
 current value in the stack pointer to 16. Afterwards, I compare the value in
 register a0, which holds the value of the mhartid, to the value in t0. If they
-are equal, I jump to line \ref{line:jump_secondary}, which makes us jump to the
+are equal, I jump to line \ref{line:jump_secondary}, which goes to the
 externally defined secondary\_main function. Otherwise, I continue on line
 \ref{line:sub_stack}, where I subtract the register t1 (STACK\_SIZE) from the
 value stored in the sp register. I increment the value in t0 by one, and jump
-back to line \ref{line:align_stack}. With this loop, I am setting up a stack
-of size STACK\_SIZE for all the different cores defined, such that I get the
+back to line \ref{line:align_stack}. With this loop, I am setting up a stack of
+size STACK\_SIZE for all the different cores defined, such that I get the
 desired memory layout shown at the top of Figure~\ref{fig:mem_layout}.
 
 \subsection{Initializing the thread jobs}\label{sec:init_threads}
