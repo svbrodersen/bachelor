@@ -66,7 +66,7 @@ include in the final output file, as well as where each section is stored in
 memory. As I am working on an embedded system, I have to deviate from the
 default and create my own linker script. Clang uses the LLVM lld linker, which
 is compatible with general linker scripts implementations of the GNU ld
-linker.\cite{llvm-org-linker}
+linker\cite{llvm-org-linker}.
 
 \begin{lstlisting}[caption=Memory area defined in linker script]
 OUTPUT_ARCH('riscv')
@@ -205,7 +205,7 @@ definitions of the STACK\_SIZE.
 On lines \ref{line:_start}-\ref{line:pop} I provide call frame information
 (CFI) for there being no return address and that the process begins here. Then
 when initializing the global pointer, I must specify options push, norelax, and
-pop as described in GNU binutils documentation. \cite{GNU_BIN} After linker relaxation, this
+pop as described in GNU binutils documentation\cite{GNU_BIN}. After linker relaxation, this
 would produce the anticipated code:
 \begin{lstlisting}
 auipc gp, %pcrel_hi(__global_pointer$)

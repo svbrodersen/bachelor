@@ -50,12 +50,12 @@ systems because they require an operating system to function. Consequently,
 developers must handle memory allocation and deallocation themselves for more
 advanced programs. Additionally, standard printing for debugging purposes is
 left up to the developer to implement, requiring them to understand hardware
-specifications, such as UART printing.\footnote{The QEMU virt machine is
+specifications, such as UART printing\footnote{The QEMU virt machine is
   compatible with UART, redirecting any output from stdout to the terminal
 instance running the QEMU virt machine by default. In
 Section~\ref{sec:validate}, this redirection is used for debugging the
 implementation, with output being redirected to a file instead.}
-\cite{uart}
+\cite{uart}.
 
 Memory management often leads to unusual errors during debugging. Notably, while
 gdb\footnote{gdb is the GNU Project Debugger later used for debugging in
@@ -72,7 +72,7 @@ The merge sort algorithm can be executed both with serial and parallel
 computing. Merge sort, in itself, has a recursive pattern of dividing the list
 into subsections and sorting each subsection for itself. Given that parallel
 algorithms often outperform their serial counterparts, this thesis chose a
-multicore approach for implementation. \cite{comp_parallel} This decision
+multicore approach for implementation\cite{comp_parallel}. This decision
 introduces new challenges not present in serial computing ranging from race
 conditions to memory management of multiple cores and threads.
 

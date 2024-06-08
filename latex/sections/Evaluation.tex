@@ -45,7 +45,7 @@ This gives the following work flow for creating and running a test:
 \end{figure}
 
 To access and debug the multicore system, QEMU provides a way for a remote
-gdb-server to connect at the start of execution.\cite{QEMU} In a system where
+gdb-server to connect at the start of execution\cite{QEMU}. In a system where
 each core is equivalent, gdb will automatically detect the cores, but will
 display them as threads. This allows one to debug the QEMU virtual machine with
 the same methodology used when debugging multithreaded execution. The workflow
@@ -141,10 +141,16 @@ the time it takes to initialize the threads. This is inherently inefficient. As
 such future work could propose a solution where the work of initializing the
 threads array could be spread among multiple cores instead.
 
-It is not possible for performance testing as the application is running on a
-QEMU version. Implementing a timing library might be needed to access whether
-the performance of multiple cores is significant.
-%TODO: this section might need more info.
+As the implementation is carried out using QEMU, it is not possible to do
+performance testing. Firstly, the implementation is implemented on bare-metal,
+and would need some sort of custom timing implemented to get the time at the
+start and then at the end. Secondly, as QEMU is a virtual machine, it mimics
+multiple cores by creating threads on the host pc. These threads provide an
+illusion of multicore, but the host operating system is still in charge of
+scheduling, which performance vice removes any theoretical performance by
+creating the bare-metal design in the first part. For performance testing the
+implementation must be carried out on actual hardware, such that it is not just
+a virtualisation of the bare-metal platform.
 
 The implementation also requires that the number of cores is a power of 2. This
 is due to how the initialization builds the threads up. This issue has a few

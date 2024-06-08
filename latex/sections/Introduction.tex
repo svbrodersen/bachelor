@@ -2,22 +2,23 @@
 \subsection{Context}\label{sec:context}
 Data centers are becoming increasingly essential in the IT sector. Whether it is
 Google's cloud platform, Microsoft Azure, or Amazon's web services, news about
-new data centres seems like a daily occurrence. With such scale comes an
+new data centres seems like a daily occurrence\cite{datacenters}. With such scale comes an
 ever-growing need for custom solutions and cutting-edge technologies to both
 reduce power consumption and improve overall performance.
 
 Historically, solid-state drives (SSDs) served as drop-in replacements for
 magnetic disks, utilizing similar interfaces to ensure seamless integration. But
 the use of SSDs came with multiple improvements over the magnetic disks of the
-past, which were hindered by said interface. As such, there was a rapid movement
+past, which were hindered by said interface. Furthermore, flash SSDs were
+subject to endurance problems, and issues with wear leveling
+emerged\cite{write_endurance, NAND_future}. As such, there was a rapid movement
 towards Open-channel SSDs that do not have a firmware Flash Translation
 Layer(FTL) and instead leave the management of the physical SSD to the
-computer's operating system. This allowed for greater utilization of the SSD,
-but introduces further data transferring between the Central Processing
-Unit(CPU) and the SSD. However, in recent years, the discrepancy between a
-storage device's READ and WRITE operations and a CPU's ability to perform READ
-and WRITE memory operations has been ever increasing. If this trend continues,
-the CPU will soon become a bottleneck for performance in the data centers.
+computer's operating system\cite{LightNVM, open-channel}. This allowed for
+greater utilization of the SSD, but introduces further data transferring between
+the Central Processing Unit(CPU) and the SSD. This increases the discrepancy
+between the amount of memory that the CPU uses to analyze data and the memory it
+has available\cite{CSDWhereAreWe}.
 
 A solution to the problem would be to offload the CPU and provide computation at
 the SSD level. Such a solution has been described as a computational storage
@@ -81,27 +82,3 @@ For this thesis, the following contributions have been made:
 \end{enumerate}
 
 
-\subsection{Related work}
-Marcelino et al. \cite{sorting_units} evaluate three hardware sorting units
-implemented with specific Field Programmable Gate Arrays (FPGAs). One of these
-being the FIFO\footnote{Short for First In First Out}-based merge sorting
-machine, where they present a merge sorting structure for a FIFO embedded system
-merging. This implementation assumes two sorted input lists and they later
-propose a hybrid solution using Insertion and FIFO based merge sorting. With
-this they find that the FPGA hybrid insertion and FIFO-based merge sorting sees
-speed-ups between 1.6 and 15 time compared to a quick sort pure software
-solution.
-
-Jackson et al. \cite{flash_sorting} look for faster sorting algorithms used for
-flash memory embedded devices. They provide a merge sort for sorting with
-minimal memory usage which aims to reduce the number of WRITES to flash memory.
-This implementation would only need two memory buffers. They find that when
-sorting large data sets with small memory the proposed algorithms reduces I/Os
-and execution time by about 30\%.
-
-Lobo et al. \cite{merge_sort} compare the performance of different types of
-merge sort algorithms. Within their testing they find that the serial and
-parallel merge sort discussed have a similar amount of resource
-utilization, but find the delay of the parallel merge sort to be a lot smaller
-than the serial counterpart. As such, they theorize that this implies the
-parallel execution to be much faster than the serial.
