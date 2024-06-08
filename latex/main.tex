@@ -16,6 +16,7 @@
 \usepackage{multirow}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage[toc,page]{appendix}
 
 \usepackage[backend=biber, style=numeric, sorting=nty]{biblatex}
 \usepackage{csquotes}
@@ -75,9 +76,11 @@
 
 \newpage
 \printbibliography[heading=bibintoc, title={References}]
-
 \newpage
 \printglossary[type=main,style=long,nonumberlist]
 \glsaddall
+
+\appendix
+\subfile{./sections/Appendix.tex}
 
 \end{document}

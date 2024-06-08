@@ -67,7 +67,6 @@ sorted the subsection of the list from index 7 to 10. This section corresponds
 to one fourth of the list, as the number of cores available is 4.
 
 \subsection{Validation}\label{sec:validate}
-%TODO: More tests with smaller size and larger size pls
 \begin{table}
   \caption{Table of tests run}\label{tab:tests}
   \begin{center}
@@ -82,27 +81,46 @@ to one fourth of the list, as the number of cores available is 4.
       \hline
       -50:50:100 & pass & pass & pass & pass & pass & pass \\
       \hline
-      -1000:1000:1000 & pass* & pass* & pass* & pass* & pass* & pass*
+      -50:50:10 & pass & pass & pass & fail & fail & fail \\
+      \hline
+      -1000:1000:1000 & pass* & pass* & pass* & pass* & pass* & pass* \\
+      \hline
+      -1000:1000:20000 & pass** & pass** & pass** & pass** & pass** & pass**
     \end{tabular} \\
     \vspace{1em}
     \raggedright{\footnotesize *This run initially failed due to stack overflow. After
-    increasing the size of STACK\_SIZE to 8192 bytes, THREAD\_STACK\_SIZE to
+    increasing the size of STACK\_SIZE to 2048 bytes, THREAD\_STACK\_SIZE to
   8192 and GLOBAL\_STACK\_SIZE 10MB bytes it worked.} \\
+    \raggedright{\footnotesize **This run was done with GLOBAL\_STACK\_SIZE of
+    0x21480 bytes, THREAD\_STACK\_SIZE 0x14080 bytes and STACK\_SIZE of 2048
+  bytes.} \\
+  \raggedright{For more information behind picking the different stack sizes see
+  Appendix~\ref{ap:stack}}
   \end{center}
 \end{table}
 
-When running a test, the .elf file first prints the unsorted array, and then once
-sorting is done, prints it again. When executing "make test", the QEMU
+When running a test, the .elf file first prints the unsorted array, and then
+once sorting is done, prints it again. When executing "make test", the QEMU
 virtual machine outputs the stdout to a file called test.txt. Subsequently,
 invoking "python3 validate.py" reads this file to ascertain if sorting was
 performed correctly. In Table 6, an overview of some tests I conducted can be
 seen. On the left, the formatting is specified as the lower bound of randomly
 selected numbers, the upper bound, and the number of random elements in the
 list. A value of 'pass' signifies that the validate.py file executed without
-throwing an assertion error. The tests were initially performed with a global
-stack of 0x800,\footnote{defined in ram.ld. Equates to 2048 bytes.} a
-STACK\_SIZE of 2048 bytes and a THREAD\_STACK\_SIZE of 1024 bytes. If a failure occurred,
+throwing an assertion error. A value of 'fail' signifies that validate.py threw
+an error when running. The tests were initially performed with a global stack of
+0x800,\footnote{defined in ram.ld. Equates to 2048 bytes.} a STACK\_SIZE of 2048
+bytes and a THREAD\_STACK\_SIZE of 1024 bytes. If a failure occurred,
 modifications were made to these three values in an attempt to pass the test.
+
+In Table~\ref{tab:tests} one can see that when the number of cores is greater than
+the number of elements in the list it fails executing the sorting algorithm.
+Generally it would not seem relevant to ever run a merge sort algorithm with
+more cores than there are elements in the list due to the tree structure created
+with merge sort. The error is caused by the merge function being told to merge a
+single element, which is undefined behaviour in the current implementation. I
+have decided not to leave a check for this, and instead assume that the number
+of cores is never larger than the length of the input list.
 
 \subsection{Future work}
 The implementation proposed in this thesis is more a proof of concept, and as
