@@ -103,7 +103,8 @@ void parallel_merge(int *res, int l, int m, int r) {
 // Utility function to find minimum of two integers
 int min(int x, int y) { return (x < y) ? x : y; }
 
-/* Iterative mergesort function to sort arr[l...r] */
+/* Modified version of iterative mergesort from GeeksforGeeks:
+ * https://www.geeksforgeeks.org/iterative-merge-sort/ */
 void mergeSort(int arr[], int l, int r) {
   int curr_size;
   int left_start;

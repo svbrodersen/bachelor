@@ -139,12 +139,12 @@ global variables within our later code implementation. The global pointer is
 used together with an offset to save global variables. For more customisability
 this value can be passed in the Makefile.
 
-The last section is the .stack section. I align the starting of the
-\_stack\_start with 4 bytes. Generally a good rule of thumb is to guarantee
-alignment to the word size, which in RISC-V is 32-bit. This is the point from
-where each thread stack will be allocated. Next, I specify that the
-\_stack\_top will reside at the end of the RAM section such that I can allocate
-a stack for each core.
+The final section is the .stack segment. First I align to 4 bytes, such that
+\_stack\_start is properly aligned. In most cases, it is advisable to maintain
+word-size alignment, which, in our RISC-V architecture, equates to 32 bits. This
+serves as the starting point for allocating each thread's stack. Subsequently, I
+designate the \_stack\_top to occupy the end of the RAM segment, thereby
+enabling the allocation of a separate stack for each core.
 
 \subsection{Getting into the main function}\label{sec:get_main}
 In the linker script, I specified the entry point of our program as `\_start`.
