@@ -1,11 +1,10 @@
+
 #include "../threads/context/libucontext.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <sys/types.h>
 
 #define MAX_NUM_THREADS 0
-#define THREAD_STACK_SIZE 16384
-
 typedef uint32_t Tid;
 
 typedef struct thread {

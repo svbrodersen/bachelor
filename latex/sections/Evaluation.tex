@@ -85,17 +85,14 @@ to one fourth of the list, as the number of cores available is 4.
       \hline
       -1000:1000:1000 & pass* & pass* & pass* & pass* & pass* & pass* \\
       \hline
-      -1000:1000:20000 & pass** & pass** & pass** & pass** & pass** & pass**
+      -1000:1000:20000 & pass* & pass* & pass* & pass* & pass* & pass* \\
+      \hline
+      -1000:1000:100000 & pass* & pass* & pass* & pass* & pass* & pass* \\
     \end{tabular} \\
     \vspace{1em}
-    \raggedright{\footnotesize *This run initially failed due to stack overflow. After
-    increasing the size of STACK\_SIZE to 2048 bytes, THREAD\_STACK\_SIZE to
-  8192 and GLOBAL\_STACK\_SIZE 10MB bytes it worked.} \\
-    \raggedright{\footnotesize **This run was done with GLOBAL\_STACK\_SIZE of
-    0x21480 bytes, THREAD\_STACK\_SIZE 0x14080 bytes and STACK\_SIZE of 2048
-  bytes.} \\
-  \raggedright{For more information behind picking the different stack sizes see
-  Appendix~\ref{ap:stack}}
+    \raggedright{\footnotesize *This run initially failed due to stack overflow.
+    After increasing the different stack sizes following Appendix~\ref{ap:stack}
+  it passed.} \\
   \end{center}
 \end{table}
 
