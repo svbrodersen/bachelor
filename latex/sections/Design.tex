@@ -67,9 +67,21 @@ no such alerts occur. Instead, a stack overflow will change the values in
 different sections without further notice. However, with the benefits of
 customization, bare-metal was chosen as the development platform in this thesis.
 
-
-%TODO: Explain what influence QEMU and RISC-V has on the developemnt on
-%bare-metal.
+Another challenge lies in the differences between architectures. Bare-metal
+programming involves direct interaction with hardware, which is highly dependent
+on the specific hardware it is programmed for. However, RISC-V offers
+compatibility standards that allow implementation to work across all RISC-V
+compatible processors, provided the extensions outlined in
+Section~\ref{sec:approach} are given. Additionally, the toolchain described in
+Section~\ref{sec:toolchain} ensures that most C code remains independent of
+architecture and can be compiled for other architectures. Nonetheless, there are
+instances where specific RISC-V assembly instructions, such as atomic
+operations, must be modified to suit different architectures. QEMU's generic
+loader facilitates loading an .elf file onto various cores. To run the
+implementation on real hardware, one needs to replicate this process by loading
+the .elf file for each core on the target system as well as modifying the linker
+script. See Section~\ref{sec:memory} and Section~\ref{sec:linker} for further
+information on system-specific modifications and linker scripts.
 
 \subsection{Single vs Multicore}\label{sec:singlevsmulti}
 The merge sort algorithm can be executed both with serial and parallel
@@ -126,8 +138,8 @@ the context needed for sorting a specific part of the list, save it in a thread
 structure and then a separate core can continue its execution at a later point.
 
 
-\subsection{Memory}
-\subsubsection*{Getting system information}\label{sec:sys-info}
+\subsection{Memory}\label{sec:memory}
+\subsubsection*{Getting system information}
 To properly use the memory, I need some information about the system I am
 working on. As this thesis is created on a QEMU system, I am able to get the
 system information by running the following:

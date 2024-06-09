@@ -20,9 +20,3 @@ typedef struct thread {
  * on the context element afterwards. The context is the function returned to
  * when finished running the context*/
 int thread_create(thread_t *, size_t);
-int thread_get(thread_t **, Tid);
-
-void init_scheduler();
-uint32_t queue_length();
-void scheduler_add_thread(thread_t *thread);
-void schedule_new_thread();
