@@ -1,6 +1,6 @@
 \section{Choosing Stack Sizes}\label{ap:stack}
-When choosing the stack size one can make a calculate guess on the size needed.
-Firstly we split it into the three different stack types; Thread, Core and
+When selecting the stack size, one can make an educated guess on the size
+needed. Firstly, we divide it into three distinct stack types: Thread, Core, and
 Global.
 
 \subsection*{Core stack}
@@ -24,15 +24,15 @@ size needed for all the default variables. Throughout my testing, I found that
 having a C value of 2048 generally was enough for the THREAD\_STACK\_SIZE.
 
 \subsection*{Global Stack}
-The global stack stores both the entire list and the thread jobs. Within GDB I
+The global stack stores both the entire list and the thread jobs. Within GDB, I
 printed the size of the thread\_t struct, which told me its size was 848 bytes.
-Thus the Global Stack size generally can be set to:
+Thus, the Global Stack size generally can be set to:
 \begin{align}
   GLOBAL\_STACK\_SIZE &= \text{LIST LENGTH} * 4  \\
                       &+ (2 * \text{NUM\_CORES} - 1) * 848  + C
 \end{align}
-Where 4 denotes the size of an integer in bytes, 848 is the size of the struct
-in bytes, $(2 * \text{NUM\_CORES} - 1)$ is the number of thread jobs and C is
-some constant needed for the different variables. Again a value of 2048 for C
-was generally enough.
+Where 4 represents the size of an integer in bytes, 848 is the size of the
+struct in bytes, $(2 * \text{NUM\_CORES} - 1)$ denotes the number of thread jobs
+and C stands for some constant needed for the different variables. A value of
+2048 for C was generally sufficient.
 
