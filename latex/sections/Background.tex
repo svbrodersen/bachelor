@@ -10,11 +10,9 @@ operations. An accelerator serves as a separate substructure designed with
 distinct objectives compared to the CPU itself. By offloading the CPU,
 accelerators can optimize performance and reduce energy consumption\cite{AA}. A
 prime example of an accelerator is the Graphics Processing Unit (GPU), a crucial
-component in contemporary computers. This thesis aims to explore the feasibility
+component in today's computers. This thesis aims to explore the feasibility
 of adopting a similar design approach for creating computational storage
 devices.
-
-
 
 \subsection{RISC-V}
 Reduced Instruction Set Computing (RISC), particularly its fifth iteration,
@@ -28,13 +26,11 @@ development\cite{ISAfree}.
 RISC-V aims to provide a small core of instructions which compilers, assemblers,
 linkers, and operating systems can generally rely on, while still being
 extendable for more specialized accelerators. In RISC-V there are two primary
-base integer variants, RV32I and RV64I, which provide the 32-bit and 64-bit
-user-level address spaces respectively. However, RISC-V is already in the works
-with a RV128I variant which would provide the foundation needed for a 128-bit
-user address space in the future. In general, RISC-V provides standard and
+base integer variants, RV32I, RV64I and RV128I, which provide the 32-bit, 64-bit
+and 128-bit user-level address spaces. In general, RISC-V provides standard and
 non-standard extensions, where standard extensions should not conflict with
 other standard extensions, and the non-standard extensions are highly
-specialized.
+specialized\cite{about_riscv, RISC_priv}.
 
 With the rise of ARM\footnote{Short for Advanced RISC Machine. ARM is another
 RISC based ISA. Difference is it is proprietary.} based machines with comparable
@@ -44,24 +40,24 @@ same benefits in an open sourced environment. With this RISC-V, more
 specifically the 32-bit version, was chosen as the ISA for development in this
 thesis.
 
-\subsection{Computational Storage}
+\subsection{Computational Storage Device}
 Computational storage can be seen as a subsection of Accelerator-based Computer
 architecture. Firstly, it aims to offload the host processor as described in
 Section~\ref{sec:ACA} by providing a secondary processors optimized for specific
 computational tasks. Secondly, it aims to reduce data movement between the
 storage device and the host processor. This would allow the read and writes to
-be distributed among multiple RAM sections rather than a single processor. This
+be distributed among multiple RAM sections rather than a single processors. This
 could be an integral part of the issues presented in Section~\ref{sec:context},
-as a computational storage device would be scalable with the ever-growing nee\label{sec:sys-info}d
-for larger volumes of data processing.
+as a computational storage device would be scalable with the ever-growing
+nee\label{sec:sys-info}d for larger volumes of data processing.
 
 
 \subsection{Toolchain}\label{sec:toolchain}
 \subsubsection*{QEMU}
 QEMU short for quick emulator system emulator, which has the capabilities of
-emulating both a 32-bit and 64-bit RISC-V processor \cite{QEMU}. With QEMU I am
+emulating both a 32-bit and 64-bit RISC-V processor\cite{QEMU}. With QEMU I am
 able to create code intended for a processor running the RISC-V instruction set
-even if my development environment is running a different ISA. For the purposes
+even if my development platform is running a different ISA. For the purposes
 of this thesis it is the RISC-V 32-bit version of the QEMU virtual machine that
 will be used. The RISC-V 32-bit virtual machine is compatible with the standard
 extensions, and throughout this thesis the following standard extensions will be
