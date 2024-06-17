@@ -1,63 +1,62 @@
 
 \begin{frame}[hoved]
-  \frametitle{Background}
-  \begin{minipage}{0.45\textwidth}
-  {\large Accelerator-based Computer Architecture}
-  \begin{itemize}
-    \item Off-loading the CPU.
-    \item Optimized for distinct objectives, instead of General Purpose.
-    \item Prominent example is the Graphical Processing Unit(GPU).
-  \end{itemize}
-  \vspace{0.5em}
-  {\large RISC-V}
-  \begin{itemize}
-    \item Reduced Instruction set Computing(RISC), version 5 (V).
-    \item Open source, minimize intellectual property, reduce barrier of entry.
-    \item Provides RV32I, RV64I and RV128I.
-  \end{itemize}
-\end{minipage}
-\hfill
-\begin{minipage}{0.45\textwidth}
-  \begin{figure}
-    \begin{center}
-      \includegraphics[width=0.95\textwidth]{figures/RISC-V-logo.png}
-    \end{center}
-    \caption{RISC-V logo \\ \tiny By ™/®RISC-V Foundation - Vectorised by
-    Vulphere from
-  https://riscv.org/wp-content/uploads/2017/05/Tue1100-RISC-V-Foundation-Update.pdf,
-Public Domain,
-https://commons.wikimedia.org/w/index.php?curid=69489388}\label{fig:riscv}
-  \end{figure}
-\end{minipage}
+	\frametitle{Background}
+	\begin{minipage}[t]{0.45\textwidth}
+		{\large Accelerator-based Computer Architecture}
+		\begin{itemize}
+			\item Off-loading the CPU.
+			\item Optimized for distinct objectives, instead of General Purpose.
+			\item Prominent example is the Graphical Processing Unit(GPU).
+		\end{itemize}
+		{\large RISC-V}
+		\begin{itemize}
+			\item Reduced Instruction set Computing(RISC), version 5 (V).
+			\item Open source, minimize intellectual property, reduce barrier of entry.
+			\item Provides RV32I, RV64I and RV128I.
+		\end{itemize}
+	\end{minipage}
+	\hfill
+	\begin{minipage}[t]{0.45\textwidth}
+		\begin{figure}
+			\begin{center}
+				\includegraphics[width=0.95\textwidth]{figures/RISC-V-logo.png}
+			\end{center}
+			\caption{RISC-V logo. \tiny By RISC-V Foundation - Vectorised by
+				Vulphere from
+				https://riscv.org/wp-content/uploads/2017/05/Tue1100-RISC-V-Foundation-Update.pdf,
+				Public Domain,
+				https://commons.wikimedia.org/w/index.php?curid=69489388}\label{fig:riscv}
+		\end{figure}
+	\end{minipage}
 \end{frame}
 
 \begin{frame}[hoved]
-  \frametitle{Background}
-  \begin{minipage}{0.45\textwidth}
-  {\large QEMU}
-  \begin{itemize}
-    \item Able to emulate both a 32-bit and 64-bit RISC-V processor.
-    \item Made it possible to develop a binary file targeting RISC-V working on
-      another ISA.
-  \end{itemize}
-  \vspace{0.5em}
-  {\large LLVM}
-  \begin{itemize}
-    \item A collection of reusable compiler and toolchain technologies.
-    \item LLVM allows for the use of an LSP.
-    \item Includes a cross-compiler capable of targeting RISC-V, but without
-      newlib.
-  \end{itemize}
-\end{minipage}
-\hfill
-\begin{minipage}{0.45\textwidth}
-  \begin{figure}
-    \begin{center}
-      \includegraphics[width=0.75\textwidth]{figures/LLVM-logo.png}
-    \end{center}
-    \caption{LLVM-logo \\
-    \tiny https://www.llvm.org/Logo.html}\label{fig:llvm-logo}
-  \end{figure}
-\end{minipage}
+	\frametitle{Background}
+	\begin{minipage}[t]{0.45\textwidth}
+		{\large QEMU}
+		\begin{itemize}
+			\item Able to emulate both a 32-bit and 64-bit RISC-V processor.
+			\item Made it possible to develop a binary file targeting RISC-V working on
+			      another ISA.
+		\end{itemize}
+		\vspace{0.5em}
+		{\large LLVM}
+		\begin{itemize}
+			\item A collection of reusable compiler and toolchain technologies.
+			\item LLVM allows for the use of an LSP.
+			\item Includes a cross-compiler capable of targeting RISC-V, but without
+			      newlib.
+		\end{itemize}
+	\end{minipage}
+	\hfill
+	\begin{minipage}[t]{0.45\textwidth}
+		\begin{figure}
+			\begin{center}
+				\includegraphics[width=0.75\textwidth]{figures/LLVM-logo.png}
+			\end{center}
+			\caption{LLVM-logo.
+				\tiny https://www.llvm.org/Logo.html}\label{fig:llvm-logo}
+		\end{figure}
+	\end{minipage}
 \end{frame}
 

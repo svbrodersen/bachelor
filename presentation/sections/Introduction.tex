@@ -1,45 +1,45 @@
 % Et standard slide. Det er vigtigt at [hoved] er inkluderet efter \begin{frame}
 \begin{frame}[hoved]
-\frametitle{Context}
-\begin{minipage}{0.45\textwidth}
-\begin{itemize}
-  \item Data centers play an ever increasing role in the IT sector.
-  \item SSDs replaced previous hard drives with similar interfaces.
-  \item Move from interfaces to open-channel SSD.
-  \item Heavy reliance on the CPU and the general purpose OS.
-\end{itemize}
-\end{minipage}
-\hfill
-\begin{minipage}{0.45\textwidth}
-  \begin{figure}
-    \begin{center}
-      \includegraphics[width=0.95\textwidth]{figures/openssd.png}
-    \end{center}
-    \caption{Open-channel SSD}\label{fig:openssd}
-  \end{figure}
-\end{minipage}
+	\frametitle{Context}
+	\begin{minipage}[t]{0.45\textwidth}
+		\begin{itemize}
+			\item Data centers play an ever increasing role in the IT sector.
+			\item SSDs replaced previous hard drives with similar interfaces.
+			\item Move from interfaces to open-channel SSD.
+			\item Heavy reliance on the CPU and the general purpose OS.
+		\end{itemize}
+	\end{minipage}
+	\hfill
+	\begin{minipage}[t]{0.45\textwidth}
+		\begin{figure}
+			\begin{center}
+				\includegraphics[width=0.55\textheight]{figures/openssd.png}
+			\end{center}
+			\caption{Open-channel SSD}\label{fig:openssd}
+		\end{figure}
+	\end{minipage}
 \end{frame}
 
 \begin{frame}[hoved]
-  \frametitle{Problem and Approach}
-  \begin{minipage}{0.45\textwidth}
-  \begin{itemize}
-    \item What computation should be handled by a storage device?
-    \item Is it feasible to implement such a computation on a bare metal RISC-V
-      processor.
-    \item Implemented following the RISC-V instruction set architecture.
-    \item implemented on the QEMU virtual machine.
-  \end{itemize}
-\end{minipage}
-\hfill
-\begin{minipage}{0.45\textwidth}
-  \begin{figure}
-    \begin{center}
-      \includegraphics[width=0.85\textwidth]{figures/qemuvirt.jpeg}
-    \end{center}
-    \caption{QEMU virtual machine. {\footnotesize Created using Microsoft
-    Designer}}\label{fig:qemu}
-  \end{figure}
-\end{minipage}
+	\frametitle{Problem and Approach}
+	\begin{minipage}[t]{0.45\textwidth}
+		\begin{itemize}
+			\item What computation should be handled by a storage device?
+			\item Is it feasible to implement such a computation on a bare metal RISC-V
+			      processor.
+			\item Implemented following the RISC-V instruction set architecture.
+			\item implemented on the QEMU virtual machine.
+		\end{itemize}
+	\end{minipage}
+	\hfill
+	\begin{minipage}[t]{0.45\textwidth}
+		\begin{figure}
+			\begin{center}
+				\includegraphics[height=0.55\textheight]{figures/qemuvirt.jpeg}
+			\end{center}
+			\caption{QEMU virtual machine. {\tiny Created using Microsoft
+						Designer}}\label{fig:qemu}
+		\end{figure}
+	\end{minipage}
 \end{frame}
 
