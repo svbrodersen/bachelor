@@ -1,6 +1,5 @@
 #include "include/ISR.h"
 #include "include/defines.h"
-#include "include/kernel.h"
 #include "include/threads.h"
 #include "include/uart.h"
 #include "palloc.h"
