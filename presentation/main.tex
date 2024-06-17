@@ -1,0 +1,47 @@
+% VIGTIGT! For at dokumentet kan compile, skal man benytte XeLaTeX eller LuaLaTeX som compiler. Dette kan gøres i Overleaf ved at gå til Menu -> Settings -> Compiler -> Vælg XeLaTeX/LuaLaTeX
+\documentclass[t,24pt,aspectratio=169]{beamer}
+
+\usepackage{KUstyle}
+\usepackage{subfiles}
+
+\toplinje{Bachelor Defence} %Teksten på toplinjen. Hvis ingen tekst ønskes, skal kommandoen fjernes
+
+\begin{document}
+
+% Det første slide. Her kan man f.eks. ændre hovedtitel, undertitlen, oplægsholder, KU-enhed og dato
+{
+\setbeamertemplate{background}{\includegraphics[width=\paperwidth,height=\paperheight]{KU/forside.pdf}}
+\begin{frame}
+    \begin{textblock*}{\textwidth}(0\textwidth,0.1\textheight)
+        \begin{beamercolorbox}[wd=7.8cm,ht=7.3cm,sep=0.5cm]{hvidbox}
+            \fontsize{5}{10}\fontfamily{lmr}\selectfont \textls[200]{KØBENHAVNS UNIVERSITET}
+            \noindent\textcolor{KUrod}{\rule{6.8cm}{0.4pt}}
+        \end{beamercolorbox}
+    \end{textblock*}
+    \begin{textblock*}{\textwidth}(0\textwidth,0.1\textheight)
+        \begin{beamercolorbox}[wd=7.8cm,sep=0.5cm]{hvidbox}
+                \Huge \textcolor{KUrod}{RISC-V based computers in the data
+                center}
+                \vspace{0.5cm}
+                \par
+                \Large Bachelor Defence
+                \vspace{0.5cm}
+                \par
+                \normalsize Simon Vinding Brodersen, 20-06-2024
+        \end{beamercolorbox}
+    \end{textblock*}
+    \begin{textblock}{1}(6.3,11.38)
+        \includegraphics[width=1cm]{KU/KU-logo.png}
+    \end{textblock}
+\end{frame}
+}
+
+\subfile{./sections/Introduction.tex}
+\subfile{./sections/Background.tex}
+\subfile{./sections/Design.tex}
+\subfile{./sections/Implementation.tex}
+\subfile{./sections/Evaluation.tex}
+\subfile{./sections/RelatedWork.tex}
+\subfile{./sections/Conclusion.tex}
+
+\end{document}
