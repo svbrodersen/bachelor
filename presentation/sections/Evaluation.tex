@@ -1,24 +1,47 @@
 \begin{frame}[hoved]
-	\frametitle{Testing}
+	\frametitle{Evaluation}
 	\begin{minipage}[t]{0.45\textwidth}
-		{\large Partitioning the lists, and creating the threads}
+		{\large Debugging}
 		\begin{itemize}
-			\item mhartid 0 is in charge of partitioning the list.
-			\item Each thread merges a subsection of the list.
-			\item When the number of cores is equal to the number of elements on a
-			      level, the context is instead to mergesort that subsection.
-			\item Each core can offset into the global THREADS list, for the next
-			      element it has to sort.
-			\item Using the atomic extension, each core tells parent when they finish.
+			\item Debugging using the riscv32-unknown-elf-gdb debugger.
+			\item Able to see the different cores active as "Threads".
+			\item Connects to the QEMU virtual machine remotely.
 		\end{itemize}
 	\end{minipage}
 	\hfill
 	\begin{minipage}[t]{0.45\textwidth}
 		\begin{figure}
 			\begin{center}
-				\includegraphics[width=0.95\textwidth]{figures/partitioning.png}
+				\includegraphics[width=0.95\textwidth]{figures/debugging.png}
 			\end{center}
-			\caption{Design of memory layout.}\label{fig:partition}
+			\caption{Debugging}\label{fig:debugging}
+		\end{figure}
+	\end{minipage}
+\end{frame}
+
+\begin{frame}[hoved]
+	\frametitle{Evaluation}
+	\begin{minipage}[t]{0.45\textwidth}
+		{\large Validation}
+		\begin{itemize}
+			\item Tested using varying sizes.
+			\item Redirects QEMU stdout to file and compares with python sort.
+			\item Found that number of cores has to be less than list size.
+			\item Number of cores has to be a power of 2. Due to the partitioning.
+		\end{itemize}
+		{\large Future work}
+		\begin{itemize}
+			\item Variable thread stack size.
+			\item Performance testing. QEMU emulates number of cores.
+		\end{itemize}
+	\end{minipage}
+	\hfill
+	\begin{minipage}[t]{0.45\textwidth}
+		\begin{figure}
+			\begin{center}
+				\includegraphics[width=0.95\textwidth]{figures/validate.png}
+			\end{center}
+			\caption{Lists of varying sizes tested}\label{fig:validate}
 		\end{figure}
 	\end{minipage}
 \end{frame}
