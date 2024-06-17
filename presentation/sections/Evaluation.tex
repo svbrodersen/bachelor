@@ -1,0 +1,24 @@
+\begin{frame}[hoved]
+	\frametitle{Testing}
+	\begin{minipage}[t]{0.45\textwidth}
+		{\large Partitioning the lists, and creating the threads}
+		\begin{itemize}
+			\item mhartid 0 is in charge of partitioning the list.
+			\item Each thread merges a subsection of the list.
+			\item When the number of cores is equal to the number of elements on a
+			      level, the context is instead to mergesort that subsection.
+			\item Each core can offset into the global THREADS list, for the next
+			      element it has to sort.
+			\item Using the atomic extension, each core tells parent when they finish.
+		\end{itemize}
+	\end{minipage}
+	\hfill
+	\begin{minipage}[t]{0.45\textwidth}
+		\begin{figure}
+			\begin{center}
+				\includegraphics[width=0.95\textwidth]{figures/partitioning.png}
+			\end{center}
+			\caption{Design of memory layout.}\label{fig:partition}
+		\end{figure}
+	\end{minipage}
+\end{frame}
