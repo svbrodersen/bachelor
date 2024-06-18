@@ -30,28 +30,67 @@
 
 \begin{frame}[hoved]
 	\frametitle{Design}
-	{\large Bare-metal continued}
+  {\large Unikernel}
+  \begin{itemize}
+    \item Bridge between a fully fledge operating system and bare-metal.
+    \item Allows a single application to run with some OS-support.
+    \item Nanos. Meant for virtual machines only. An alternative to Docker with
+      Linux.
+  \end{itemize}
+  {\large freeRTOS}
+  \begin{itemize}
+    \item Real Time Operating System(RTOS).
+    \item Gives some standard library functionality.
+    \item Allows for more platform independent applications.
+  \end{itemize}
+	{\large Bare-metal}
 	\begin{itemize}
 		\item Processor uses RISC-V ISA with extensions:
-		\item Control and Status Register(Zicsr). (mhartid)
-		\item Atomic Instructions(a). (amoadd.w)
-		\item Integer Multiplication and Division (m).
-		\item Compressed Instructions (c). (bnez, lw). Mainly used for code size
-		      reduction.
+    \item Control and Status Register(Zicsr), Atomic Instructions(a), Integer
+      Multiplication and Division (m), Compressed Instructions (c).
+    \item Single vs multicore. Merge sort has a parallel structure. Parallel
+      should in theory increase performance.
 	\end{itemize}
 \end{frame}
-
 
 \begin{frame}[hoved]
 	\frametitle{Design}
 	\begin{minipage}[t]{0.45\textwidth}
-		{\large Memory continued}
+		{\large Scheduler vs Partitioning}
+    \begin{itemize}
+      \item Assuming cores have different execution speed, scheduler would allow
+        for the faster cores to do more.
+      \item Scheduler would require synchronization.
+      \item Partitioning makes each cores amount of work deterministic.
+    \end{itemize}
+	\end{minipage}
+	\hfill
+	\begin{minipage}[t]{0.45\textwidth}
+		\begin{figure}
+			\begin{center}
+				\includegraphics[width=0.95\textwidth]{figures/queue.png}
+			\end{center}
+			\caption{A queue data structure. \tiny https://www.geeksforgeeks.org/queue-meaning-in-dsa/}\label{fig:queue}
+		\end{figure}
+	\end{minipage}
+\end{frame}
+
+\begin{frame}[hoved]
+	\frametitle{Design}
+	\begin{minipage}[t]{0.45\textwidth}
+		{\large Memory}
 		\begin{itemize}
 			\item Use context switching.
 			\item Separate core memory and thread memory.
-			\item When I had issues with corrupted data, I would thus know have an
-			      idea where it was happening.
+      \item When I had issues with corrupted data, I would have an idea of where
+        it was happening.
 		\end{itemize}
+    {\large Partitioning the list}
+    \begin{itemize}
+      \item Partition the list following the structure of the merge tree.
+      \item Create a thread for each partition of the list to either merge or
+        merge sort.
+    \end{itemize}
 	\end{minipage}
 	\hfill
 	\begin{minipage}[t]{0.45\textwidth}

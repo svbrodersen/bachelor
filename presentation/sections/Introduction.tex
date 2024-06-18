@@ -5,17 +5,16 @@
 		\begin{itemize}
 			\item Data centers play an ever increasing role in the IT sector.
 			\item SSDs replaced previous hard drives with similar interfaces.
-			\item Move from interfaces to open-channel SSD.
-			\item Heavy reliance on the CPU and the general purpose OS.
+      \item Computational storage to reduce data movement.
 		\end{itemize}
 	\end{minipage}
 	\hfill
 	\begin{minipage}[t]{0.45\textwidth}
 		\begin{figure}
 			\begin{center}
-				\includegraphics[width=0.55\textheight]{figures/openssd.png}
+				\includegraphics[height=0.55\textheight]{figures/CSD.png}
 			\end{center}
-			\caption{Open-channel SSD}\label{fig:openssd}
+			\caption{Traditional architecture vs with CSD.}\label{fig:openssd}
 		\end{figure}
 	\end{minipage}
 \end{frame}
@@ -25,7 +24,7 @@
 	\begin{minipage}[t]{0.45\textwidth}
 		\begin{itemize}
 			\item What computation should be handled by a storage device?
-			\item Is it feasible to implement such a computation on a bare metal RISC-V
+			\item Is it feasible to implement such a computation on a RISC-V
 			      processor.
 			\item Implemented following the RISC-V instruction set architecture.
 			\item implemented on the QEMU virtual machine.
