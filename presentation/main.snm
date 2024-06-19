@@ -1,4 +1,11 @@
 \beamer@slide {fig:openssd}{2}
 \beamer@slide {fig:qemu}{3}
 \beamer@slide {fig:riscv}{4}
-\beamer@slide {fig:llvm-logo}{5}
+\beamer@slide {fig:qemu-logo}{5}
+\beamer@slide {fig:}{6}
+\beamer@slide {fig:queue}{8}
+\beamer@slide {fig:mem_layout}{9}
+\beamer@slide {fig:mem_layout1}{10}
+\beamer@slide {fig:partition}{11}
+\beamer@slide {fig:debugging}{12}
+\beamer@slide {fig:validate}{13}
